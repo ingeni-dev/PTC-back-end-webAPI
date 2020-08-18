@@ -6,16 +6,16 @@ using WebApi.Services.DataServices;
 namespace PTCwebApi.Controllers {
     [Route ("[controller]")]
     [ApiController]
-    public class UserController : ControllerBase {
-        public UserController () { }
+    public class UsersController : ControllerBase {
+        public UsersController () { }
 
         [HttpPost ("login")]
         public string Login (UserLogin model) {
             Boolean status = AuthenticateUsers.AuthenticateUser (model);
             if (status != false) {
-                return "เสียใจด้วย";
+                return "ยินดีต้อนรับ";
             }
-            return "ยินดีต้อนรับ";
+            return "เสียใจด้วย";
         }
     }
 }
