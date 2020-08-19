@@ -2,7 +2,7 @@ using System;
 using System.DirectoryServices;
 using PTCwebApi.Models;
 
-namespace WebApi.Services.DataServices {
+namespace PTCwebApi.Security {
     public class AuthenticateUsers {
         internal static Boolean AuthenticateUser (UserLogin model) {
             DirectoryEntry entry = new DirectoryEntry ("LDAP://192.168.1.2", model.Username, model.Password);

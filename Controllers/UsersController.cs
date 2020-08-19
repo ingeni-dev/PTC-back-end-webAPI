@@ -1,7 +1,7 @@
 using System;
 using Microsoft.AspNetCore.Mvc;
 using PTCwebApi.Models;
-using WebApi.Services.DataServices;
+using PTCwebApi.Security;
 
 namespace PTCwebApi.Controllers {
     [Route ("[controller]")]
