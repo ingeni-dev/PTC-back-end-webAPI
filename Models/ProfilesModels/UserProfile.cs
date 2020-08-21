@@ -1,4 +1,4 @@
-namespace PTCwebApi.Models.Profiles_Models
+namespace PTCwebApi.Models.ProfilesModels
 {
     public class UserProfile
     {

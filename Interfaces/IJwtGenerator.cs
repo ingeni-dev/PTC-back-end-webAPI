@@ -1,4 +1,4 @@
-using PTCwebApi.Models.Profiles_Models;
+using PTCwebApi.Models.ProfilesModels;
 
 namespace PTCwebApi.Interfaces {
 

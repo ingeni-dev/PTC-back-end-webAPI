@@ -1,6 +1,6 @@
-using PTCwebApi.Models.Profiles_Models;
+using PTCwebApi.Models.ProfilesModels;
 
-namespace PTCwebApi.Models.Authenticate_Models {
+namespace PTCwebApi.Models.AuthenticateModels {
     public class AuthenticateResponse {
         public string org { get; set; }
         public string userID { get; set; }

@@ -8,8 +8,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using PTCwebApi.Interfaces;
-using PTCwebApi.Models.Authenticate_Models;
-using PTCwebApi.Models.Profiles_Models;
+using PTCwebApi.Models.AuthenticateModels;
+using PTCwebApi.Models.ProfilesModels;
 
 namespace PTCwebApi.Security {
 
