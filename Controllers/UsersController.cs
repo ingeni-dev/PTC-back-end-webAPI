@@ -35,17 +35,11 @@ namespace PTCwebApi.Controllers {
             return Unauthorized (new { message = "Username or password is incorrect" });
         }
 
-        [HttpPost ("testoracle")]
-        public async Task<IActionResult> Post (SerialNumber model) {
-            var query = $"select * from kpdba.ptc_stock_detail where ptc_id = '{model.PTC_ID}'";
-            var result = await new DataContext ().GetResultDapperAsyncNew (DataBaseHostEnum.KPR, query); // (DataBaseHostEnum.KPR, query, baseName);
-            return Ok (result);
-        }
-
+        [Authorize]
         [HttpPost ("getProflie")]
         public IActionResult GetAllProfile (UserRequestUserProfile model) {
-            var userProfike = _jwtGenerator.DecodeToken (model.token);
-            return Ok (userProfike);
+            var userProfile = _jwtGenerator.DecodeToken (model.token);
+            return Ok (userProfile);
         }
 
         [HttpPost ("getMenu")]
@@ -53,10 +47,10 @@ namespace PTCwebApi.Controllers {
             try {
                 switch (model.fn) {
                     case "fn1":
-                        _results = await new GetMenuMethod (_mapper).GetIconMenu (model);
+                        _results = await new StoreConnectionMethod (_mapper).KmapGetIconMenu (model);
                         break;
                     default: //ยังไม่สนใจ fn
-                        _results = await new GetMenuMethod (_mapper).GetIconMenu (model);
+                        _results = await new StoreConnectionMethod (_mapper).KmapGetIconMenu (model);
                         break;
                 }
                 if (_results != null)

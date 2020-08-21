@@ -872,7 +872,7 @@ namespace PTCwebApi {
             return string.Empty;
         }
         /// <summary>
-        /// เรียกใช้งาน StoreProcedure
+        /// เรียกใช้งาน Store Procedure Project KMAP
         /// </summary>
         /// <param name="databasehost"></param>
         /// <param name="storedName"></param>
@@ -886,6 +886,37 @@ namespace PTCwebApi {
                 }
                 //cursor name
                 dyParam.Add ("CUR_RET", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                var conn = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
+                if (conn.State == ConnectionState.Closed) {
+                    conn.Open ();
+                }
+                if (conn.State == ConnectionState.Open) {
+                    var rawResult = await SqlMapper.QueryAsync (conn, storedName, param : dyParam, commandType : CommandType.StoredProcedure);
+                    return rawResult;
+                }
+            } catch (Exception ex) {
+                throw ex;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// เรียกใช้งาน Store Procedure project PTC
+        /// </summary>
+        /// <param name="databasehost"></param>
+        /// <param name="storedName"></param>
+        /// <param name="param"></param>
+        /// //UserJwt user,
+        public async Task<IEnumerable<object>> CallStoredProcudurePTC (DataBaseHostEnum databasehost, string storedName, List<Param> param) {
+            try {
+                var dyParam = new OracleDynamicParameters ();
+                foreach (Param p in param) {
+                    dyParam.Add (p.ParamName, GetOracleDbType (p.ParamType), ParameterDirection.Input, p.ParamValue);
+                }
+                //cursor name
+                dyParam.Add ("O_CUR_RETURN", OracleDbType.RefCursor, ParameterDirection.Output);
 
                 var conn = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
                 if (conn.State == ConnectionState.Closed) {

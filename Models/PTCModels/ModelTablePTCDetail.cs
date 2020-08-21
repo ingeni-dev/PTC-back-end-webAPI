@@ -4,7 +4,7 @@ namespace PTCwebApi.Models.PTCModels {
     public class ModelTablePTCDetail {
         public string TRAN_ID { get; set; }
         public decimal TRAN_SEQ { get; set; }
-        public decimal TRAN_TYPE { get; set; }
+        public string TRAN_TYPE { get; set; }
         public DateTime TRAN_DATE { get; set; }
         public string PTC_ID { get; set; }
         public string LOT_ID { get; set; }

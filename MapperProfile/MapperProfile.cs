@@ -1,10 +1,15 @@
+using Newtonsoft.Json.Linq;
 using PTCwebApi.Models;
 using PTCwebApi.Models.ProfilesModels;
+using PTCwebApi.Models.PTCModels.Entities;
 using PTCwebApi.Models.RequestModels;
 
 namespace PTCwebApi.Profiles {
     public class MapperProfile : AutoMapper.Profile {
         public MapperProfile () {
+            // CreateMap<JObject, CheckToolingInWare> ()
+            //     .ForMember (d => d.Count, o => { o.MapFrom (s => s["COUNT(1)"]); });
+
             CreateMap<AppUserToolModel, GetMenuModel> ()
                 .ForMember (d => d.ID, o => o.MapFrom (s => s.TOOL_ID))
                 .ForMember (d => d.appName, o => o.MapFrom (s => s.TOOL_NAME))
