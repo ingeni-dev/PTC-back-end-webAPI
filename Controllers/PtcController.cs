@@ -9,6 +9,7 @@ using PTCwebApi.Methods;
 using PTCwebApi.Models.ProfilesModels;
 using PTCwebApi.Models.PTCModels;
 using PTCwebApi.Models.PTCModels.Entities;
+using PTCwebApi.Models.PTCModels.MethodModels.MoveLoc;
 using PTCwebApi.Models.RequestModels;
 //using PTC-back-end-webAPI.Models;
 
@@ -59,7 +60,8 @@ namespace PTCwebApi.Controllers {
         }
 
         [HttpPost ("movetooling")]
-        public IActionResult MoveTooling (SerialNumber model) {
+        public object MoveTooling (SerialNumber modelFT,RequestDataMoveLoc modelML) {
+
             return null;
         }
 
