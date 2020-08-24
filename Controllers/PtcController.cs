@@ -97,20 +97,18 @@ namespace PTCwebApi.Controllers {
 
                     //*Insert data to Table
                     getResult.TRAN_SEQ = 1;
-                    getResult.TRAN_TYPE = "3";
+                    getResult.TRAN_TYPE = "4";
                     getResult.TRAN_DATE = DateTime.Now.ToString ("dd/MM/yyyy HH:mm:ss", new CultureInfo ("en-US"));
                     getResult.CR_DATE = DateTime.Now.ToString ("dd/MM/yyyy HH:mm:ss", new CultureInfo ("en-US"));
                     var insertGetQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{getResult.TRAN_SEQ}'), TO_NUMBER('{getResult.TRAN_TYPE}'), TO_DATE('{getResult.TRAN_DATE}', 'dd/mm/yyyy hh24:mi:ss'),'{getResult.PTC_ID}', TO_NUMBER('{getResult.QTY-1}'), {getResult.COMP_ID},'{getResult.WAREHOUSE_ID}','{getResult.LOC_ID}', 'F',TO_DATE('{getResult.CR_DATE}', 'dd/mm/yyyy hh24:mi:ss') , '{userProfile.org}', '{userProfile.userID}')";
                     var resultInsert = await new DataContext ().InsertResultDapperAsync (DataBaseHostEnum.KPR, insertGetQuery);
 
                     //*Insert data to Table
-                    // getResult.TRAN_SEQ = 2;
-                    // var insertOutQuery = $@"INSERT INTO KPDBA.PTC_STOCK_DETAIL 
-                    //                 (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) 
-                    //                 VALUES ({tran_id}, TO_NUMBER({getResult.TRAN_SEQ}), TO_NUMBER({getResult.TRAN_TYPE}), 
-                    //                 TO_DATE({getResult.TRAN_DATE}, 'dd/mm/yyyy hh24:mi:ss'),{getResult.PTC_ID}, 
-                    //                 TO_NUMBER('{getResult.QTY-1}'),  {getResult.COMP_ID},{getResult.WAREHOUSE_ID}, {getResult.LOC_ID}, 'F', 
-                    //                 {getResult.CR_DATE}, {userProfile.org}, {userProfile.userID})";
+                    getResult.TRAN_SEQ = 2;
+                    getResult.TRAN_DATE = DateTime.Now.ToString ("dd/MM/yyyy HH:mm:ss", new CultureInfo ("en-US"));
+                    getResult.CR_DATE = DateTime.Now.ToString ("dd/MM/yyyy HH:mm:ss", new CultureInfo ("en-US"));
+                    var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{getResult.TRAN_SEQ}'), TO_NUMBER('{getResult.TRAN_TYPE}'), TO_DATE('{getResult.TRAN_DATE}', 'dd/mm/yyyy hh24:mi:ss'),'{getResult.PTC_ID}', TO_NUMBER('{getResult.QTY-1}'), {getResult.COMP_ID},'{getResult.WAREHOUSE_ID}','{getResult.LOC_ID}', 'F',TO_DATE('{getResult.CR_DATE}', 'dd/mm/yyyy hh24:mi:ss') , '{userProfile.org}', '{userProfile.userID}')";
+                    var resultoutInsert = await new DataContext ().InsertResultDapperAsync (DataBaseHostEnum.KPR, insertGetQuery);
                 } else {
                     _returnFlag = "1";
                     _returnText = "\"error\": \"ระบบไม่ได้รับ Token กรุณา Login\"";
