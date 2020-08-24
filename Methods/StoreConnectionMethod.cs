@@ -25,7 +25,7 @@ namespace PTCwebApi.Methods {
             var resultReal = _mapper.Map<IEnumerable<AppUserToolModel>, IEnumerable<GetMenuModel>> (result).ToList ();
             return resultReal;
         }
-        public async Task<IEnumerable<object>> PtcGetTranID (ModelTablePTCDetail model) {
+        public async Task<string> PtcGetTranID (ModelTablePTCDetail model) {
             List<Param> param = new List<Param> () {
                 new Param () { ParamName = "I_TRAN_TYPE", ParamType = ParamMeterTypeEnum.STRING, ParamValue = model.TRAN_TYPE },
                 new Param () { ParamName = "I_COMP_ID", ParamType = ParamMeterTypeEnum.STRING, ParamValue = model.TRAN_ID },
@@ -33,9 +33,9 @@ namespace PTCwebApi.Methods {
             var results = await new DataContext (_mapper).CallStoredProcudurePTC (DataBaseHostEnum.KPR, "KPDBA.PACK_PTC.SP_GET_PTC_TRAN_ID", param);
             if (results == null)
                 return null;
-            var result = _mapper.Map<IEnumerable<TranIDNew>> (results);
-            // var resultReal = _mapper.Map<IEnumerable<AppUserToolModel>, IEnumerable<GetMenuModel>> (result).ToList ();
-            return results;
+
+            string result = (results as List<dynamic>) [0].TRAN_ID;
+            return result;
         }
     }
 }

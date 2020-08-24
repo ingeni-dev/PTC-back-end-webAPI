@@ -909,7 +909,7 @@ namespace PTCwebApi {
         /// <param name="storedName"></param>
         /// <param name="param"></param>
         /// //UserJwt user,
-        public async Task<IEnumerable<object>> CallStoredProcudurePTC (DataBaseHostEnum databasehost, string storedName, List<Param> param) {
+        public async Task<IEnumerable<dynamic>> CallStoredProcudurePTC (DataBaseHostEnum databasehost, string storedName, List<Param> param) {
             try {
                 var dyParam = new OracleDynamicParameters ();
                 foreach (Param p in param) {
@@ -957,18 +957,36 @@ namespace PTCwebApi {
             return oracleType;
         }
 
-         /// <summary>
+        /// <summary>
         /// ดึงข้อมูลจาก Database ด้วย Dapper ORM แบบ Asynchronize
         /// </summary>
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
-        public async Task<Object> GetResultDapperAsyncNew (DataBaseHostEnum databasehost, string query) {
+        public async Task<dynamic> GetResultDapperAsyncDynamic (DataBaseHostEnum databasehost, string query) {
             DateTime dtStart = DateTime.Now;
             Stopwatch stopwatch = new Stopwatch ();
             stopwatch.Start ();
 
             OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
             var result = await SqlMapper.QueryAsync (instance, query, commandType : CommandType.Text);
+            return result;
+        }
+        public async Task<Object> GetResultDapperAsyncObject (DataBaseHostEnum databasehost, string query) {
+            DateTime dtStart = DateTime.Now;
+            Stopwatch stopwatch = new Stopwatch ();
+            stopwatch.Start ();
+
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
+            var result = await SqlMapper.QueryAsync (instance, query, commandType : CommandType.Text);
+            return result;
+        }
+        public async Task<Object> InsertResultDapperAsync (DataBaseHostEnum databasehost, string query) {
+            DateTime dtStart = DateTime.Now;
+            Stopwatch stopwatch = new Stopwatch ();
+            stopwatch.Start ();
+
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
+            var result = await SqlMapper.ExecuteAsync (instance, query, commandType : CommandType.Text);
             return result;
         }
     }

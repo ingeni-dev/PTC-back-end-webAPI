@@ -3,27 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using PTCwebApi.Models.PTCModels.Entities;
-using PTCwebApi.Models.RequestModels;
 
 namespace PTCwebApi.Methods {
     public class QueryBaseOracle {
-        private readonly IMapper _mapper;
-        public QueryBaseOracle (IMapper mapper) {
-            _mapper = mapper;
+        public QueryBaseOracle () {
+
         }
-        public async Task<bool> checkToolingInWare (SerialNumber model) {
-            var query = $"SELECT COUNT(1) FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.PTC_ID}'";
-            var results = await new DataContext ().GetResultDapperAsyncNew (DataBaseHostEnum.KPR, query);
-            var result = _mapper.Map<IEnumerable<CheckToolingInWare>> (results);
-            CheckToolingInWare count = result.ElementAt (0);
-            // try {
-            //     if (result != null)
-            //         return true;
+        public async Task<Boolean> checkToolingInWare (string ptc_id) {
+            var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{ptc_id}'";
+            var resultCheck = await new DataContext ().GetResultDapperAsyncDynamic (DataBaseHostEnum.KPR, queryCheck);
+            decimal result = (resultCheck as List<dynamic>) [0].COUN;
+            if (result == 0)
                 return false;
-            // } catch (Exception e) {
-            //     return false;
-            // }
+            return true;
+
         }
     }
 }
