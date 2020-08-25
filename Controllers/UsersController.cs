@@ -42,6 +42,7 @@ namespace PTCwebApi.Controllers {
             return Ok (userProfile);
         }
 
+        [Authorize]
         [HttpPost ("getMenu")]
         public async Task<ActionResult<AppUserToolModel>> PostToGetIcon (UserRequestMenu model) {
             try {
