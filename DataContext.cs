@@ -915,7 +915,6 @@ namespace PTCwebApi {
                 foreach (Param p in param) {
                     dyParam.Add (p.ParamName, GetOracleDbType (p.ParamType), ParameterDirection.Input, p.ParamValue);
                 }
-                //cursor name
                 dyParam.Add ("O_CUR_RETURN", OracleDbType.RefCursor, ParameterDirection.Output);
 
                 var conn = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
@@ -929,7 +928,6 @@ namespace PTCwebApi {
             } catch (Exception ex) {
                 throw ex;
             }
-
             return null;
         }
 
@@ -972,19 +970,11 @@ namespace PTCwebApi {
             return result;
         }
         public async Task<Object> GetResultDapperAsyncObject (DataBaseHostEnum databasehost, string query) {
-            DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
-
             OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
             var result = await SqlMapper.QueryAsync (instance, query, commandType : CommandType.Text);
             return result;
         }
         public async Task<Object> InsertResultDapperAsync (DataBaseHostEnum databasehost, string query) {
-            DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
-
             OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
             var result = await SqlMapper.ExecuteAsync (instance, query, commandType : CommandType.Text);
             return result;

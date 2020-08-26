@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using PTCwebApi.Models;
 using PTCwebApi.Models.PersistenceModels;
+using PTCwebApi.Models.ProfilesModels;
 using PTCwebApi.Models.PTCModels;
 using PTCwebApi.Models.RequestModels;
 
@@ -33,9 +34,40 @@ namespace PTCwebApi.Methods {
             var results = await new DataContext (_mapper).CallStoredProcudurePTC (DataBaseHostEnum.KPR, "KPDBA.PACK_PTC.SP_GET_PTC_TRAN_ID", param);
             if (results == null)
                 return null;
-
             string result = (results as List<dynamic>) [0].TRAN_ID;
             return result;
+        }
+
+        public async Task<IEnumerable<dynamic>> PtcGetWareHouse (string user) {
+            List<Param> param = new List<Param> () {
+                new Param () { ParamName = "I_USER_ID", ParamType = ParamMeterTypeEnum.STRING, ParamValue = user },
+            };
+            var results = await new DataContext (_mapper).CallStoredProcudurePTC (DataBaseHostEnum.KPR, "KPDBA.PACK_PTC.SP_GET_USER_WAREHOUSE", param);
+            if (results == null)
+                return null;
+            return results;
+        }
+        public async Task<IEnumerable<dynamic>> PtcGetWareHouseTool (string user) {
+            List<Param> param = new List<Param> () {
+                new Param () { ParamName = "I_USER_ID", ParamType = ParamMeterTypeEnum.STRING, ParamValue = user },
+            };
+            var results = await new DataContext (_mapper).CallStoredProcudurePTC (DataBaseHostEnum.KPR, "KPDBA.PACK_PTC.SP_GET_USER_TOOLING", param);
+            if (results == null)
+                return null;
+            // var result = _mapper.Map<IEnumerable<UserWareHouseTool>> (results).ToList ();
+            return results;
+        }
+
+        public async Task<IEnumerable<dynamic>> PtcGetCurrentPlans (string toolType, string startDay, string endDay) {
+            List<Param> param = new List<Param> () {
+                new Param () { ParamName = "I_PTC_TYPE", ParamType = ParamMeterTypeEnum.STRING, ParamValue = toolType },
+                new Param () { ParamName = "I_DATE_START", ParamType = ParamMeterTypeEnum.STRING, ParamValue = startDay },
+                new Param () { ParamName = " I_DATE_END", ParamType = ParamMeterTypeEnum.STRING, ParamValue = endDay },
+            };
+            var results = await new DataContext (_mapper).CallStoredProcudurePTC (DataBaseHostEnum.KPR, "KPDBA.PACK_PTC.SP_GET_JS_PLAN", param);
+            if (results == null)
+                return null;
+            return results;
         }
     }
 }
