@@ -1,10 +1,10 @@
 namespace PTCwebApi.Models.PTCModels.MethodModels.FindTools {
     public class ReturnDataTool {
         // public string PTC_NAME { get; set; }
-        public string LOC_ID { get; set; }
-        public string LOC_NAME { get; set; }
-        public string FLAG { get; set; }
-        public string TEXT { get; set; }
+        public string locID { get; set; }
+        public string locName { get; set; }
+        public string flag { get; set; }
+        public string text { get; set; }
 
     }
 }

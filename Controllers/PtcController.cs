@@ -18,13 +18,14 @@ namespace PTCwebApi.Controllers {
             _mapper = mapper;
         }
 
+        // [Authorize]
         [HttpPost ("")]
         public async Task<ActionResult<Object>> ApiAllPTC (RequestAllModelsPTC model) {
             switch (model.fn) {
                 case "FIND TOOL":
                     var _findToolResult = await new PTCMethods (_mapper, _jwtGenerator).FindTooling (model);
                     return Ok (_findToolResult);
-                case "SCAN LOCATION TO MOVE":
+                case "SCAN TOOLING TO MOVE":
                     var _moveToolResult = await new PTCMethods (_mapper, _jwtGenerator).MoveTooling (model);
                     return Ok (_moveToolResult);
                 case "CHECK USER WAREHOUSE":
@@ -38,8 +39,8 @@ namespace PTCwebApi.Controllers {
                     return Ok (_pickUpResult);
                 default:
                     var res = new ReturnDataMoveLoc {
-                        FLAG = "1",
-                        TEXT = "\"error: กรุณากำหนด Function ให้ถูกต้อง\""
+                        flag = "1",
+                        text = "\"error: กรุณากำหนด Function ให้ถูกต้อง\""
                     };
                     return res;
             }

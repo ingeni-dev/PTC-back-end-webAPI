@@ -1,6 +1,6 @@
 namespace PTCwebApi.Models.PTCModels.MethodModels.MoveLoc {
     public class ReturnDataMoveLoc {
-        public string FLAG { get; set; }
-        public string TEXT { get; set; }
+        public string flag { get; set; }
+        public string text { get; set; }
     }
 }
