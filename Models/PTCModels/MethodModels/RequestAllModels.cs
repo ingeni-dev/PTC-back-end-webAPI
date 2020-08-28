@@ -15,6 +15,7 @@ namespace PTCwebApi.Models.PTCModels.MethodModels {
         public string planSubSeq { get; set; }
         public string splitSeq { get; set; }
         public string stepID { get; set; }
+        public string machID { get; set; }
         public string jobID { get; set; }
     }
 }

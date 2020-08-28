@@ -16,9 +16,9 @@ namespace PTCwebApi.Models.PTCModels.MethodModels.CurrentPlans {
         public string LOC_ID { get; set; }
         public string LOC_NAME { get; set; }
         public string DIECUT_SN { get; set; }
-        public string WITHD_DATE { get; set; }
-        public string WITHD_USER_ID { get; set; }
-        public string RETURN_DATE { get; set; }
-        public string RETURN_USER_ID { get; set; }
+        // public string WITHD_DATE { get; set; }
+        // public string WITHD_USER_ID { get; set; }
+        // public string RETURN_DATE { get; set; }
+        // public string RETURN_USER_ID { get; set; }
     }
 }
