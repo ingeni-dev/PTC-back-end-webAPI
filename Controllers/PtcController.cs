@@ -26,7 +26,7 @@ namespace PTCwebApi.Controllers {
                 case "FIND TOOL":
                     var _findToolResult = await new PTCMethods (_mapper, _jwtGenerator).FindLocOfTooling (model);
                     return Ok (_findToolResult);
-                case "SCAN TOOLING TO MOVE":
+                case "SCAN LOCATION TO MOVE":
                     var _moveToolResult = await new PTCMethods (_mapper, _jwtGenerator).MoveTooling (model);
                     return Ok (_moveToolResult);
                 case "CHECK USER WAREHOUSE":

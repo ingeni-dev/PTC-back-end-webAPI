@@ -42,24 +42,6 @@ namespace PTCwebApi.Controllers {
             return Ok (userProfile);
         }
 
-        [Authorize]
-        [HttpPost ("getMenu")]
-        public async Task<ActionResult<AppUserToolModel>> PostToGetIcon (UserRequestMenu model) {
-            try {
-                switch (model.fn) {
-                    case "fn1":
-                        _results = await new StoreConnectionMethod (_mapper).KmapGetIconMenu (model);
-                        break;
-                    default: //ยังไม่สนใจ fn
-                        _results = await new StoreConnectionMethod (_mapper).KmapGetIconMenu (model);
-                        break;
-                }
-                if (_results != null)
-                    return Ok (_results);
-                return BadRequest (new { message = "Information from Oracle be null!!" });
-            } catch (Exception e) {
-                return BadRequest (new { message = e.Message });
-            }
-        }
+       
     }
 }

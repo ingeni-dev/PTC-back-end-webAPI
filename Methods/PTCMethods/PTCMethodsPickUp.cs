@@ -36,7 +36,7 @@ namespace PTCwebApi.Methods.PTCMethods {
                 // string endDay = today.AddDays (3).ToString ("dd/MM/yyyy", new CultureInfo ("en-US"));
                 string yesterday = "1/08/2020";
                 string endDay = "24/08/2020";
-                string toolsType = "DC";
+                string toolsType = "%";
                 int count = (userTool as List<dynamic>).Count;
                 switch (count) {
                     case 1:

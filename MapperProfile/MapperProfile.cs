@@ -19,7 +19,8 @@ namespace PTCwebApi.Profiles {
                 .ForMember (d => d.ID, o => o.MapFrom (s => s.TOOL_ID))
                 .ForMember (d => d.appName, o => o.MapFrom (s => s.TOOL_NAME))
                 .ForMember (d => d.URLPath, o => o.MapFrom (s => s.URL))
-                .ForMember (d => d.img, o => o.MapFrom (s => s.ICON_SRC));
+                .ForMember (d => d.img, o => o.MapFrom (s => s.ICON_SRC))
+                .ForMember (d => d.groupName, o => o.MapFrom (s => s.GROUP_NAME));
 
             CreateMap<UserProfileFromSQl, UserProfile> ()
                 .ForMember (d => d.org, o => o.MapFrom (s => s.ORG_ID))
