@@ -27,7 +27,7 @@ namespace WebApi.Controllers
         }
 
         [Authorize]
-        [HttpPost("getMenu")]
+        [HttpPost("")]
         public async Task<ActionResult<AppUserToolModel>> PostToGetIcon(UserRequestMenu model)
         {
             try

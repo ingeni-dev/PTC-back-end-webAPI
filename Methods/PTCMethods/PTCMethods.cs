@@ -40,7 +40,7 @@ namespace PTCwebApi.Methods.PTCMethods {
                 decimal count = (result as List<object>).Count;
                 if (count == 0) {
                     _returnFlag = "1";
-                    _returnText = "\"error: อุปกรณ์หมด ไม่มีอุปกรณ์คงเหลือภายในคลัง\"";
+                    _returnText = "\"error: อุปกรณ์หมด ไม่มีอุปกรณ์คงเหลือภายในคลัง หมายเลข warehouse ที่กำหนด\"";
                 } else {
                     //มี
                     var results = _mapper.Map<IEnumerable<GetLoc>> (result);
