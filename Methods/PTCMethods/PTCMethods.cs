@@ -46,7 +46,7 @@ namespace PTCwebApi.Methods.PTCMethods
                 if (count == 0)
                 {
                     _returnFlag = "1";
-                    _returnText = "\"error: อุปกรณ์หมด ไม่มีอุปกรณ์คงเหลือภายในคลัง หมายเลข warehouse ที่กำหนด\"";
+                    _returnText = "ไม่มีอุปกรณ์คงเหลือภายในหมายเลขคลังที่ท่านเลือก";
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace PTCwebApi.Methods.PTCMethods
             else
             {
                 _returnFlag = "1";
-                _returnText = "\"error: ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล\"";
+                _returnText = "ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล";
             }
             var returnResult = new ReturnDataTool
             {
@@ -73,7 +73,7 @@ namespace PTCwebApi.Methods.PTCMethods
         public async Task<ReturnDataTool> FindSuggLocOfTooling(RequestAllModelsPTC model)
         {
             string _returnFlag = "1";
-            string _returnText = "\"error: ไม่มีพื้นที่แนะนำ สำหรับจัดเก็บอุปกรณ์นี้\"";
+            string _returnText = "ไม่มีพื้นที่แนะนำ สำหรับจัดเก็บอุปกรณ์นี้";
             GetLoc _dataLoc = new GetLoc();
 
             //* check A tool is real in warehourse.
@@ -83,7 +83,6 @@ namespace PTCwebApi.Methods.PTCMethods
 
             if (toolValid == 1)
             {
-
                 //* check location of the tool.
                 var query = $"SELECT SD.LOC_ID, LOC.LOC_DETAIL, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID HAVING SUM (SD.QTY) > 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC WHERE RECEIVE_LOC_FLAG = 'T') LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
                 var result = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
@@ -105,7 +104,7 @@ namespace PTCwebApi.Methods.PTCMethods
             else
             {
                 _returnFlag = "1";
-                _returnText = "\"error: ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล\"";
+                _returnText = "ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล";
             }
             var returnResult = new ReturnDataTool
             {
@@ -132,7 +131,7 @@ namespace PTCwebApi.Methods.PTCMethods
                     decimal toolReal = (resultCheck as List<dynamic>)[0].COUN;
                     if (toolReal == 1)
                     {
-                        var queryCheckLoc = $"SELECT COUNT(1) AS COUN FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}'";
+                        var queryCheckLoc = $"SELECT COUNT(1) AS COUN FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}' AND WAREHOUSE_ID = '{model.warehouseID}'";
                         var resultCheckLoc = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckLoc);
                         decimal LocValid = (resultCheckLoc as List<dynamic>)[0].COUN;
                         if (LocValid == 1)
@@ -143,7 +142,7 @@ namespace PTCwebApi.Methods.PTCMethods
                             if (count == 0)
                             {
                                 _returnFlag = "1";
-                                _returnText = "\"error: อุปกรณ์หมด ไม่มีอุปกรณ์คงเหลือภายในคลัง\"";
+                                _returnText = "ไม่มีอุปกณ์คงเหลือภายในคลัง";
                             }
                             else
                             {
@@ -176,25 +175,25 @@ namespace PTCwebApi.Methods.PTCMethods
                         else
                         {
                             _returnFlag = "1";
-                            _returnText = "\"error: ไม่พบหมายเลข Location นี้ในฐานข้อมูล\"";
+                            _returnText = "ไม่พบหมายเลข Location นี้ในฐานข้อมูล";
                         }
                     }
                     else
                     {
                         _returnFlag = "1";
-                        _returnText = "\"error: ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล\"";
+                        _returnText = "ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล";
                     }
                 }
                 else
                 {
                     _returnFlag = "1";
-                    _returnText = "\"error: ข้อมูล Token ผิดพลาด กรุณาติดต่อฝ่ายIT \"";
+                    _returnText = "ข้อมูลผู้ใช้เกิดความผิดพลาด กรุณาติดต่อฝ่าย IT เพื่อแก้ไข";
                 }
             }
             else
             {
                 _returnFlag = "1";
-                _returnText = "\"error: ระบบไม่ได้รับ Token กรุณา Login ใหม่อีกครั้งหรือ ติดต่อแผนก IT\"";
+                _returnText = "ระบบไม่พบข้อมูลผู้ใช้งานของท่าน กรุณา Login ใหม่อีกครั้งหรือติดต่อแผนก IT เพื่อแก้ไข";
             }
             var retuenResult = new ReturnDataMoveLoc
             {
