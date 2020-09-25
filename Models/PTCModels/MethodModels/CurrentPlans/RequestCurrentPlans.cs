@@ -1,5 +1,7 @@
-namespace PTCwebApi.Models.PTCModels.MethodModels.CurrentPlans {
-    public class RequestCurrentPlans {
+namespace PTCwebApi.Models.PTCModels.MethodModels.CurrentPlans
+{
+    public class RequestCurrentPlans
+    {
         public string JOB_ID { get; set; }
         public string STEP_ID { get; set; }
         public string SPLIT_SEQ { get; set; }
@@ -13,12 +15,14 @@ namespace PTCwebApi.Models.PTCModels.MethodModels.CurrentPlans {
         public string PERIOD { get; set; }
         public string PTC_TYPE { get; set; }
         public string PTC_ID { get; set; }
-        public string LOC_ID { get; set; }
-        public string LOC_NAME { get; set; }
         public string DIECUT_SN { get; set; }
-        // public string WITHD_DATE { get; set; }
-        // public string WITHD_USER_ID { get; set; }
-        // public string RETURN_DATE { get; set; }
-        // public string RETURN_USER_ID { get; set; }
+        public string WITHD_DATE { get; set; }
+        public string WITHD_USER_ID { get; set; }
+        public string RETURN_DATE { get; set; }
+        public string RETURN_USER_ID { get; set; }
+        public string PTC_SN { get; set; }
+        public string LOC_ID { get; set; }
+        public string LOC_DESC { get; set; }
+        public string CHECK_SHOW { get; set; }
     }
 }

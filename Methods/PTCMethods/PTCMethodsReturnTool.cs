@@ -40,13 +40,13 @@ namespace PTCwebApi.Methods.PTCMethods
                 else
                 {
                     _returnFlag = "1";
-                    _returnText = "ไม่พบประวัติการเบิกอุปกรณ์ของคุณ";
+                    _returnText = "ไม่พบประวัติการเบิก";
                 }
             }
             else
             {
                 _returnFlag = "1";
-                _returnText = "ระบบไม่ได้รับ ข้อมูลผู้ใช้งานของท่าน กรุณา Login ใหม่อีกครั้งหรือ ติดต่อแผนก IT";
+                _returnText = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT ";
             }
             var returnResult = new ResponseWthdralwalHistory
             {
@@ -84,7 +84,7 @@ namespace PTCwebApi.Methods.PTCMethods
                 result = new ReturnDataMoveLoc
                 {
                     flag = "1",
-                    text = "ระบบไม่ได้รับ ข้อมูลผู้ใช้งานของท่าน กรุณา Login ใหม่อีกครั้งหรือ ติดต่อแผนก IT"
+                    text = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT "
                 };
             }
 

@@ -46,7 +46,7 @@ namespace PTCwebApi.Methods.PTCMethods
                 if (count == 0)
                 {
                     _returnFlag = "1";
-                    _returnText = "ไม่มีอุปกรณ์คงเหลือภายในหมายเลขคลังที่ท่านเลือก";
+                    _returnText = "ไม่พบอุปกรณ์คงเหลือภายในคลัง";
                 }
                 else
                 {
@@ -58,7 +58,7 @@ namespace PTCwebApi.Methods.PTCMethods
             else
             {
                 _returnFlag = "1";
-                _returnText = "ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล";
+                _returnText = "ไม่พบรหัส Tooling นี้ในฐานข้อมูล";
             }
             var returnResult = new ReturnDataTool
             {
@@ -104,7 +104,7 @@ namespace PTCwebApi.Methods.PTCMethods
             else
             {
                 _returnFlag = "1";
-                _returnText = "ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล";
+                _returnText = "ไม่พบรหัส Tooling นี้ในฐานข้อมูล";
             }
             var returnResult = new ReturnDataTool
             {
@@ -142,7 +142,7 @@ namespace PTCwebApi.Methods.PTCMethods
                             if (count == 0)
                             {
                                 _returnFlag = "1";
-                                _returnText = "ไม่มีอุปกณ์คงเหลือภายในคลัง";
+                                _returnText = "ไม่พบอุปกรณ์คงเหลือภายในคลัง";
                             }
                             else
                             {
@@ -175,25 +175,26 @@ namespace PTCwebApi.Methods.PTCMethods
                         else
                         {
                             _returnFlag = "1";
-                            _returnText = "ไม่พบหมายเลข Location นี้ในฐานข้อมูล";
+                            //ไม่พบหมายเลข Location นี้ในฐานข้อมูล
+                            _returnText = "ไม่พบอุปกรณ์คงเหลือภายในคลัง";
                         }
                     }
                     else
                     {
                         _returnFlag = "1";
-                        _returnText = "ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล";
+                        _returnText = "ไม่พบรหัส Tooling นี้ในฐานข้อมูล";
                     }
                 }
                 else
                 {
                     _returnFlag = "1";
-                    _returnText = "ข้อมูลผู้ใช้เกิดความผิดพลาด กรุณาติดต่อฝ่าย IT เพื่อแก้ไข";
+                    _returnText = "ข้อมูลผู้ใช้เกิดข้อผิดพลาด กรุณาติดต่อฝ่าย IT";
                 }
             }
             else
             {
                 _returnFlag = "1";
-                _returnText = "ระบบไม่พบข้อมูลผู้ใช้งานของท่าน กรุณา Login ใหม่อีกครั้งหรือติดต่อแผนก IT เพื่อแก้ไข";
+                _returnText = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT ";
             }
             var retuenResult = new ReturnDataMoveLoc
             {
@@ -238,7 +239,7 @@ namespace PTCwebApi.Methods.PTCMethods
             }
             else
             {
-                _returnText = "\"error: ระบบไม่ได้รับ Token กรุณา Login ใหม่อีกครั้งหรือ ติดต่อแผนก IT\"";
+                _returnText = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT ";
             }
 
             var returnResult = new CheckWareHouseUser

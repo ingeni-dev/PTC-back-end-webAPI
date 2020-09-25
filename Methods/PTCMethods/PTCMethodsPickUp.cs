@@ -52,22 +52,42 @@ namespace PTCwebApi.Methods.PTCMethods
                     case 2:
                         var allCurrentPlans = await new StoreConnectionMethod(_mapper).PtcGetCurrentPlans(compID: compID, toolType: toolsType, startDay: yesterday, endDay: endDay);
                         var DataCurrentPlans = allCurrentPlans.ToList();
-                        //TODO convert List<dynamic> to dataTable
-                        var planTable = ToDatable.ToDataTable(DataCurrentPlans, "CurrentPlans");
+                        // //TODO convert List<dynamic> to dataTable
+                        // var planTable = ToDatable.ToDataTable(DataCurrentPlans, "CurrentPlans");
                         // DataTable a = ToDataTable (DataCurrentPlans, "CurrentPlans");
-                        for (int i = 0; i < (count + 1); i++) { };
+                        // for (int i = 0; i < (count + 1); i++) { };
                         break;
                     default:
+                        List<RequestCurrentPlans> _data = null;
                         _resultCurrentPlans = await new StoreConnectionMethod(_mapper).PtcGetCurrentPlans(compID: compID, toolType: toolsType, startDay: yesterday, endDay: endDay);
                         var currentPlans = _mapper.Map<IEnumerable<RequestCurrentPlans>>(_resultCurrentPlans);
-                        _ptcList = _mapper.Map<List<RequestCurrentPlans>, List<RequestCurrentPlansList>>(currentPlans);
+                        decimal _numCount = (currentPlans as List<RequestCurrentPlans>).Count;
+                        for (int i = 0; i < _numCount; i++)
+                        {
+                            _data = currentPlans as List<RequestCurrentPlans>;
+                            var _jobID = _data[i].JOB_ID.ToString();
+                            var _stepID = _data[i].JOB_ID.ToString();
+                            //!config again
+                            string _queryCheckIDPlan = $"SELECT COUNT(1) AS COUN FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE JOB_ID = '{_jobID}' AND STEP_ID = '{_stepID}'";
+                            var _stateCheckPlan = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, _queryCheckIDPlan);
+                            decimal _stateCheck = (_stateCheckPlan as List<dynamic>)[0].COUN;
+                            if (_stateCheck == 0)
+                            {
+                                _data[i].CHECK_SHOW = "T";
+                            }
+                            else
+                            {
+                                _data[i].CHECK_SHOW = "F";
+                            }
+                        }
+                        _ptcList = _mapper.Map<List<RequestCurrentPlans>, List<RequestCurrentPlansList>>(_data);
                         break;
                 }
             }
             else
             {
                 _returnFlag = "1";
-                _returnText = "ระบบไม่พบข้อมูลผู้ใช้งานของท่าน กรุณา Login ใหม่อีกครั้ง หรือติดต่อแผนก IT เพื่อแก้ไข";
+                _returnText = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT ";
             }
             var returnResult = new ResponseCurrentPlans
             {
@@ -103,7 +123,8 @@ namespace PTCwebApi.Methods.PTCMethods
                         var dataLoc = results.ElementAt(0);
                         var queryCompID = $"SELECT COMP_ID COMP FROM KPDBA.WAREHOUSE WHERE WAREHOUSE_ID ='{model.warehouseID}'";
                         var resultCompID = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCompID);
-                        string queryCheckIDPlan = $"SELECT COUNT(1) AS COUN FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE JOB_ID = '{model.jobID}'";
+                        //!config again
+                        string queryCheckIDPlan = $"SELECT COUNT(1) AS COUN FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE JOB_ID = '{model.jobID}' AND STEP_ID = '{model.stepID}'";
                         var stateCheckPlan = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCheckIDPlan);
                         decimal stateCheck = (stateCheckPlan as List<dynamic>)[0].COUN;
                         if (stateCheck == 0)
@@ -130,13 +151,13 @@ namespace PTCwebApi.Methods.PTCMethods
                         else
                         {
                             _returnFlag = "1";
-                            _returnText = "หมายเลข JOB ID นี้ได้ถูกลงทะเบียนเรียบร้อยแล้ว";
+                            _returnText = "หมายเลข JOB ID นี้ถูกแล้ว";
                         }
                     }
                     else
                     {
                         _returnFlag = "1";
-                        _returnText = "อุปกรณ์หมด ไม่มีอุปกรณ์คงเหลือภายในคลัง";
+                        _returnText = "ไม่พบอุปกรณ์คงเหลือภายในคลัง";
                     }
                 }
                 else
@@ -148,19 +169,19 @@ namespace PTCwebApi.Methods.PTCMethods
                     if (LocValid == 1)
                     {
                         _returnFlag = "1";
-                        _returnText = "QR code นี้คือ Location";
+                        _returnText = "QR code นี้คือ Location กรุณาสแกนใหม่อีกครั้ง";
                     }
                     else
                     {
                         _returnFlag = "1";
-                        _returnText = "ไม่พบหมายเลขของอุปกรณ์นี้ในฐานข้อมูล";
+                        _returnText = "ไม่พบรหัส Tooling นี้ในฐานข้อมูล";
                     }
                 }
             }
             else
             {
                 _returnFlag = "1";
-                _returnText = "ระบบไม่พบข้อมูลผู้ใช้งานของท่าน กรุณา Login ใหม่อีกครั้งหรือติดต่อแผนก IT เพื่อแก้ไข";
+                _returnText = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT ";
             }
             var returnResult = new ReturnDataMoveLoc
             {

@@ -38,9 +38,10 @@ namespace PTCwebApi
                 opt.AddPolicy("CorsPolicy", policy =>
                 {
                     //policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200").SetIsOriginAllowed((host) => true);
-                    // policy.AllowAnyOrigin ().AllowAnyHeader ().AllowAnyMethod ();
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://portal.kimpai.com/").SetIsOriginAllowed((host) => true);
+                    // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200").SetIsOriginAllowed((host) => true);
+                    // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://192.168.55.129:4200").SetIsOriginAllowed((host) => true);
+                    policy.AllowAnyOrigin ().AllowAnyHeader ().AllowAnyMethod ();
+                    // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://portal.kimpai.com/").SetIsOriginAllowed((host) => true);
                     // .WithExposedHeaders ("WWW-Authenticate").AllowCredentials ();
                 });
             });
