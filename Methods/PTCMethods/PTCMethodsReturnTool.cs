@@ -63,12 +63,11 @@ namespace PTCwebApi.Methods.PTCMethods
             if (model.token != null)
             {
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
-                result = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model);
+                result = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model, "12");
                 if (result != null)
                 {
                     if (result.flag == "0")
                     {
-                        //TODO update
                         string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
                         var query = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{model.jobID}'";
                         var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);

@@ -50,7 +50,6 @@ namespace PTCwebApi.Methods.PTCMethods
                 }
                 else
                 {
-                    //มี
                     var results = _mapper.Map<IEnumerable<GetLoc>>(result);
                     _dataLoc = results.ElementAt(0);
                 }
@@ -117,7 +116,7 @@ namespace PTCwebApi.Methods.PTCMethods
         }
 
         //* Move Tool
-        public async Task<ReturnDataMoveLoc> MoveTooling(RequestAllModelsPTC model)
+        public async Task<ReturnDataMoveLoc> MoveTooling(RequestAllModelsPTC model,String tranTypes)
         {
             string _returnFlag = "0";
             string _returnText = "ผ่าน";
@@ -154,7 +153,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                 var tranSEQ = 1;
                                 var QTY = "-1";
                                 var S_STATUS = 'T';
-                                var tranType = "4"; // โอนย้ายเข้า
+                                var tranType = "5"; // โอนย้ายออก
                                 var locID = dataLoc.LOC_ID; // old loc
                                 string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: model.warehouseID, tranType: compID);
 
@@ -164,7 +163,7 @@ namespace PTCwebApi.Methods.PTCMethods
 
                                 tranSEQ = 2;
                                 QTY = "1";
-                                tranType = "4"; // โอนย้ายเข้า
+                                tranType = tranTypes; // โอนย้ายเข้า
                                 locID = model.locID; // newLoc
 
                                 tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
