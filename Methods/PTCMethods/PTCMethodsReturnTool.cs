@@ -63,7 +63,7 @@ namespace PTCwebApi.Methods.PTCMethods
             if (model.token != null)
             {
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
-                result = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model, "12");
+                result = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model, "3");
                 if (result != null)
                 {
                     if (result.flag == "0")
