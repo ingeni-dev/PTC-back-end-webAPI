@@ -7,6 +7,7 @@ using AutoMapper;
 using PTCwebApi.Interfaces;
 using PTCwebApi.Models.ProfilesModels;
 using PTCwebApi.Models.PTCModels.MethodModels;
+using PTCwebApi.Models.PTCModels.MethodModels.FindTools;
 using PTCwebApi.Models.PTCModels.MethodModels.MoveLoc;
 using PTCwebApi.Models.PTCModels.MethodModels.ReturnTooling;
 
@@ -56,38 +57,126 @@ namespace PTCwebApi.Methods.PTCMethods
             };
             return returnResult;
         }
-        public async Task<object> moveToKeep(RequestAllModelsPTC model)
+
+        public async Task<object> scanCheckNewGet(RequestAllModelsPTC model)
         {
             ReturnDataMoveLoc result = new ReturnDataMoveLoc();
+            var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
+            var resultCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheck);
+            decimal toolReal = (resultCheck as List<dynamic>)[0].COUN;
+            return result;
+        }
 
+        public async Task<object> moveToKeep(RequestAllModelsPTC model)
+        {
+            string _returnFlag = "0";
+            string _returnText = "ผ่าน";
+            ReturnDataMoveLoc result = new ReturnDataMoveLoc();
             if (model.token != null)
             {
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
-                result = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model, "3");
-                if (result != null)
+                if (userProfile != null)
                 {
-                    if (result.flag == "0")
+                    var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
+                    var resultCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheck);
+                    decimal toolReal = (resultCheck as List<dynamic>)[0].COUN;
+                    if (toolReal == 1)
                     {
-                        string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
-                        var query = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{model.jobID}'";
-                        var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
+                        var queryCheckLoc = $"SELECT COUNT(1) AS COUN FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}' AND WAREHOUSE_ID = '{model.warehouseID}'";
+                        var resultCheckLoc = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckLoc);
+                        decimal LocValid = (resultCheckLoc as List<dynamic>)[0].COUN;
+                        if (LocValid == 1)
+                        {
+                            var query = $"SELECT SD.LOC_ID, LOC.LOC_DETAIL, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID HAVING SUM (SD.QTY) < 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC) LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
+                            var resultt = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
+                            decimal count = (resultt as List<object>).Count;
+                            if (count != 0)
+                            {
+                                var results = _mapper.Map<IEnumerable<GetLoc>>(resultt);
+                                var dataLoc = results.ElementAt(0);
+                                var queryCompID = $"SELECT COMP_ID COMP FROM KPDBA.WAREHOUSE WHERE WAREHOUSE_ID ='{model.warehouseID}'";
+                                var resultCompID = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCompID);
+                                var compID = (resultCompID as List<dynamic>)[0].COMP;
+                                var tranSEQ = 1;
+                                var QTY = "1";
+                                var S_STATUS = 'T';
+                                var tranType = "3"; // โอนย้ายออก
+                                var locID = dataLoc.LOC_ID; // old loc
+                                string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: model.warehouseID, tranType: compID);
+
+                                var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
+                                var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
+                                var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
+
+                                string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
+                                var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{model.jobID}'";
+                                var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querys);
+
+                            }
+                            else
+                            {
+                                _returnFlag = "1";
+                                _returnText = "ไม่พบอุปกรณ์ในประวัติการเบิก";
+                            }
+                        }
+                        else
+                        {
+                            _returnFlag = "1";
+                            //ไม่พบหมายเลข Location นี้ในฐานข้อมูล
+                            _returnText = "ไม่พบรหัสพื้นที่นี้ภายในคลัง";
+                        }
                     }
                     else
                     {
-                        return result;
+                        _returnFlag = "1";
+                        _returnText = "ไม่พบรหัส Tooling นี้ในฐานข้อมูล";
                     }
+                }
+                else
+                {
+                    _returnFlag = "1";
+                    _returnText = "ข้อมูลผู้ใช้เกิดข้อผิดพลาด กรุณาติดต่อฝ่าย IT";
                 }
             }
             else
             {
-                result = new ReturnDataMoveLoc
-                {
-                    flag = "1",
-                    text = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT "
-                };
+                _returnFlag = "1";
+                _returnText = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT ";
             }
 
-            return result;
+            // if (model.token != null)
+            // {
+            //     UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
+            //     result = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model, "4");
+            //     if (result != null)
+            //     {
+            //         if (result.flag == "0")
+            //         {
+            //             string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
+            //             var query = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{model.jobID}'";
+            //             var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
+            //         }
+            //         else
+            //         {
+            //             return result;
+            //         }
+            //     }
+            // }
+            // else
+            // {
+            //     result = new ReturnDataMoveLoc
+            //     {
+            //         flag = "1",
+            //         text = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT "
+            //     };
+            // }
+            var resultts = new ReturnDataMoveLoc
+            {
+                flag = _returnFlag,
+                text = _returnText
+            };
+
+            return resultts;
         }
     }
 }

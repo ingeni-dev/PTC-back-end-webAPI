@@ -50,6 +50,10 @@ namespace PTCwebApi.Controllers
                     var _keepResult = await new PTCMethodsReturnTool(_mapper, _jwtGenerator).moveToKeep(model);
                     return Ok(_keepResult);
 
+                case "GET TOOLING":
+                    var _getTooling = await new PTCMethods(_mapper, _jwtGenerator).checkToolingWareHouse();
+                    return Ok(_getTooling);
+
                 //!Function DEV test, Don't forget to delete this function!!
                 case "CHECK LOCATION OF TOOL":
                     var _findLocOfTool = await new PTCMethods(_mapper, _jwtGenerator).FindLocOfTooling(model);

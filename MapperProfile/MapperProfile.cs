@@ -68,6 +68,10 @@ namespace PTCwebApi.Profiles
                 .ForMember(d => d.locName, o => o.MapFrom(s => s.LOC_NAME))
                 .ForMember(d => d.machID, o => o.MapFrom(s => s.MACH_ID))
                 .ForMember(d => d.time, o => o.MapFrom(s => s.TIME));
+
+            CreateMap<WareHouseTooling, WareHouseToolingNew>()
+                .ForMember(d => d.ptcType, o => o.MapFrom(s => s.PTC_TYPE))
+                .ForMember(d => d.ptcDesc, o => o.MapFrom(s => s.PTC_DESC));
         }
     }
 }

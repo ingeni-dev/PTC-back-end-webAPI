@@ -63,7 +63,7 @@ namespace PTCwebApi.Methods.PTCMethods
                         // var currentPlans = _mapper.Map<IEnumerable<RequestCurrentPlans>>(_resultCurrentPlans);
                         List<RequestCurrentPlans> currentPlans = new List<RequestCurrentPlans> {
                             new RequestCurrentPlans {  JOB_ID= "6309080",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -86,7 +86,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         CHECK_SHOW= null
                                                         },
                             new RequestCurrentPlans {JOB_ID= "6309081",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -108,7 +108,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 01 ชั้น 02",
                                                         CHECK_SHOW= null },
                             new RequestCurrentPlans { JOB_ID= "6309082",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -130,7 +130,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 01 ชั้น 11",
                                                         CHECK_SHOW= null},
                             new RequestCurrentPlans {JOB_ID= "6309083",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -152,7 +152,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 01 ชั้น 02",
                                                         CHECK_SHOW= null },
                             new RequestCurrentPlans {  JOB_ID= "6309084",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -175,13 +175,13 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         CHECK_SHOW= null
                                                         },
                             new RequestCurrentPlans {JOB_ID= "6309085",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
                                                         WDEPT_ID= "7",
                                                         REVISION= "2",
-                                                        ACT_DATE= "7/10/2020",
+                                                        ACT_DATE= "11/10/2020",
                                                         MACH_ID= "5006",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
@@ -197,13 +197,13 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 01 ชั้น 11",
                                                         CHECK_SHOW= null },
                             new RequestCurrentPlans { JOB_ID= "6309086",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
                                                         WDEPT_ID= "7",
                                                         REVISION= "2",
-                                                        ACT_DATE= "7/10/2020",
+                                                        ACT_DATE= "11/10/2020",
                                                         MACH_ID= "5007",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
@@ -219,13 +219,13 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 01 ชั้น 07",
                                                         CHECK_SHOW= null},
                             new RequestCurrentPlans {JOB_ID= "6309087",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
                                                         WDEPT_ID= "7",
                                                         REVISION= "2",
-                                                        ACT_DATE= "7/10/2020",
+                                                        ACT_DATE= "11/10/2020",
                                                         MACH_ID= "5008",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
@@ -241,7 +241,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 11 ชั้น 13",
                                                         CHECK_SHOW= null },
                             new RequestCurrentPlans {  JOB_ID= "6309088",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -264,7 +264,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         CHECK_SHOW= null
                                                         },
                             new RequestCurrentPlans {JOB_ID= "6309089",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -286,7 +286,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 01 ชั้น 05",
                                                         CHECK_SHOW= null },
                             new RequestCurrentPlans { JOB_ID= "6309090",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -308,7 +308,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 10 ชั้น 01",
                                                         CHECK_SHOW= null},
                             new RequestCurrentPlans {JOB_ID= "6309091",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -330,7 +330,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 05 ชั้น 04",
                                                         CHECK_SHOW= null },
                             new RequestCurrentPlans {  JOB_ID= "6309092",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -353,7 +353,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         CHECK_SHOW= null
                                                         },
                             new RequestCurrentPlans {JOB_ID= "6309093",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -375,7 +375,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 03 ชั้น 13",
                                                         CHECK_SHOW= null },
                             new RequestCurrentPlans { JOB_ID= "6309094",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -397,7 +397,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_DESC= "ตู้ 04 ชั้น 02",
                                                         CHECK_SHOW= null},
                             new RequestCurrentPlans {JOB_ID= "6309095",
-                                                        STEP_ID= "4",
+                                                        STEP_ID= "5",
                                                         SPLIT_SEQ= "2",
                                                         PLAN_SUB_SEQ= "1",
                                                         SEQ_RUN= "7",
@@ -418,6 +418,28 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         LOC_ID= "$R70",
                                                         LOC_DESC= "ตู้ 01 ชั้น 01",
                                                         CHECK_SHOW= null },
+                            new RequestCurrentPlans {JOB_ID= "6309096",
+                                                        STEP_ID= "5",
+                                                        SPLIT_SEQ= "2",
+                                                        PLAN_SUB_SEQ= "1",
+                                                        SEQ_RUN= "7",
+                                                        WDEPT_ID= "7",
+                                                        REVISION= "2",
+                                                        ACT_DATE= "12/10/2020",
+                                                        MACH_ID= "5016",
+                                                        COMP_ID= "001",
+                                                        PERIOD= "A",
+                                                        PTC_TYPE= "PL",
+                                                        PTC_ID= "D5206019-1",
+                                                        DIECUT_SN= null,
+                                                        WITHD_DATE= null,
+                                                        WITHD_USER_ID= null,
+                                                        RETURN_DATE= null,
+                                                        RETURN_USER_ID= null,
+                                                        PTC_SN= "D5206020-1",
+                                                        LOC_ID= "$R70",
+                                                        LOC_DESC= "ตู้ 05 ชั้น 01",
+                                                        CHECK_SHOW= null }
                             };
                         decimal _numCount = (currentPlans as List<RequestCurrentPlans>).Count;
                         for (int i = 0; i < _numCount; i++)
@@ -486,20 +508,20 @@ namespace PTCwebApi.Methods.PTCMethods
                             string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{model.jobID}', TO_CHAR ('{model.machID}'),  TO_CHAR ('{model.stepID}'), TO_NUMBER ('{model.splitSeq}'), TO_NUMBER ('{model.planSubSeq}'), TO_NUMBER ('{model.seqRun}'), TO_NUMBER ('{model.wdeptID}'), TO_NUMBER ('{model.revision}'), TO_DATE ('{model.actDate}', 'dd/mm/yyyy hh24:mi:ss'), '{model.ptcType}', '{model.ptcID}', TO_DATE(TO_CHAR(SYSDATE), 'dd/mm/yyyy'), TO_CHAR ('{userProfile.userID}'), '{model.ptcID}')";
                             var insertPlanDetail = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, queryPlanDetail);
                             var compID = (resultCompID as List<dynamic>)[0].COMP;
-                            var tranSEQ = 1;
-                            var tranType = "5"; // โอนย้ายเข้า
-                            var locID = dataLoc.LOC_ID; // old loc
+                            // var tranSEQ = 1;
+                            // var tranType = "5"; // โอนย้ายเข้า
+                            // var locID = dataLoc.LOC_ID; // old loc
                             string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: model.warehouseID, tranType: compID);
+                            // var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
+                            // var insertGetQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('-1'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', 'T', SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
+                            // var resultInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertGetQuery);
+                            // Console.WriteLine(Foo(resultInsert));
+                            // string Foo<T>(T parameter) { return typeof(T).Name; }
+                            var tranSEQ = 1;
+                            var tranType = "2"; // โอนย้ายเข้า
+                            var locID = "$W70"; // newLoc ย้ายไปพื้นที่เบิก
                             var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
-                            var insertGetQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('-1'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', 'T', SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
-                            var resultInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertGetQuery);
-                            Console.WriteLine(Foo(resultInsert));
-                            string Foo<T>(T parameter) { return typeof(T).Name; }
-                            tranSEQ = 2;
-                            tranType = "2"; // โอนย้ายเข้า
-                            locID = "$W70"; // newLoc ย้ายไปพื้นที่เบิก
-                            tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
-                            var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('1'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', 'T', SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
+                            var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('-1'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', 'T', SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
                             var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
                         }
                         else

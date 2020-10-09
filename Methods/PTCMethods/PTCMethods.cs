@@ -12,6 +12,7 @@ using PTCwebApi.Models.PTCModels.MethodModels;
 using PTCwebApi.Models.PTCModels.MethodModels.CurrentPlans;
 using PTCwebApi.Models.PTCModels.MethodModels.FindTools;
 using PTCwebApi.Models.PTCModels.MethodModels.MoveLoc;
+using PTCwebApi.Models.PTCModels.MethodModels.ReturnTooling;
 
 namespace PTCwebApi.Methods.PTCMethods
 {
@@ -116,7 +117,7 @@ namespace PTCwebApi.Methods.PTCMethods
         }
 
         //* Move Tool
-        public async Task<ReturnDataMoveLoc> MoveTooling(RequestAllModelsPTC model,String tranTypes)
+        public async Task<ReturnDataMoveLoc> MoveTooling(RequestAllModelsPTC model, String tranTypes)
         {
             string _returnFlag = "0";
             string _returnText = "ผ่าน";
@@ -248,6 +249,14 @@ namespace PTCwebApi.Methods.PTCMethods
                 text = _returnText
             };
             return returnResult;
+        }
+        public async Task<object> checkToolingWareHouse()
+        {
+            var query = $"SELECT PTC_TYPE, PTC_DESC FROM KPDBA.PTC_TYPE_MASTER WHERE CANCEL_FLAG = 'F'";
+            var result = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
+            var results = _mapper.Map<IEnumerable<WareHouseTooling>>(result);
+            var _result = _mapper.Map<IEnumerable<WareHouseTooling>, IEnumerable<WareHouseToolingNew>>(results).ToList();
+            return _result;
         }
     }
 }
