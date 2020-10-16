@@ -117,7 +117,7 @@ namespace PTCwebApi.Methods.PTCMethods
         }
 
         //* Move Tool
-        public async Task<ReturnDataMoveLoc> MoveTooling(RequestAllModelsPTC model, String tranTypes)
+        public async Task<ReturnDataMoveLoc> MoveTooling(RequestAllModelsPTC model)
         {
             string _returnFlag = "0";
             string _returnText = "ผ่าน";
@@ -164,7 +164,7 @@ namespace PTCwebApi.Methods.PTCMethods
 
                                 tranSEQ = 2;
                                 QTY = "1";
-                                tranType = tranTypes; // โอนย้ายเข้า
+                                tranType = "4"; // โอนย้ายเข้า
                                 locID = model.locID; // newLoc
 
                                 tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));

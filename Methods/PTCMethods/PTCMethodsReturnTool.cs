@@ -104,7 +104,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                     var compID = (resultCompID as List<dynamic>)[0].COMP;
 
                                     var tranSEQ = 1;
-                                    var tranType = "5"; // โอนย้ายออก
+                                    var tranType = "3"; // โอนย้ายออก
                                     var locID = dataLoc.LOC_ID; // old loc
                                     string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: model.warehouseID, tranType: compID);
                                     var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
@@ -123,8 +123,12 @@ namespace PTCwebApi.Methods.PTCMethods
                                     var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
                                     var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
 
+                                    var queryCheckType = $"SELECT DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
+                                    var resultCheckType = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckType);
+                                    var toolType = (resultCheckType as List<dynamic>)[0].DIECUT_TYPE;
+
                                     string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
-                                    var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{model.jobID}'";
+                                    var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE PTC_ID = '{model.ptcID}' AND PTC_TYPE = '{toolType}'";
                                     var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querys);
 
                                 }
@@ -134,7 +138,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                     _returnText = "ไม่พบอุปกรณ์ในประวัติการเบิก";
                                 }
                             }
-                            else if (countQty == null)
+                            else if (countQty == null || countQty == 0)
                             {
                                 var queryCompID = $"SELECT COMP_ID COMP FROM KPDBA.WAREHOUSE WHERE WAREHOUSE_ID ='{model.warehouseID}'";
                                 var resultCompID = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCompID);

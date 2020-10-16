@@ -96,7 +96,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5002",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "PL",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206151-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -140,7 +140,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5004",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "CP",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206153-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -185,7 +185,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5006",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "CP",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206155-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -229,7 +229,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5008",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "PL",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206157-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -274,7 +274,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5010",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "CP",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206159-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -318,7 +318,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5012",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "PL",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206161-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -363,7 +363,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5014",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "CP",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206163-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -407,7 +407,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                                         MACH_ID= "5016",
                                                         COMP_ID= "001",
                                                         PERIOD= "A",
-                                                        PTC_TYPE= "PL",
+                                                        PTC_TYPE= "DC",
                                                         PTC_ID= "D5206165-1",
                                                         DIECUT_SN= null,
                                                         WITHD_DATE= null,
@@ -561,21 +561,23 @@ namespace PTCwebApi.Methods.PTCMethods
                     decimal count = (result as List<object>).Count;
                     if (count != 0)
                     {
-
                         var results = _mapper.Map<IEnumerable<GetLoc>>(result);
                         var dataLoc = results.ElementAt(0);
                         var queryCompID = $"SELECT COMP_ID COMP FROM KPDBA.WAREHOUSE WHERE WAREHOUSE_ID ='{model.warehouseID}'";
                         var resultCompID = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCompID);
-                        string queryCheckIDPlan = $"SELECT COUNT(1) AS COUN FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE JOB_ID = '{model.jobID}' AND STEP_ID = TO_CHAR('{model.stepID}') AND SPLIT_SEQ = TO_NUMBER('{model.splitSeq}') AND PLAN_SUB_SEQ = TO_NUMBER('{model.planSubSeq}') AND SEQ_RUN = TO_NUMBER('{model.seqRun}') AND WDEPT_ID = TO_NUMBER('{model.wdeptID}') AND REVISION = TO_NUMBER('{model.revision}') AND PTC_TYPE = '{model.ptcType}' AND PTC_ID = '{model.ptcID}'";
+                        var queryCheckType = $"SELECT DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
+                        var resultCheckType = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckType);
+                        var toolType = (resultCheckType as List<dynamic>)[0].DIECUT_TYPE;
+                        string queryCheckIDPlan = $"SELECT COUNT(1) AS COUN FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE JOB_ID = '{model.jobID}' AND STEP_ID = TO_CHAR('{model.stepID}') AND SPLIT_SEQ = TO_NUMBER('{model.splitSeq}') AND PLAN_SUB_SEQ = TO_NUMBER('{model.planSubSeq}') AND SEQ_RUN = TO_NUMBER('{model.seqRun}') AND WDEPT_ID = TO_NUMBER('{model.wdeptID}') AND REVISION = TO_NUMBER('{model.revision}') AND PTC_TYPE = '{toolType}' AND PTC_ID = '{model.ptcID}'";
                         var stateCheckPlan = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCheckIDPlan);
                         decimal stateCheck = (stateCheckPlan as List<dynamic>)[0].COUN;
                         if (stateCheck == 0)
                         {
-                            string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{model.jobID}', TO_CHAR ('{model.machID}'),  TO_CHAR ('{model.stepID}'), TO_NUMBER ('{model.splitSeq}'), TO_NUMBER ('{model.planSubSeq}'), TO_NUMBER ('{model.seqRun}'), TO_NUMBER ('{model.wdeptID}'), TO_NUMBER ('{model.revision}'), TO_DATE ('{model.actDate}', 'dd/mm/yyyy hh24:mi:ss'), '{model.ptcType}', '{model.ptcID}', TO_DATE(TO_CHAR(SYSDATE), 'dd/mm/yyyy'), TO_CHAR ('{userProfile.userID}'), '{model.ptcID}')";
+                            string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{model.jobID}', TO_CHAR ('{model.machID}'),  TO_CHAR ('{model.stepID}'), TO_NUMBER ('{model.splitSeq}'), TO_NUMBER ('{model.planSubSeq}'), TO_NUMBER ('{model.seqRun}'), TO_NUMBER ('{model.wdeptID}'), TO_NUMBER ('{model.revision}'), TO_DATE ('{model.actDate}', 'dd/mm/yyyy hh24:mi:ss'), '{toolType}', '{model.ptcID}', TO_DATE(TO_CHAR(SYSDATE), 'dd/mm/yyyy'), TO_CHAR ('{userProfile.userID}'), '{model.ptcID}')";
                             var insertPlanDetail = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, queryPlanDetail);
                             var compID = (resultCompID as List<dynamic>)[0].COMP;
                             var tranSEQ = 1;
-                            var tranType = "5"; // โอนย้ายออก
+                            var tranType = "2"; // โอนย้ายออก
                             var locID = dataLoc.LOC_ID; // old loc
                             string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: model.warehouseID, tranType: compID);
                             var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
