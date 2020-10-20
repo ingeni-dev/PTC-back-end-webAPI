@@ -176,7 +176,7 @@ namespace PTCwebApi.Methods.PTCMethods
                         {
                             _returnFlag = "1";
                             //ไม่พบหมายเลข Location นี้ในฐานข้อมูล
-                            _returnText = "ไม่พบรหัสพื้นที่นี้ภายในคลัง";
+                            _returnText = "ไม่พบพื้นที่นี้ภายในคลัง";
                         }
                     }
                     else
