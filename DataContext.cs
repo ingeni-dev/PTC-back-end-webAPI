@@ -12,12 +12,14 @@ using Oracle.ManagedDataAccess.Client;
 using PTCwebApi.Models.PersistenceModels;
 using PTCwebApi.Persistence.Helpers;
 
-namespace PTCwebApi {
-    public class DataContext {
+namespace PTCwebApi
+{
+    public class DataContext
+    {
         private readonly IMapper _mapper;
-        public DataContext (IMapper mapper) => _mapper = mapper;
+        public DataContext(IMapper mapper) => _mapper = mapper;
 
-        public DataContext () { }
+        public DataContext() { }
 
         /// <summary>
         /// ดึงข้อมูลจาก Database ด้วย ADO แบบ Synchronize
@@ -26,23 +28,25 @@ namespace PTCwebApi {
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
         /// <param name="tableName"></param>
-        public Task<DataTable> GetResultADOAsync (DataBaseHostEnum databasehost, string query, string tableName) {
+        public Task<DataTable> GetResultADOAsync(DataBaseHostEnum databasehost, string query, string tableName)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            DataSet ds = new DataSet ();
-            return Task<DataTable>.Factory.StartNew (() => {
-                OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-                OracleDataAdapter da = new OracleDataAdapter (query, instance);
-                da.Fill (ds);
+            DataSet ds = new DataSet();
+            return Task<DataTable>.Factory.StartNew(() =>
+            {
+                OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+                OracleDataAdapter da = new OracleDataAdapter(query, instance);
+                da.Fill(ds);
                 ds.Tables[0].TableName = tableName;
 
                 DateTime dtEnd = DateTime.Now;
-                stopwatch.Stop ();
-                string Header = dtStart.ToString () + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString ();
+                stopwatch.Stop();
+                string Header = dtStart.ToString() + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString();
                 // WebApiTracking.SendToSignalRWithTimeUsed (user, Header, query, string.Empty, stopwatch, dtStart, dtEnd);
-                return ds.Tables[0].Copy ();
+                return ds.Tables[0].Copy();
             });
 
         }
@@ -54,35 +58,38 @@ namespace PTCwebApi {
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
         /// <param name="dynamic parameter"></param>
-        public async Task<Object> GetResultDapperAsync (UserJwt user, DataBaseHostEnum databasehost, string query, dynamic param) {
+        public async Task<Object> GetResultDapperAsync(UserJwt user, DataBaseHostEnum databasehost, string query, dynamic param)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            Type type = param.GetType ();
-            PropertyInfo[] propertiesInfo = type.GetProperties ();
+            Type type = param.GetType();
+            PropertyInfo[] propertiesInfo = type.GetProperties();
             string parameterText = string.Empty;
-            foreach (PropertyInfo p in propertiesInfo) {
+            foreach (PropertyInfo p in propertiesInfo)
+            {
                 string propName = p.Name;
-                object value = p.GetValue (param, null);
-                string propValue = (value == null) ? string.Empty : value.ToString ();
+                object value = p.GetValue(param, null);
+                string propValue = (value == null) ? string.Empty : value.ToString();
                 parameterText = parameterText + System.Environment.NewLine + "</br>" + propName + " : " + propValue;
             }
 
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var parameter = new DynamicParameters (param);
-            var result = await SqlMapper.QueryAsync (instance, query, parameter);
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var parameter = new DynamicParameters(param);
+            var result = await SqlMapper.QueryAsync(instance, query, parameter);
             // var result = await SqlMapper.QueryAsync(instance, query, commandType: CommandType.Text);
 
             DateTime dtEnd = DateTime.Now;
-            stopwatch.Stop ();
+            stopwatch.Stop();
 
-            if (!string.IsNullOrEmpty (parameterText)) {
-                parameterText = System.Environment.NewLine + "</br></br>" + "Record Count : " + result.Count () +
+            if (!string.IsNullOrEmpty(parameterText))
+            {
+                parameterText = System.Environment.NewLine + "</br></br>" + "Record Count : " + result.Count() +
                     System.Environment.NewLine + "</br></br>" + "Parameter List " + parameterText;
             }
 
-            string Header = dtStart.ToString () + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString ();
+            string Header = dtStart.ToString() + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString();
             // await WebApiTracking.SendToSignalRWithTimeUsedAsync (user, Header, query, parameterText, stopwatch, dtStart, dtEnd);
             return result;
         }
@@ -94,29 +101,32 @@ namespace PTCwebApi {
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
         /// <param name="Dapper dynamic parameter"></param>
-        public async Task<Object> GetResultDapperWithDapperParmAsync (UserJwt user, DataBaseHostEnum databasehost, string query, DynamicParameters dapperParam) {
+        public async Task<Object> GetResultDapperWithDapperParmAsync(UserJwt user, DataBaseHostEnum databasehost, string query, DynamicParameters dapperParam)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var result = await SqlMapper.QueryAsync (instance, query, dapperParam);
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var result = await SqlMapper.QueryAsync(instance, query, dapperParam);
             // var result = await SqlMapper.QueryAsync(instance, query, commandType: CommandType.Text);
 
             DateTime dtEnd = DateTime.Now;
-            stopwatch.Stop ();
+            stopwatch.Stop();
             var parameterText = string.Empty;
 
-            foreach (var paramName in dapperParam.ParameterNames) {
-                parameterText = parameterText + System.Environment.NewLine + "</br>" + paramName + " : " + dapperParam.Get<dynamic> (paramName);
+            foreach (var paramName in dapperParam.ParameterNames)
+            {
+                parameterText = parameterText + System.Environment.NewLine + "</br>" + paramName + " : " + dapperParam.Get<dynamic>(paramName);
             }
 
-            if (!string.IsNullOrEmpty (parameterText)) {
-                parameterText = System.Environment.NewLine + "</br></br>" + "Record Count : " + result.Count () +
+            if (!string.IsNullOrEmpty(parameterText))
+            {
+                parameterText = System.Environment.NewLine + "</br></br>" + "Record Count : " + result.Count() +
                     System.Environment.NewLine + "</br></br>" + "Parameter List " + parameterText;
             }
 
-            string Header = dtStart.ToString () + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString ();
+            string Header = dtStart.ToString() + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString();
             // await WebApiTracking.SendToSignalRWithTimeUsedAsync (user, Header, query, parameterText, stopwatch, dtStart, dtEnd);
             return result;
         }
@@ -127,19 +137,20 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
-        public async Task<Object> GetResultDapperAsync (UserJwt user, DataBaseHostEnum databasehost, string query) {
+        public async Task<Object> GetResultDapperAsync(UserJwt user, DataBaseHostEnum databasehost, string query)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var result = await SqlMapper.QueryAsync (instance, query, commandType : CommandType.Text);
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var result = await SqlMapper.QueryAsync(instance, query, commandType: CommandType.Text);
 
             DateTime dtEnd = DateTime.Now;
-            stopwatch.Stop ();
+            stopwatch.Stop();
 
-            string Header = dtStart.ToString () + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString ();
-            string footer = System.Environment.NewLine + "</br></br>" + "Record Count : " + result.Count ();
+            string Header = dtStart.ToString() + " => GetResultDapperAsync" + " DataBase Host : " + databasehost.ToString();
+            string footer = System.Environment.NewLine + "</br></br>" + "Record Count : " + result.Count();
             // await WebApiTracking.SendToSignalRWithTimeUsedAsync (user, Header, query, footer, stopwatch, dtStart, dtEnd);
             return result;
         }
@@ -149,8 +160,9 @@ namespace PTCwebApi {
         /// </summary>
         /// <param name="User"></param>
         /// <param name="query"></param>
-        public async Task<Object> GetResultDapperAsync (UserJwt user, string query) {
-            var result = await GetResultDapperAsync (user, DataContextConfiguration.DEFAULT_DATABASE, query);
+        public async Task<Object> GetResultDapperAsync(UserJwt user, string query)
+        {
+            var result = await GetResultDapperAsync(user, DataContextConfiguration.DEFAULT_DATABASE, query);
             return result;
         }
 
@@ -160,8 +172,9 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
-        public async Task<Object> GetResultAsync (UserJwt user, DataBaseHostEnum databasehost, string query) {
-            var result = await GetResultDapperAsync (user, databasehost, query);
+        public async Task<Object> GetResultAsync(UserJwt user, DataBaseHostEnum databasehost, string query)
+        {
+            var result = await GetResultDapperAsync(user, databasehost, query);
             return result;
         }
 
@@ -170,8 +183,9 @@ namespace PTCwebApi {
         /// </summary>
         /// <param name="User"></param>
         /// <param name="query"></param>
-        public async Task<Object> GetResultAsync (UserJwt user, string query) {
-            var result = await GetResultDapperAsync (user, query);
+        public async Task<Object> GetResultAsync(UserJwt user, string query)
+        {
+            var result = await GetResultDapperAsync(user, query);
             return result;
         }
 
@@ -182,8 +196,9 @@ namespace PTCwebApi {
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
         /// <param name="dynamic parameter"></param>
-        public async Task<Object> GetResultAsync (UserJwt user, DataBaseHostEnum databasehost, string query, dynamic param) {
-            var result = await GetResultDapperAsync (user, databasehost, query, param);
+        public async Task<Object> GetResultAsync(UserJwt user, DataBaseHostEnum databasehost, string query, dynamic param)
+        {
+            var result = await GetResultDapperAsync(user, databasehost, query, param);
             return result;
         }
 
@@ -193,12 +208,13 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="query"></param>
         /// <param name="dynamic parameter"></param>
-        public async Task<Object> GetResultAsync (UserJwt user, string query, dynamic param) {
+        public async Task<Object> GetResultAsync(UserJwt user, string query, dynamic param)
+        {
             object result = null;
             if (param == null)
-                result = await GetResultDapperAsync (user, DataContextConfiguration.DEFAULT_DATABASE, query);
+                result = await GetResultDapperAsync(user, DataContextConfiguration.DEFAULT_DATABASE, query);
             else
-                result = await GetResultDapperAsync (user, DataContextConfiguration.DEFAULT_DATABASE, query, param);
+                result = await GetResultDapperAsync(user, DataContextConfiguration.DEFAULT_DATABASE, query, param);
             return result;
         }
 
@@ -209,34 +225,37 @@ namespace PTCwebApi {
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
         /// <param name="dynamic parameter"></param>
-        public async Task<int> ExecuteDapperAsync (UserJwt user, DataBaseHostEnum databasehost, string query, dynamic param) {
+        public async Task<int> ExecuteDapperAsync(UserJwt user, DataBaseHostEnum databasehost, string query, dynamic param)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            Type type = param.GetType ();
-            PropertyInfo[] propertiesInfo = type.GetProperties ();
+            Type type = param.GetType();
+            PropertyInfo[] propertiesInfo = type.GetProperties();
             string parameterText = string.Empty;
-            foreach (PropertyInfo p in propertiesInfo) {
+            foreach (PropertyInfo p in propertiesInfo)
+            {
                 string propName = p.Name;
-                object value = p.GetValue (param, null);
-                string propValue = (value == null) ? string.Empty : value.ToString ();
+                object value = p.GetValue(param, null);
+                string propValue = (value == null) ? string.Empty : value.ToString();
                 parameterText = parameterText + System.Environment.NewLine + "</br>" + propName + " : " + propValue;
             }
 
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var parameter = new DynamicParameters (param);
-            var result = SqlMapper.ExecuteAsync (instance, query, parameter).Result;
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var parameter = new DynamicParameters(param);
+            var result = SqlMapper.ExecuteAsync(instance, query, parameter).Result;
 
             DateTime dtEnd = DateTime.Now;
-            stopwatch.Stop ();
+            stopwatch.Stop();
 
-            if (!string.IsNullOrEmpty (parameterText)) {
+            if (!string.IsNullOrEmpty(parameterText))
+            {
                 parameterText = System.Environment.NewLine + "</br></br>" + "Result : " + (result == 0) +
                     System.Environment.NewLine + "</br></br>" + "Parameter List " + parameterText;
             }
 
-            string Header = dtStart.ToString () + " => ExecuteDapperAsync" + " DataBase Host : " + databasehost.ToString ();
+            string Header = dtStart.ToString() + " => ExecuteDapperAsync" + " DataBase Host : " + databasehost.ToString();
             // await WebApiTracking.SendToSignalRWithTimeUsedAsync (user, Header, query, parameterText, stopwatch, dtStart, dtEnd);
             return result;
         }
@@ -247,20 +266,21 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
-        public async Task<int> ExecuteDapperAsync (UserJwt user, DataBaseHostEnum databasehost, string query) {
+        public async Task<int> ExecuteDapperAsync(UserJwt user, DataBaseHostEnum databasehost, string query)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var result = SqlMapper.ExecuteAsync (instance, query).Result;
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var result = SqlMapper.ExecuteAsync(instance, query).Result;
 
             DateTime dtEnd = DateTime.Now;
-            stopwatch.Stop ();
+            stopwatch.Stop();
 
             var parameterText = System.Environment.NewLine + "</br></br>" + "Result : " + (result == 0);
 
-            string Header = dtStart.ToString () + " => ExecuteDapperAsync" + " DataBase Host : " + databasehost.ToString ();
+            string Header = dtStart.ToString() + " => ExecuteDapperAsync" + " DataBase Host : " + databasehost.ToString();
             // await WebApiTracking.SendToSignalRWithTimeUsedAsync (user, Header, query, parameterText, stopwatch, dtStart, dtEnd);
             return result;
         }
@@ -271,31 +291,34 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="databasehost"></param>
         /// <param name="queries"></param>
-        public async Task<int> ExecuteDapperMultiAsync (UserJwt user, DataBaseHostEnum databasehost, List<string> queries) {
+        public async Task<int> ExecuteDapperMultiAsync(DataBaseHostEnum databasehost, List<string> queries)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
             int rowEffect = 0;
 
-            using (var tran = new TransactionScope (TransactionScopeAsyncFlowOption.Enabled))
-            using (var instance = ConnectionFactory.GetNewInstance (DataContextConfiguration.DEFAULT_DATABASE)) {
-                foreach (var query in queries) {
-                    var result = await SqlMapper.ExecuteAsync (instance, query);
-                    if (result < 0) {
-                        tran.Complete ();
+            using (var tran = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+            using (var instance = ConnectionFactory.GetNewInstance(DataContextConfiguration.DEFAULT_DATABASE))
+            {
+                foreach (var query in queries)
+                {
+                    var result = await SqlMapper.ExecuteAsync(instance, query);
+                    if (result < 0)
+                    {
+                        tran.Complete();
                         return result;
                     }
-
                     rowEffect = rowEffect + result;
                 }
-                tran.Complete ();
+                tran.Complete();
             }
 
             DateTime dtEnd = DateTime.Now;
-            stopwatch.Stop ();
+            stopwatch.Stop();
             var parameterText = System.Environment.NewLine + "</br></br>" + "Result : " + rowEffect + " rows updated";
-            string Header = dtStart.ToString () + " => ExecuteDapperAsync" + " DataBase Host : " + databasehost.ToString ();
+            string Header = dtStart.ToString() + " => ExecuteDapperAsync" + " DataBase Host : " + databasehost.ToString();
             // await WebApiTracking.SendToSignalRWithTimeUsedAsync (user, Header, string.Join ("</br>", queries), parameterText, stopwatch, dtStart, dtEnd);
             return rowEffect;
         }
@@ -307,25 +330,30 @@ namespace PTCwebApi {
         /// <param name="databasehost"></param>
         /// <param name="selectStrings"></param>
         /// <param name="err">out</param>
-        public DataSet ExecuteReader (UserJwt user, DataBaseHostEnum databasehost, string[] selectStrings, ref string err) {
-            try {
+        public DataSet ExecuteReader(UserJwt user, DataBaseHostEnum databasehost, string[] selectStrings, ref string err)
+        {
+            try
+            {
                 // WebApiTracking.SendToSignalR(DateTime.Now.ToString() + " => ExecuteReader" + " DataBase Host : " + databasehost.ToString(), TrackingTypeEnum.HEADER);
 
-                var databaseInstance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-                DataSet dsOutput = new DataSet ();
+                var databaseInstance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+                DataSet dsOutput = new DataSet();
                 OracleDataAdapter[] da = new OracleDataAdapter[selectStrings.Length];
 
-                for (int i = 0; i < selectStrings.Length; i++) {
+                for (int i = 0; i < selectStrings.Length; i++)
+                {
                     // WebApiTracking.SendToSignalR(selectStrings[i]);
-                    da[i] = new OracleDataAdapter (selectStrings[i], databaseInstance);
-                    OracleCommandBuilder cb = new OracleCommandBuilder (da[i]);
-                    da[i].InsertCommand = cb.GetInsertCommand ();
-                    da[i].UpdateCommand = cb.GetUpdateCommand ();
-                    da[i].DeleteCommand = cb.GetDeleteCommand ();
-                    da[i].Fill (dsOutput, "Table " + i.ToString ());
+                    da[i] = new OracleDataAdapter(selectStrings[i], databaseInstance);
+                    OracleCommandBuilder cb = new OracleCommandBuilder(da[i]);
+                    da[i].InsertCommand = cb.GetInsertCommand();
+                    da[i].UpdateCommand = cb.GetUpdateCommand();
+                    da[i].DeleteCommand = cb.GetDeleteCommand();
+                    da[i].Fill(dsOutput, "Table " + i.ToString());
                 }
                 return dsOutput;
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 err = ex.Message;
                 // WebApiTracking.SendToSignalR(ex.Message);
                 return null;
@@ -340,42 +368,48 @@ namespace PTCwebApi {
         /// <param name="dsInput"></param>
         /// <param name="selectStrings"></param>
         /// <param name="err">out</param>
-        public bool ExecuteUpdate (UserJwt user, DataBaseHostEnum databasehost, string[] selectStrings, DataSet dsInput, ref string err) {
+        public bool ExecuteUpdate(UserJwt user, DataBaseHostEnum databasehost, string[] selectStrings, DataSet dsInput, ref string err)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            DataSet dsOutput = new DataSet ();
-            var databaseInstance = ConnectionFactory.GetNewDatabaseInstanceByHost (databasehost);
+            DataSet dsOutput = new DataSet();
+            var databaseInstance = ConnectionFactory.GetNewDatabaseInstanceByHost(databasehost);
             OracleDataAdapter[] da = new OracleDataAdapter[dsInput.Tables.Count];
-            for (int i = 0; i < selectStrings.Length; i++) {
-                da[i] = new OracleDataAdapter (selectStrings[i], databaseInstance);
-                OracleCommandBuilder cb = new OracleCommandBuilder (da[i]);
-                da[i].InsertCommand = cb.GetInsertCommand ();
-                da[i].UpdateCommand = cb.GetUpdateCommand ();
-                da[i].DeleteCommand = cb.GetDeleteCommand ();
-                da[i].Fill (dsOutput, "Table " + i.ToString ());
+            for (int i = 0; i < selectStrings.Length; i++)
+            {
+                da[i] = new OracleDataAdapter(selectStrings[i], databaseInstance);
+                OracleCommandBuilder cb = new OracleCommandBuilder(da[i]);
+                da[i].InsertCommand = cb.GetInsertCommand();
+                da[i].UpdateCommand = cb.GetUpdateCommand();
+                da[i].DeleteCommand = cb.GetDeleteCommand();
+                da[i].Fill(dsOutput, "Table " + i.ToString());
             }
 
-            OracleTransaction trans = databaseInstance.BeginTransaction ();
-            try {
-                for (int i = 0; i < dsInput.Tables.Count; i++) {
+            OracleTransaction trans = databaseInstance.BeginTransaction();
+            try
+            {
+                for (int i = 0; i < dsInput.Tables.Count; i++)
+                {
                     da[i].InsertCommand.Transaction = trans;
                     da[i].UpdateCommand.Transaction = trans;
                     da[i].DeleteCommand.Transaction = trans;
-                    da[i].Update (dsInput.Tables[i]);
+                    da[i].Update(dsInput.Tables[i]);
                 }
-                trans.Commit ();
-                databaseInstance.Close ();
+                trans.Commit();
+                databaseInstance.Close();
                 DateTime dtEnd = DateTime.Now;
-                stopwatch.Stop ();
+                stopwatch.Stop();
                 return true;
-            } catch (Exception ex) {
-                trans.Rollback ();
-                databaseInstance.Close ();
+            }
+            catch (Exception ex)
+            {
+                trans.Rollback();
+                databaseInstance.Close();
                 err = ex.Message;
                 DateTime dtEnd = DateTime.Now;
-                stopwatch.Stop ();
+                stopwatch.Stop();
                 // WebApiTracking.SendToSignalR(dtStart.ToString() + " => ExecuteUpdate" + " DataBase Host : " + databasehost.ToString(), TrackingTypeEnum.HEADER);
                 // WebApiTracking.SendToSignalRWithTimeUsed("result: False => " + err, stopwatch, dtStart, dtEnd, TrackingTypeEnum.ERROR);
                 return false;
@@ -391,50 +425,57 @@ namespace PTCwebApi {
         /// <param name="dsInput"></param>
         /// <param name="selectStrings"></param>
         /// <param name="err">out</param>
-        public Task<string> ExecuteUpdateAsync (UserJwt user, DataBaseHostEnum databasehost, string[] selectStrings, DataSet dsInput) {
+        public Task<string> ExecuteUpdateAsync(UserJwt user, DataBaseHostEnum databasehost, string[] selectStrings, DataSet dsInput)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
-            return Task<string>.Factory.StartNew (() => {
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+            return Task<string>.Factory.StartNew(() =>
+            {
                 string err = string.Empty;
-                DataSet dsOutput = new DataSet ();
-                var databaseInstance = ConnectionFactory.GetNewDatabaseInstanceByHost (databasehost);
+                DataSet dsOutput = new DataSet();
+                var databaseInstance = ConnectionFactory.GetNewDatabaseInstanceByHost(databasehost);
                 OracleDataAdapter[] da = new OracleDataAdapter[dsInput.Tables.Count];
-                for (int i = 0; i < selectStrings.Length; i++) {
-                    da[i] = new OracleDataAdapter (selectStrings[i], databaseInstance);
-                    OracleCommandBuilder cb = new OracleCommandBuilder (da[i]);
-                    da[i].InsertCommand = cb.GetInsertCommand ();
-                    da[i].UpdateCommand = cb.GetUpdateCommand ();
-                    da[i].DeleteCommand = cb.GetDeleteCommand ();
-                    da[i].Fill (dsOutput, "Table " + i.ToString ());
+                for (int i = 0; i < selectStrings.Length; i++)
+                {
+                    da[i] = new OracleDataAdapter(selectStrings[i], databaseInstance);
+                    OracleCommandBuilder cb = new OracleCommandBuilder(da[i]);
+                    da[i].InsertCommand = cb.GetInsertCommand();
+                    da[i].UpdateCommand = cb.GetUpdateCommand();
+                    da[i].DeleteCommand = cb.GetDeleteCommand();
+                    da[i].Fill(dsOutput, "Table " + i.ToString());
                 }
 
-                OracleTransaction trans = databaseInstance.BeginTransaction ();
-                try {
-                    for (int i = 0; i < dsInput.Tables.Count; i++) {
+                OracleTransaction trans = databaseInstance.BeginTransaction();
+                try
+                {
+                    for (int i = 0; i < dsInput.Tables.Count; i++)
+                    {
                         da[i].InsertCommand.Transaction = trans;
                         da[i].UpdateCommand.Transaction = trans;
                         da[i].DeleteCommand.Transaction = trans;
-                        da[i].Update (dsInput.Tables[i]);
+                        da[i].Update(dsInput.Tables[i]);
                     }
-                    trans.Commit ();
-                    databaseInstance.Close ();
+                    trans.Commit();
+                    databaseInstance.Close();
                     DateTime dtEnd = DateTime.Now;
-                    stopwatch.Stop ();
+                    stopwatch.Stop();
 
-                    string Header = dtStart.ToString () + " => ExecuteUpdateAsync" + " DataBase Host : " + databasehost.ToString ();
-                    string query = string.Join ("</br></br>", selectStrings);
+                    string Header = dtStart.ToString() + " => ExecuteUpdateAsync" + " DataBase Host : " + databasehost.ToString();
+                    string query = string.Join("</br></br>", selectStrings);
                     string footer = System.Environment.NewLine + "</br></br>" + "Result: Success";
                     // WebApiTracking.SendToSignalRWithTimeUsed (user, Header, query, footer, stopwatch, dtStart, dtEnd);
                     return "OK";
-                } catch (Exception ex) {
-                    trans.Rollback ();
-                    databaseInstance.Close ();
+                }
+                catch (Exception ex)
+                {
+                    trans.Rollback();
+                    databaseInstance.Close();
                     err = ex.Message;
                     DateTime dtEnd = DateTime.Now;
-                    stopwatch.Stop ();
-                    string Header = dtStart.ToString () + " => ExecuteUpdateAsync" + " DataBase Host : " + databasehost.ToString ();
-                    string query = string.Join ("</br></br>", selectStrings);
+                    stopwatch.Stop();
+                    string Header = dtStart.ToString() + " => ExecuteUpdateAsync" + " DataBase Host : " + databasehost.ToString();
+                    string query = string.Join("</br></br>", selectStrings);
                     string footer = System.Environment.NewLine + "</br></br>" + "Result: Fail";
                     // WebApiTracking.SendToSignalRWithTimeUsed (user, Header, query, footer, stopwatch, dtStart, dtEnd);
                     return err;
@@ -448,14 +489,16 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="appId"></param>
         /// <param name="sqlNo"></param>
-        public async Task<string> GetSqlStmtFromSqlTab (UserJwt user, int appId, int sqlNo) {
+        public async Task<string> GetSqlStmtFromSqlTab(UserJwt user, int appId, int sqlNo)
+        {
             var callSqlTab = "SELECT sql_stmt FROM KPDBA.SQL_TAB_OPPN WHERE APP_ID = " + appId + " and SQL_NO = " + sqlNo;
-            var rawData = await GetResultAsync (user, callSqlTab);
+            var rawData = await GetResultAsync(user, callSqlTab);
             var results =
                 _mapper.Map<IEnumerable<SqlTab>>
-                (rawData).ToList ();
+                (rawData).ToList();
 
-            if (results.Count > 0) {
+            if (results.Count > 0)
+            {
                 return results[0].SQL_STMT as string;
             }
             return string.Empty;
@@ -467,14 +510,16 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="appId"></param>
         /// <param name="sqlNo"></param>
-        public async Task<string> GetSqlStmtFromSqlTab (UserJwt user, DataBaseHostEnum dbHost, int appId, int sqlNo) {
+        public async Task<string> GetSqlStmtFromSqlTab(UserJwt user, DataBaseHostEnum dbHost, int appId, int sqlNo)
+        {
             var callSqlTab = "SELECT sql_stmt FROM KPDBA.SQL_TAB_OPPN WHERE APP_ID = " + appId + " and SQL_NO = " + sqlNo;
-            var rawData = await GetResultAsync (user, dbHost, callSqlTab);
+            var rawData = await GetResultAsync(user, dbHost, callSqlTab);
             var results =
                 _mapper.Map<IEnumerable<SqlTab>>
-                (rawData).ToList ();
+                (rawData).ToList();
 
-            if (results.Count > 0) {
+            if (results.Count > 0)
+            {
                 return results[0].SQL_STMT as string;
             }
             return string.Empty;
@@ -488,26 +533,33 @@ namespace PTCwebApi {
         /// <param name="appId"></param>
         /// <param name="sqlNo"></param>
         /// <param name="parm"></param>
-        public async Task<object> GetResultFromSQLTab (UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, List<Param> parm, string queryExtend = "") {
+        public async Task<object> GetResultFromSQLTab(UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, List<Param> parm, string queryExtend = "")
+        {
             // WebApiTracking.SendToSignalR(DateTime.Now.ToString() + " => GetResultFromSQLTab", TrackingTypeEnum.HEADER);
 
             object result = null;
-            string sql = await GetSqlStmtFromSqlTab (user, appId, sqlNo);
+            string sql = await GetSqlStmtFromSqlTab(user, appId, sqlNo);
 
-            if (string.IsNullOrEmpty (sql))
+            if (string.IsNullOrEmpty(sql))
                 return result;
 
-            if (parm.Count > 0) {
-                foreach (Param p in parm) {
+            if (parm.Count > 0)
+            {
+                foreach (Param p in parm)
+                {
                     string paramValueText = string.Empty;
 
-                    if (string.IsNullOrEmpty (p.ParamValue)) {
+                    if (string.IsNullOrEmpty(p.ParamValue))
+                    {
                         paramValueText = " null ";
-                    } else {
-                        p.ParamValue.Replace ("--", ""); //ป้องกัน SQL Injection
-                        switch (p.ParamType) {
+                    }
+                    else
+                    {
+                        p.ParamValue.Replace("--", ""); //ป้องกัน SQL Injection
+                        switch (p.ParamType)
+                        {
                             case ParamMeterTypeEnum.STRING:
-                                paramValueText = "'" + p.ParamValue.Replace ("'", "''") + "'";
+                                paramValueText = "'" + p.ParamValue.Replace("'", "''") + "'";
                                 break;
                             case ParamMeterTypeEnum.INTEGER:
                             case ParamMeterTypeEnum.DECIMAL:
@@ -522,28 +574,33 @@ namespace PTCwebApi {
                         }
                     }
 
-                    sql = sql.Replace (":" + p.ParamName, paramValueText);
+                    sql = sql.Replace(":" + p.ParamName, paramValueText);
                 }
             }
 
             string strReplace = ":I_";
-            while (sql.IndexOf (strReplace) > 0) {
-                int index = sql.IndexOf (strReplace);
-                int indexWord = sql.IndexOf (" ", index);
-                int indexWord2 = sql.IndexOf (",", index);
+            while (sql.IndexOf(strReplace) > 0)
+            {
+                int index = sql.IndexOf(strReplace);
+                int indexWord = sql.IndexOf(" ", index);
+                int indexWord2 = sql.IndexOf(",", index);
                 if (indexWord > indexWord2)
                     indexWord = indexWord2;
-                string strSub = sql.Substring (index, (indexWord - index));
-                sql = sql.Replace (strSub, " NULL ");
+                string strSub = sql.Substring(index, (indexWord - index));
+                sql = sql.Replace(strSub, " NULL ");
             }
 
-            if (sql.IndexOf (strReplace) < 0) {
-                try {
+            if (sql.IndexOf(strReplace) < 0)
+            {
+                try
+                {
                     sql = sql + queryExtend;
                     // WebApiTracking.SendToSignalR(sql);
 
-                    result = await GetResultAsync (user, host, sql);
-                } catch (Exception ex) {
+                    result = await GetResultAsync(user, host, sql);
+                }
+                catch (Exception ex)
+                {
                     // WebApiTracking.SendToSignalR(ex.ToString());
                     throw ex;
                 }
@@ -562,21 +619,22 @@ namespace PTCwebApi {
         /// <param name="parm"></param>
         /// <param name="replaceTitle"></param>
         /// <param name="replaceText"></param>
-        public async Task<object> GetResultFromSQLTabWithReplace (UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, dynamic parm, string replaceTitle, string replaceText) {
+        public async Task<object> GetResultFromSQLTabWithReplace(UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, dynamic parm, string replaceTitle, string replaceText)
+        {
             // WebApiTracking.SendToSignalR(DateTime.Now.ToString() + " => GetResultFromSQLTab", TrackingTypeEnum.HEADER);
 
             object result = null;
-            string sql = await GetSqlStmtFromSqlTab (user, appId, sqlNo);
+            string sql = await GetSqlStmtFromSqlTab(user, appId, sqlNo);
 
-            if (string.IsNullOrEmpty (sql))
+            if (string.IsNullOrEmpty(sql))
                 return result;
 
-            sql = sql.Replace (replaceTitle, replaceText);
+            sql = sql.Replace(replaceTitle, replaceText);
 
             if (parm == null)
-                result = await GetResultDapperAsync (user, host, sql);
+                result = await GetResultDapperAsync(user, host, sql);
             else
-                result = await GetResultDapperAsync (user, host, sql, parm);
+                result = await GetResultDapperAsync(user, host, sql, parm);
             return result;
 
         }
@@ -591,21 +649,22 @@ namespace PTCwebApi {
         /// <param name="parm"></param>
         /// <param name="replaceTitle"></param>
         /// <param name="replaceText"></param>
-        public async Task<object> GetResultFromSQLTabWithReplace (UserJwt user, DataBaseHostEnum hostStmt, DataBaseHostEnum hostRetrieve, int appId, int sqlNo, dynamic parm, string replaceTitle, string replaceText) {
+        public async Task<object> GetResultFromSQLTabWithReplace(UserJwt user, DataBaseHostEnum hostStmt, DataBaseHostEnum hostRetrieve, int appId, int sqlNo, dynamic parm, string replaceTitle, string replaceText)
+        {
             // WebApiTracking.SendToSignalR(DateTime.Now.ToString() + " => GetResultFromSQLTab", TrackingTypeEnum.HEADER);
 
             object result = null;
-            string sql = await GetSqlStmtFromSqlTab (user, hostStmt, appId, sqlNo);
+            string sql = await GetSqlStmtFromSqlTab(user, hostStmt, appId, sqlNo);
 
-            if (string.IsNullOrEmpty (sql))
+            if (string.IsNullOrEmpty(sql))
                 return result;
 
-            sql = sql.Replace (replaceTitle, replaceText);
+            sql = sql.Replace(replaceTitle, replaceText);
 
             if (parm == null)
-                result = await GetResultDapperAsync (user, hostRetrieve, sql);
+                result = await GetResultDapperAsync(user, hostRetrieve, sql);
             else
-                result = await GetResultDapperAsync (user, hostRetrieve, sql, parm);
+                result = await GetResultDapperAsync(user, hostRetrieve, sql, parm);
             return result;
 
         }
@@ -620,27 +679,34 @@ namespace PTCwebApi {
         /// <param name="parm"></param>
         /// <param name="replaceTitle"></param>
         /// <param name="replaceText"></param>
-        public async Task<object> GetResultFromSQLTabWithReplace (UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, List<Param> parm, string replaceTitle, string replaceText) {
+        public async Task<object> GetResultFromSQLTabWithReplace(UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, List<Param> parm, string replaceTitle, string replaceText)
+        {
             // WebApiTracking.SendToSignalR(DateTime.Now.ToString() + " => GetResultFromSQLTab", TrackingTypeEnum.HEADER);
 
             object result = null;
-            string sql = await GetSqlStmtFromSqlTab (user, appId, sqlNo);
+            string sql = await GetSqlStmtFromSqlTab(user, appId, sqlNo);
 
-            if (string.IsNullOrEmpty (sql))
+            if (string.IsNullOrEmpty(sql))
                 return result;
 
-            sql = sql.Replace (replaceTitle, replaceText);
-            if (parm.Count > 0) {
-                foreach (Param p in parm) {
+            sql = sql.Replace(replaceTitle, replaceText);
+            if (parm.Count > 0)
+            {
+                foreach (Param p in parm)
+                {
                     string paramValueText = string.Empty;
 
-                    if (string.IsNullOrEmpty (p.ParamValue)) {
+                    if (string.IsNullOrEmpty(p.ParamValue))
+                    {
                         paramValueText = " null ";
-                    } else {
-                        p.ParamValue.Replace ("--", ""); //ป้องกัน SQL Injection
-                        switch (p.ParamType) {
+                    }
+                    else
+                    {
+                        p.ParamValue.Replace("--", ""); //ป้องกัน SQL Injection
+                        switch (p.ParamType)
+                        {
                             case ParamMeterTypeEnum.STRING:
-                                paramValueText = "'" + p.ParamValue.Replace ("'", "''") + "'";
+                                paramValueText = "'" + p.ParamValue.Replace("'", "''") + "'";
                                 break;
                             case ParamMeterTypeEnum.INTEGER:
                             case ParamMeterTypeEnum.DECIMAL:
@@ -655,25 +721,30 @@ namespace PTCwebApi {
                         }
                     }
 
-                    sql = sql.Replace (":" + p.ParamName, paramValueText);
+                    sql = sql.Replace(":" + p.ParamName, paramValueText);
                 }
             }
 
             string strReplace = ":I_";
-            while (sql.IndexOf (strReplace) > 0) {
-                int index = sql.IndexOf (strReplace);
-                int indexWord = sql.IndexOf (" ", index);
-                int indexWord2 = sql.IndexOf (",", index);
+            while (sql.IndexOf(strReplace) > 0)
+            {
+                int index = sql.IndexOf(strReplace);
+                int indexWord = sql.IndexOf(" ", index);
+                int indexWord2 = sql.IndexOf(",", index);
                 if (indexWord > indexWord2)
                     indexWord = indexWord2;
-                string strSub = sql.Substring (index, (indexWord - index));
-                sql = sql.Replace (strSub, " NULL ");
+                string strSub = sql.Substring(index, (indexWord - index));
+                sql = sql.Replace(strSub, " NULL ");
             }
 
-            if (sql.IndexOf (strReplace) < 0) {
-                try {
-                    result = await GetResultAsync (user, host, sql);
-                } catch (Exception ex) {
+            if (sql.IndexOf(strReplace) < 0)
+            {
+                try
+                {
+                    result = await GetResultAsync(user, host, sql);
+                }
+                catch (Exception ex)
+                {
                     throw ex;
                 }
             }
@@ -689,14 +760,15 @@ namespace PTCwebApi {
         /// <param name="appId">รหัส Application</param>
         /// <param name="sqlNo">รหัส SqlTab</param>
         /// <param name="parm">parameter</param>
-        public async Task<object> GetResultFromSQLTab (UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, dynamic param) {
+        public async Task<object> GetResultFromSQLTab(UserJwt user, DataBaseHostEnum host, int appId, int sqlNo, dynamic param)
+        {
             object result = null;
-            string sql = await GetSqlStmtFromSqlTab (user, appId, sqlNo);
+            string sql = await GetSqlStmtFromSqlTab(user, appId, sqlNo);
 
             if (param == null)
-                result = await GetResultDapperAsync (user, host, sql);
+                result = await GetResultDapperAsync(user, host, sql);
             else
-                result = await GetResultDapperAsync (user, host, sql, param);
+                result = await GetResultDapperAsync(user, host, sql, param);
             return result;
         }
 
@@ -707,9 +779,10 @@ namespace PTCwebApi {
         /// <param name="appId">รหัส Application</param>
         /// <param name="sqlNo">รหัส SqlTab</param>
         /// <param name="parm">parameter</param>
-        public async Task<object> GetResultFromSQLTab (UserJwt user, int appId, int sqlNo, dynamic param) {
+        public async Task<object> GetResultFromSQLTab(UserJwt user, int appId, int sqlNo, dynamic param)
+        {
             object result = null;
-            result = await GetResultFromSQLTab (user, DataContextConfiguration.DEFAULT_DATABASE, appId, sqlNo, param);
+            result = await GetResultFromSQLTab(user, DataContextConfiguration.DEFAULT_DATABASE, appId, sqlNo, param);
             return result;
         }
 
@@ -720,10 +793,11 @@ namespace PTCwebApi {
         /// <param name="appId">รหัส Application</param>
         /// <param name="sqlNo">รหัส SqlTab</param>
         /// <param name="parm">parameter</param>
-        public async Task<object> GetResultFromSQLTabWithDapperParm (UserJwt user, int appId, int sqlNo, DynamicParameters dapperParam) {
+        public async Task<object> GetResultFromSQLTabWithDapperParm(UserJwt user, int appId, int sqlNo, DynamicParameters dapperParam)
+        {
             object result = null;
-            string sql = await GetSqlStmtFromSqlTab (user, appId, sqlNo);
-            result = await GetResultDapperWithDapperParmAsync (user, DataContextConfiguration.DEFAULT_DATABASE, sql, dapperParam);
+            string sql = await GetSqlStmtFromSqlTab(user, appId, sqlNo);
+            result = await GetResultDapperWithDapperParmAsync(user, DataContextConfiguration.DEFAULT_DATABASE, sql, dapperParam);
             return result;
         }
 
@@ -733,9 +807,10 @@ namespace PTCwebApi {
         /// <param name="user">user ที่ดึงข้อมูล</param>
         /// <param name="appId">รหัส Application</param>
         /// <param name="sqlNo">รหัส SqlTab</param>
-        public async Task<object> GetResultFromSQLTabWithOutParm (UserJwt user, int appId, int sqlNo) {
+        public async Task<object> GetResultFromSQLTabWithOutParm(UserJwt user, int appId, int sqlNo)
+        {
             object result = null;
-            result = await GetResultFromSQLTab (user, appId, sqlNo, new List<Param> ());
+            result = await GetResultFromSQLTab(user, appId, sqlNo, new List<Param>());
             return result;
         }
 
@@ -746,9 +821,10 @@ namespace PTCwebApi {
         ///<param name="host">base ที่ต้องการดึงข้อมูล</param>
         /// <param name="appId">รหัส Application</param>
         /// <param name="sqlNo">รหัส SqlTab</param>
-        public async Task<object> GetResultFromSQLTabWithOutParm (UserJwt user, DataBaseHostEnum host, int appId, int sqlNo) {
+        public async Task<object> GetResultFromSQLTabWithOutParm(UserJwt user, DataBaseHostEnum host, int appId, int sqlNo)
+        {
             object result = null;
-            result = await GetResultFromSQLTab (user, host, appId, sqlNo, new List<Param> ());
+            result = await GetResultFromSQLTab(user, host, appId, sqlNo, new List<Param>());
             return result;
         }
 
@@ -758,8 +834,9 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="sqlNo"></param>
         /// <param name="parm"></param>
-        public async Task<object> GetResultFromSQLTab (UserJwt user, int appId, int sqlNo, List<Param> parm, string queryExtend = "") {
-            return await GetResultFromSQLTab (user, DataContextConfiguration.DEFAULT_DATABASE, appId, sqlNo, parm, queryExtend);
+        public async Task<object> GetResultFromSQLTab(UserJwt user, int appId, int sqlNo, List<Param> parm, string queryExtend = "")
+        {
+            return await GetResultFromSQLTab(user, DataContextConfiguration.DEFAULT_DATABASE, appId, sqlNo, parm, queryExtend);
         }
 
         /// <summary>
@@ -769,16 +846,17 @@ namespace PTCwebApi {
         /// <param name="host"></param>
         /// <param name="sqlNo"></param>
         /// <param name="parm"></param>
-        public async Task<object> GetResultFromSQLTabPortal (UserJwt user, int sqlNo, dynamic param) {
+        public async Task<object> GetResultFromSQLTabPortal(UserJwt user, int sqlNo, dynamic param)
+        {
             // WebApiTracking.SendToSignalR(DateTime.Now.ToString() + " => GetResultFromSQLTab", TrackingTypeEnum.HEADER);
 
             object result = null;
-            string sql = await GetSqlStmtFromSqlTabPortal (user, sqlNo);
+            string sql = await GetSqlStmtFromSqlTabPortal(user, sqlNo);
 
-            if (string.IsNullOrEmpty (sql))
+            if (string.IsNullOrEmpty(sql))
                 return result;
 
-            result = await GetResultDapperAsync (user, DataContextConfiguration.DEFAULT_DATABASE, sql, param);
+            result = await GetResultDapperAsync(user, DataContextConfiguration.DEFAULT_DATABASE, sql, param);
 
             return result;
         }
@@ -790,25 +868,32 @@ namespace PTCwebApi {
         /// <param name="host"></param>
         /// <param name="sqlNo"></param>
         /// <param name="parm"></param>
-        public async Task<object> GetResultFromSQLTabPortal (UserJwt user, int sqlNo, List<Param> parm, string queryExtend = "") {
+        public async Task<object> GetResultFromSQLTabPortal(UserJwt user, int sqlNo, List<Param> parm, string queryExtend = "")
+        {
             // WebApiTracking.SendToSignalR(DateTime.Now.ToString() + " => GetResultFromSQLTab", TrackingTypeEnum.HEADER);
 
             object result = null;
-            string sql = await GetSqlStmtFromSqlTabPortal (user, sqlNo);
+            string sql = await GetSqlStmtFromSqlTabPortal(user, sqlNo);
 
-            if (string.IsNullOrEmpty (sql))
+            if (string.IsNullOrEmpty(sql))
                 return result;
 
-            if (parm.Count > 0) {
-                foreach (Param p in parm) {
+            if (parm.Count > 0)
+            {
+                foreach (Param p in parm)
+                {
                     string paramValueText = string.Empty;
 
-                    if (string.IsNullOrEmpty (p.ParamValue)) {
+                    if (string.IsNullOrEmpty(p.ParamValue))
+                    {
                         paramValueText = " null ";
-                    } else {
-                        switch (p.ParamType) {
+                    }
+                    else
+                    {
+                        switch (p.ParamType)
+                        {
                             case ParamMeterTypeEnum.STRING:
-                                paramValueText = "'" + p.ParamValue.Replace ("'", "''") + "'";
+                                paramValueText = "'" + p.ParamValue.Replace("'", "''") + "'";
                                 break;
                             case ParamMeterTypeEnum.INTEGER:
                             case ParamMeterTypeEnum.DECIMAL:
@@ -823,28 +908,33 @@ namespace PTCwebApi {
                         }
                     }
 
-                    sql = sql.Replace (":" + p.ParamName, paramValueText);
+                    sql = sql.Replace(":" + p.ParamName, paramValueText);
                 }
             }
 
             string strReplace = ":I_";
-            while (sql.IndexOf (strReplace) > 0) {
-                int index = sql.IndexOf (strReplace);
-                int indexWord = sql.IndexOf (" ", index);
-                int indexWord2 = sql.IndexOf (",", index);
+            while (sql.IndexOf(strReplace) > 0)
+            {
+                int index = sql.IndexOf(strReplace);
+                int indexWord = sql.IndexOf(" ", index);
+                int indexWord2 = sql.IndexOf(",", index);
                 if (indexWord > indexWord2)
                     indexWord = indexWord2;
-                string strSub = sql.Substring (index, (indexWord - index));
-                sql = sql.Replace (strSub, " NULL ");
+                string strSub = sql.Substring(index, (indexWord - index));
+                sql = sql.Replace(strSub, " NULL ");
             }
 
-            if (sql.IndexOf (strReplace) < 0) {
-                try {
+            if (sql.IndexOf(strReplace) < 0)
+            {
+                try
+                {
                     sql = sql + queryExtend;
                     // WebApiTracking.SendToSignalR(sql);
 
-                    result = await GetResultAsync (user, DataContextConfiguration.DEFAULT_DATABASE, sql);
-                } catch (Exception ex) {
+                    result = await GetResultAsync(user, DataContextConfiguration.DEFAULT_DATABASE, sql);
+                }
+                catch (Exception ex)
+                {
                     // WebApiTracking.SendToSignalR(ex.ToString());
                     throw ex;
                 }
@@ -859,14 +949,16 @@ namespace PTCwebApi {
         /// <param name="User"></param>
         /// <param name="appId"></param>
         /// <param name="sqlNo"></param>
-        public async Task<string> GetSqlStmtFromSqlTabPortal (UserJwt user, int sqlNo) {
+        public async Task<string> GetSqlStmtFromSqlTabPortal(UserJwt user, int sqlNo)
+        {
             var callSqlTab = "SELECT sql_stmt FROM KPDBA.SQL_TAB_PORTAL WHERE SQL_NO = " + sqlNo;
-            var rawData = await GetResultAsync (user, callSqlTab);
+            var rawData = await GetResultAsync(user, callSqlTab);
             var results =
                 _mapper.Map<IEnumerable<SqlTab>>
-                (rawData).ToList ();
+                (rawData).ToList();
 
-            if (results.Count > 0) {
+            if (results.Count > 0)
+            {
                 return results[0].SQL_STMT as string;
             }
             return string.Empty;
@@ -878,24 +970,31 @@ namespace PTCwebApi {
         /// <param name="storedName"></param>
         /// <param name="param"></param>
         /// //UserJwt user,
-        public async Task<IEnumerable<object>> CallStoredProcudure (DataBaseHostEnum databasehost, string storedName, List<Param> param) {
-            try {
-                var dyParam = new OracleDynamicParameters ();
-                foreach (Param p in param) {
-                    dyParam.Add (p.ParamName, GetOracleDbType (p.ParamType), ParameterDirection.Input, p.ParamValue);
+        public async Task<IEnumerable<object>> CallStoredProcudure(DataBaseHostEnum databasehost, string storedName, List<Param> param)
+        {
+            try
+            {
+                var dyParam = new OracleDynamicParameters();
+                foreach (Param p in param)
+                {
+                    dyParam.Add(p.ParamName, GetOracleDbType(p.ParamType), ParameterDirection.Input, p.ParamValue);
                 }
                 //cursor name
-                dyParam.Add ("CUR_RET", OracleDbType.RefCursor, ParameterDirection.Output);
+                dyParam.Add("CUR_RET", OracleDbType.RefCursor, ParameterDirection.Output);
 
-                var conn = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-                if (conn.State == ConnectionState.Closed) {
-                    conn.Open ();
+                var conn = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
                 }
-                if (conn.State == ConnectionState.Open) {
-                    var rawResult = await SqlMapper.QueryAsync (conn, storedName, param : dyParam, commandType : CommandType.StoredProcedure);
+                if (conn.State == ConnectionState.Open)
+                {
+                    var rawResult = await SqlMapper.QueryAsync(conn, storedName, param: dyParam, commandType: CommandType.StoredProcedure);
                     return rawResult;
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
 
@@ -909,31 +1008,40 @@ namespace PTCwebApi {
         /// <param name="storedName"></param>
         /// <param name="param"></param>
         /// //UserJwt user,
-        public async Task<IEnumerable<dynamic>> CallStoredProcudurePTC (DataBaseHostEnum databasehost, string storedName, List<Param> param) {
-            try {
-                var dyParam = new OracleDynamicParameters ();
-                foreach (Param p in param) {
-                    dyParam.Add (p.ParamName, GetOracleDbType (p.ParamType), ParameterDirection.Input, p.ParamValue);
+        public async Task<IEnumerable<dynamic>> CallStoredProcudurePTC(DataBaseHostEnum databasehost, string storedName, List<Param> param)
+        {
+            try
+            {
+                var dyParam = new OracleDynamicParameters();
+                foreach (Param p in param)
+                {
+                    dyParam.Add(p.ParamName, GetOracleDbType(p.ParamType), ParameterDirection.Input, p.ParamValue);
                 }
-                dyParam.Add ("O_CUR_RETURN", OracleDbType.RefCursor, ParameterDirection.Output);
+                dyParam.Add("O_CUR_RETURN", OracleDbType.RefCursor, ParameterDirection.Output);
 
-                var conn = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-                if (conn.State == ConnectionState.Closed) {
-                    conn.Open ();
+                var conn = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
                 }
-                if (conn.State == ConnectionState.Open) {
-                    var rawResult = await SqlMapper.QueryAsync (conn, storedName, param : dyParam, commandType : CommandType.StoredProcedure);
+                if (conn.State == ConnectionState.Open)
+                {
+                    var rawResult = await SqlMapper.QueryAsync(conn, storedName, param: dyParam, commandType: CommandType.StoredProcedure);
                     return rawResult;
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex)
+            {
                 throw ex;
             }
             return null;
         }
 
-        public static OracleDbType GetOracleDbType (ParamMeterTypeEnum type) {
+        public static OracleDbType GetOracleDbType(ParamMeterTypeEnum type)
+        {
             OracleDbType oracleType = OracleDbType.Varchar2;
-            switch (type) {
+            switch (type)
+            {
                 case ParamMeterTypeEnum.STRING:
                     oracleType = OracleDbType.Varchar2;
                     break;
@@ -960,23 +1068,26 @@ namespace PTCwebApi {
         /// </summary>
         /// <param name="databasehost"></param>
         /// <param name="query"></param>
-        public async Task<dynamic> GetResultDapperAsyncDynamic (DataBaseHostEnum databasehost, string query) {
+        public async Task<dynamic> GetResultDapperAsyncDynamic(DataBaseHostEnum databasehost, string query)
+        {
             DateTime dtStart = DateTime.Now;
-            Stopwatch stopwatch = new Stopwatch ();
-            stopwatch.Start ();
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
 
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var result = await SqlMapper.QueryAsync (instance, query, commandType : CommandType.Text);
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var result = await SqlMapper.QueryAsync(instance, query, commandType: CommandType.Text);
             return result;
         }
-        public async Task<Object> GetResultDapperAsyncObject (DataBaseHostEnum databasehost, string query) {
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var result = await SqlMapper.QueryAsync (instance, query, commandType : CommandType.Text);
+        public async Task<Object> GetResultDapperAsyncObject(DataBaseHostEnum databasehost, string query)
+        {
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var result = await SqlMapper.QueryAsync(instance, query, commandType: CommandType.Text);
             return result;
         }
-        public async Task<Object> InsertResultDapperAsync (DataBaseHostEnum databasehost, string query) {
-            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost (databasehost);
-            var result = await SqlMapper.ExecuteAsync (instance, query, commandType : CommandType.Text);
+        public async Task<Object> InsertResultDapperAsync(DataBaseHostEnum databasehost, string query)
+        {
+            OracleConnection instance = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+            var result = await SqlMapper.ExecuteAsync(instance, query, commandType: CommandType.Text);
             return result;
         }
     }

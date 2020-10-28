@@ -40,9 +40,9 @@ namespace PTCwebApi
                     //policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
                     // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200").SetIsOriginAllowed((host) => true);
                     // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://192.168.55.129:4200").SetIsOriginAllowed((host) => true);
-                    // policy.AllowAnyOrigin ().AllowAnyHeader ().AllowAnyMethod ();
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://192.168.55.97:1150/tooling-frontend/").SetIsOriginAllowed((host) => true);
-                    policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://192.168.55.97:8080/").SetIsOriginAllowed((host) => true);
+                    policy.AllowAnyOrigin ().AllowAnyHeader ().AllowAnyMethod ();
+                    // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://192.168.55.97:1150/tooling-frontend/").SetIsOriginAllowed((host) => true);
+                    // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://192.168.55.97:8080/").SetIsOriginAllowed((host) => true);
                     // policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://portal.kimpai.com/").SetIsOriginAllowed((host) => true);
                     // .WithExposedHeaders ("WWW-Authenticate").AllowCredentials ();
                 });

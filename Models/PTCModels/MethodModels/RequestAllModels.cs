@@ -1,5 +1,7 @@
-namespace PTCwebApi.Models.PTCModels.MethodModels {
-    public class RequestAllModelsPTC {
+namespace PTCwebApi.Models.PTCModels.MethodModels
+{
+    public class RequestAllModelsPTC
+    {
         public string fn { get; set; }
         public string ptcID { get; set; }
         public string ptcType { get; set; }
@@ -17,5 +19,6 @@ namespace PTCwebApi.Models.PTCModels.MethodModels {
         public string stepID { get; set; }
         public string machID { get; set; }
         public string jobID { get; set; }
+        public string day { get; set; }
     }
 }

@@ -77,6 +77,11 @@ namespace PTCwebApi.Methods.PTCMethods
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
                 if (userProfile != null)
                 {
+
+                    var querySN = $"SELECT DIECUT_SN FROM KPDBA.DIECUT_SN WHERE DIECUT_ID ='{model.ptcID}'";
+                    var resultSN = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySN);
+                    if ((resultSN as List<dynamic>).Count != 0) { model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN; }
+
                     var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
                     var resultCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheck);
                     decimal toolReal = (resultCheck as List<dynamic>)[0].COUN;
@@ -97,7 +102,8 @@ namespace PTCwebApi.Methods.PTCMethods
                                 decimal count = (resultt as List<object>).Count;
                                 if (count != 0)
                                 {
-                                    if ((resultt as List<dynamic>)[0].LOC_ID == "$W70" || (resultt as List<dynamic>)[0].LOC_ID == "$WG0")
+                                    var locNow = (resultt as List<dynamic>)[0].LOC_ID;
+                                    if (locNow == "$W70" || locNow == "$WG0")
                                     {
                                         var results = _mapper.Map<IEnumerable<GetLoc>>(resultt);
                                         var dataLoc = results.ElementAt(0);
@@ -118,7 +124,6 @@ namespace PTCwebApi.Methods.PTCMethods
                                         var S_STATUS = 'T';
                                         tranType = "3"; // โอนย้ายออก
                                         locID = "$R70"; // old loc
-                                        tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: model.warehouseID, tranType: compID);
                                         tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
                                         var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
                                         var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
@@ -128,8 +133,19 @@ namespace PTCwebApi.Methods.PTCMethods
                                         var toolType = (resultCheckType as List<dynamic>)[0].DIECUT_TYPE;
 
                                         string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
-                                        var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE PTC_ID = '{model.ptcID}' AND PTC_TYPE = '{toolType}'";
-                                        var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querys);
+                                        string queHistory = $"SELECT * FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE RETURN_DATE IS NULL AND RETURN_USER_ID IS NULL AND DIECUT_SN='{model.ptcID}'";
+                                        var resultQueHis = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queHistory);
+                                        // decimal countHis = (resultCompID as List<dynamic>).Count;
+                                        if (resultQueHis != null)
+                                        {
+                                            var mapResultQueHis = _mapper.Map<IEnumerable<GetHistoryWithd>>(resultQueHis);
+                                            foreach (var item in mapResultQueHis)
+                                            {
+                                                var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{item.JOB_ID}' AND STEP_ID = '{item.STEP_ID}' AND SPLIT_SEQ = '{item.SPLIT_SEQ}' AND PLAN_SUB_SEQ = '{item.PLAN_SUB_SEQ}' AND SEQ_RUN = '{item.SEQ_RUN}' AND WDEPT_ID = '{item.WDEPT_ID}' AND REVISION = '{item.REVISION}' AND PTC_TYPE = '{item.PTC_TYPE}' AND PTC_ID = '{item.PTC_ID}' AND WITHD_USER_ID = '{item.WITHD_USER_ID}' AND DIECUT_SN = '{item.DIECUT_SN}' AND MACH_ID = '{item.MACH_ID}'";
+                                                var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querys);
+                                            }
+                                        }
+
                                     }
                                     else
                                     {

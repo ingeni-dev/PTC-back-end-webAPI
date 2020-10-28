@@ -27,13 +27,13 @@ namespace PTCwebApi.Controllers
         {
             switch (model.fn)
             {
-
                 case "FIND TOOL":
                     var _findToolResult = await new PTCMethods(_mapper, _jwtGenerator).FindLocOfTooling(model);
                     return Ok(_findToolResult);
                 case "SCAN LOCATION TO MOVE":
                     var _moveToolResult = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model);
                     return Ok(_moveToolResult);
+                //!
                 case "CHECK USER WAREHOUSE":
                     var _WareHouseResult = await new PTCMethods(_mapper, _jwtGenerator).checkWareHouse(model);
                     return Ok(_WareHouseResult);
