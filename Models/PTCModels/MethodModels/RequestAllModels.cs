@@ -4,6 +4,7 @@ namespace PTCwebApi.Models.PTCModels.MethodModels
     {
         public string fn { get; set; }
         public string ptcID { get; set; }
+        public string diecutSN { get; set; }
         public string ptcType { get; set; }
         public string warehouseID { get; set; }
         public string locID { get; set; }

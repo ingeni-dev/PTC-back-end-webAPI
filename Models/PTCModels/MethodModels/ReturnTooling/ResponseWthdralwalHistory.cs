@@ -9,7 +9,7 @@ namespace PTCwebApi.Models.PTCModels.MethodModels.ReturnTooling {
     public class ResponseWthdralwalHistoryList {
         public string ptcID { get; set; }
         public string ptcType { get; set; }
-        public string ptcName { get; set; }
+        public string diecutSN { get; set; }
         public string machID { get; set; }
         public string locID { get; set; }
         public string locName { get; set; }
@@ -20,7 +20,7 @@ namespace PTCwebApi.Models.PTCModels.MethodModels.ReturnTooling {
         public string JOB_ID { get; set; }
         public string PTC_ID { get; set; }
         public string PTC_TYPE { get; set; }
-        public string PTC_NAME { get; set; }
+        public string DIECUT_SN { get; set; }
         public string MACH_ID { get; set; }
         public string LOC_ID { get; set; }
         public string LOC_NAME { get; set; }

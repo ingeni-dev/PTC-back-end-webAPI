@@ -78,11 +78,11 @@ namespace PTCwebApi.Methods.PTCMethods
                 if (userProfile != null)
                 {
 
-                    var querySN = $"SELECT DIECUT_SN FROM KPDBA.DIECUT_SN WHERE DIECUT_ID ='{model.ptcID}'";
-                    var resultSN = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySN);
-                    if ((resultSN as List<dynamic>).Count != 0) { model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN; }
+                    // var querySN = $"SELECT DIECUT_SN FROM KPDBA.DIECUT_SN WHERE DIECUT_ID ='{model.ptcID}'";
+                    // var resultSN = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySN);
+                    // if ((resultSN as List<dynamic>).Count != 0) { model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN; }
 
-                    var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
+                    var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.diecutSN}'";
                     var resultCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheck);
                     decimal toolReal = (resultCheck as List<dynamic>)[0].COUN;
                     if (toolReal == 1)
@@ -92,12 +92,12 @@ namespace PTCwebApi.Methods.PTCMethods
                         decimal LocValid = (resultCheckLoc as List<dynamic>)[0].COUN;
                         if (LocValid == 1)
                         {
-                            var queryQTY = $"SELECT SUM(QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL WHERE WAREHOUSE_ID = '{model.warehouseID}' AND PTC_ID = '{model.ptcID}'";
+                            var queryQTY = $"SELECT SUM(QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL WHERE WAREHOUSE_ID = '{model.warehouseID}' AND PTC_ID = '{model.diecutSN}'";
                             var resultQTY = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryQTY);
                             var countQty = (resultQTY as List<dynamic>)[0].QTY;
                             if (countQty == 1)
                             {
-                                var query = $"SELECT SD.LOC_ID AS LOC_ID, LOC.LOC_DETAIL, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID HAVING SUM (SD.QTY) > 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC) LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
+                                var query = $"SELECT SD.LOC_ID AS LOC_ID, LOC.LOC_DETAIL, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.diecutSN}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID HAVING SUM (SD.QTY) > 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC) LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
                                 var resultt = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
                                 decimal count = (resultt as List<object>).Count;
                                 if (count != 0)
@@ -111,13 +111,15 @@ namespace PTCwebApi.Methods.PTCMethods
                                         var resultCompID = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCompID);
                                         var compID = (resultCompID as List<dynamic>)[0].COMP;
 
+                                        List<string> insertQuery = new List<string>();
                                         var tranSEQ = 1;
                                         var tranType = "3"; // โอนย้ายออก
                                         var locID = dataLoc.LOC_ID; // old loc
                                         string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: model.warehouseID, tranType: compID);
                                         var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
-                                        var insertGetQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('-1'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', 'T', SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
-                                        var resultInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertGetQuery);
+                                        var insertGetQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.diecutSN}', TO_NUMBER('-1'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', 'T', SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
+                                        insertQuery.Add(insertGetQuery);
+                                        // var resultInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertGetQuery)1;
 
                                         tranSEQ = 2;
                                         var QTY = "1";
@@ -125,27 +127,27 @@ namespace PTCwebApi.Methods.PTCMethods
                                         tranType = "3"; // โอนย้ายออก
                                         locID = "$R70"; // old loc
                                         tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
-                                        var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
-                                        var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
-
-                                        var queryCheckType = $"SELECT DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
-                                        var resultCheckType = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckType);
-                                        var toolType = (resultCheckType as List<dynamic>)[0].DIECUT_TYPE;
+                                        var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.diecutSN}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}')";
+                                        insertQuery.Add(insertOutQuery);
+                                        // var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
 
                                         string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
-                                        string queHistory = $"SELECT * FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE RETURN_DATE IS NULL AND RETURN_USER_ID IS NULL AND DIECUT_SN='{model.ptcID}'";
+                                        string queHistory = $"SELECT * FROM KPDBA.PTC_JS_PLAN_DETAIL WHERE RETURN_DATE IS NULL AND RETURN_USER_ID IS NULL AND DIECUT_SN='{model.diecutSN}'";
                                         var resultQueHis = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queHistory);
                                         // decimal countHis = (resultCompID as List<dynamic>).Count;
+                                        // List<string> testUpdate = new List<string>();
+
                                         if (resultQueHis != null)
                                         {
-                                            var mapResultQueHis = _mapper.Map<IEnumerable<GetHistoryWithd>>(resultQueHis);
-                                            foreach (var item in mapResultQueHis)
-                                            {
-                                                var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{item.JOB_ID}' AND STEP_ID = '{item.STEP_ID}' AND SPLIT_SEQ = '{item.SPLIT_SEQ}' AND PLAN_SUB_SEQ = '{item.PLAN_SUB_SEQ}' AND SEQ_RUN = '{item.SEQ_RUN}' AND WDEPT_ID = '{item.WDEPT_ID}' AND REVISION = '{item.REVISION}' AND PTC_TYPE = '{item.PTC_TYPE}' AND PTC_ID = '{item.PTC_ID}' AND WITHD_USER_ID = '{item.WITHD_USER_ID}' AND DIECUT_SN = '{item.DIECUT_SN}' AND MACH_ID = '{item.MACH_ID}'";
-                                                var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querys);
-                                            }
+                                            // var mapResultQueHis = _mapper.Map<IEnumerable<GetHistoryWithd>>(resultQueHis);
+                                            // foreach (var item in mapResultQueHis)
+                                            // {
+                                            var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE RETURN_DATE IS NULL AND RETURN_USER_ID IS NULL AND DIECUT_SN = '{model.diecutSN}'";
+                                            // testUpdate.Add(querys);
+                                            var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querys);
+                                            // }
                                         }
-
+                                        var resultInsertAll = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQuery);
                                     }
                                     else
                                     {

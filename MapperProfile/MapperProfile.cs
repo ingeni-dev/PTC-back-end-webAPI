@@ -44,25 +44,24 @@ namespace PTCwebApi.Profiles
                 .ForMember(d => d.machID, o => o.MapFrom(s => s.MACH_ID))
                 .ForMember(d => d.period, o => o.MapFrom(s => s.PERIOD))
                 .ForMember(d => d.planSubSeq, o => o.MapFrom(s => s.PLAN_SUB_SEQ))
+                .ForMember(d => d.ptcSN, o => o.MapFrom(s => s.PTC_SN))
                 .ForMember(d => d.ptcID, o => o.MapFrom(s => s.PTC_ID))
                 .ForMember(d => d.ptcType, o => o.MapFrom(s => s.PTC_TYPE))
                 .ForMember(d => d.revision, o => o.MapFrom(s => s.REVISION))
                 .ForMember(d => d.seqRun, o => o.MapFrom(s => s.SEQ_RUN))
                 .ForMember(d => d.splitSeq, o => o.MapFrom(s => s.SPLIT_SEQ))
                 .ForMember(d => d.stepID, o => o.MapFrom(s => s.STEP_ID))
-                 .ForMember(d => d.checkShow, o => o.MapFrom(s => s.CHECK_SHOW))
-
+                .ForMember(d => d.checkShow, o => o.MapFrom(s => s.CHECK_SHOW))
                 .ForMember(d => d.withdUserID, o => o.MapFrom(s => s.WITHD_USER_ID))
                 .ForMember(d => d.withdDate, o => o.MapFrom(s => s.WITHD_DATE))
                 .ForMember(d => d.returnDate, o => o.MapFrom(s => s.RETURN_DATE))
                 .ForMember(d => d.returnUserID, o => o.MapFrom(s => s.RETURN_USER_ID))
-
                 .ForMember(d => d.wdeptID, o => o.MapFrom(s => s.WDEPT_ID));
 
             CreateMap<RequestWthdralwalHistoryList, ResponseWthdralwalHistoryList>()
                 .ForMember(d => d.jobID, o => o.MapFrom(s => s.JOB_ID))
                 .ForMember(d => d.ptcID, o => o.MapFrom(s => s.PTC_ID))
-                .ForMember(d => d.ptcName, o => o.MapFrom(s => s.PTC_NAME))
+                .ForMember(d => d.diecutSN, o => o.MapFrom(s => s.DIECUT_SN))
                 .ForMember(d => d.ptcType, o => o.MapFrom(s => s.PTC_TYPE))
                 .ForMember(d => d.locID, o => o.MapFrom(s => s.LOC_ID))
                 .ForMember(d => d.locName, o => o.MapFrom(s => s.LOC_NAME))
