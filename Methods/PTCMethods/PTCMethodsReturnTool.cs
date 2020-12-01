@@ -77,16 +77,15 @@ namespace PTCwebApi.Methods.PTCMethods
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
                 if (userProfile != null)
                 {
-                    var querySN = $"SELECT DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.diecutSN}'";
-                    var resultSN = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySN);
+                    //     var querySN = $"SELECT DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.diecutSN}'";
+                    //     var resultSN = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySN);
                     // if ((resultSN as List<dynamic>).Count != 0) { model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN; }
-
-                    var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.diecutSN}'";
+                    var queryCheck = $"SELECT DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.diecutSN}'";
                     var resultCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheck);
-                    decimal toolReal = (resultCheck as List<dynamic>)[0].COUN;
-                    if (toolReal == 1)
+                    decimal toolReal = (resultCheck as List<dynamic>).Count;
+                    if (toolReal != 0)
                     {
-                        var ptcTypes = (resultSN as List<dynamic>)[0].DIECUT_TYPE;
+                        var ptcTypes = (resultCheck as List<dynamic>)[0].DIECUT_TYPE;
                         var queryCheckLoc = $"SELECT COUNT(1) AS COUN FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}' AND WAREHOUSE_ID = '{model.warehouseID}' AND PTC_TYPE = '{ptcTypes}'";
                         var resultCheckLoc = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckLoc);
                         decimal LocValid = (resultCheckLoc as List<dynamic>)[0].COUN;
@@ -97,21 +96,19 @@ namespace PTCwebApi.Methods.PTCMethods
                             var countQty = (resultQTY as List<dynamic>)[0].QTY;
                             if (countQty == 1)
                             {
-                                var query = $"SELECT SD.LOC_ID AS LOC_ID, LOC.LOC_DETAIL, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.diecutSN}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID HAVING SUM (SD.QTY) > 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC) LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
+                                var query = $"SELECT SD.LOC_ID AS LOC_ID, LOC.LOC_DETAIL, SD.COMP_ID AS COMP, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.diecutSN}' GROUP BY SD.WAREHOUSE_ID, SD.COMP_ID, SD.LOC_ID HAVING SUM (SD.QTY) > 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC WHERE PTC_TYPE = '{ptcTypes}') LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
                                 var resultt = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
+                                var compID = (resultt as List<dynamic>)[0].COMP;
                                 decimal count = (resultt as List<object>).Count;
                                 if (count != 0)
                                 {
                                     var locNow = (resultt as List<dynamic>)[0].LOC_ID;
                                     if (locNow == "$W70" || locNow == "$WG0")
                                     {
+                                        List<string> insertQuery = new List<string>();
                                         var results = _mapper.Map<IEnumerable<GetLoc>>(resultt);
                                         var dataLoc = results.ElementAt(0);
-                                        var queryCompID = $"SELECT COMP_ID COMP FROM KPDBA.WAREHOUSE WHERE WAREHOUSE_ID ='{model.warehouseID}'";
-                                        var resultCompID = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCompID);
-                                        var compID = (resultCompID as List<dynamic>)[0].COMP;
 
-                                        List<string> insertQuery = new List<string>();
                                         var tranSEQ = 1;
                                         var tranType = "3"; // โอนย้ายออก
                                         var locID = dataLoc.LOC_ID; // old loc
@@ -139,13 +136,8 @@ namespace PTCwebApi.Methods.PTCMethods
 
                                         if (resultQueHis != null)
                                         {
-                                            // var mapResultQueHis = _mapper.Map<IEnumerable<GetHistoryWithd>>(resultQueHis);
-                                            // foreach (var item in mapResultQueHis)
-                                            // {
                                             var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE RETURN_DATE IS NULL AND RETURN_USER_ID IS NULL AND DIECUT_SN = '{model.diecutSN}'";
-                                            // testUpdate.Add(querys);
-                                            var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querys);
-                                            // }
+                                            insertQuery.Add(querys);
                                         }
                                         var resultInsertAll = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQuery);
                                     }
@@ -174,7 +166,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                 string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: compID, tranType: "4");
 
                                 var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
-                                var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{ptcTypes}'))";
+                                var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.diecutSN}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{ptcTypes}'))";
                                 var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
                             }
                             else
@@ -207,33 +199,6 @@ namespace PTCwebApi.Methods.PTCMethods
                 _returnFlag = "1";
                 _returnText = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT ";
             }
-
-            // if (model.token != null)
-            // {
-            //     UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
-            //     result = await new PTCMethods(_mapper, _jwtGenerator).MoveTooling(model, "4");
-            //     if (result != null)
-            //     {
-            //         if (result.flag == "0")
-            //         {
-            //             string DateNow = DateTime.Today.ToString("dd/MM/yyyy", new CultureInfo("en-US"));
-            //             var query = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE JOB_ID = '{model.jobID}'";
-            //             var upDateResult = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
-            //         }
-            //         else
-            //         {
-            //             return result;
-            //         }
-            //     }
-            // }
-            // else
-            // {
-            //     result = new ReturnDataMoveLoc
-            //     {
-            //         flag = "1",
-            //         text = "ไม่พบข้อมูลผู้ใช้ กรุณา Login อีกครั้ง หรือติดต่อฝ่าย IT "
-            //     };
-            // }
             var resultts = new ReturnDataMoveLoc
             {
                 flag = _returnFlag,

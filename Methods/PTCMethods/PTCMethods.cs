@@ -32,19 +32,16 @@ namespace PTCwebApi.Methods.PTCMethods
             string _returnText = "ผ่าน";
             GetLoc _dataLoc = new GetLoc();
 
-            var querySN = $"SELECT DIECUT_SN FROM KPDBA.DIECUT_SN WHERE DIECUT_ID ='{model.ptcID}'";
+            var querySN = $"SELECT DIECUT_SN, DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_ID ='{model.ptcID}' OR DIECUT_SN ='{model.ptcID}'";
             var resultSN = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySN);
-            if ((resultSN as List<dynamic>).Count != 0) { model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN; }
-
-            //* check A tool is real in warehourse.
-            var queryCheck = $"SELECT COUNT(1) AS COUN FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
-            var resultCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheck);
-            decimal toolValid = (resultCheck as List<dynamic>)[0].COUN;
+            model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN;
+            var ptcType = (resultSN as List<dynamic>)[0].DIECUT_TYPE;
+            decimal toolValid = (resultSN as List<dynamic>).Count;
 
             if (toolValid == 1)
             {
                 //* check location of the tool.
-                var query = $"SELECT SD.LOC_ID,  LOC.LOC_DETAIL, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID HAVING SUM (SD.QTY) > 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC) LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
+                var query = $"SELECT SD.LOC_ID, SD.COMP_ID, LOC.LOC_DETAIL, SD.QTY FROM(SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID HAVING SUM (SD.QTY) > 0) SD JOIN(SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC WHERE PTC_TYPE = '{ptcType}') LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
                 var result = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
                 decimal count = (result as List<object>).Count;
                 if (count == 0)
@@ -130,25 +127,19 @@ namespace PTCwebApi.Methods.PTCMethods
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
                 if (userProfile != null)
                 {
-                    var querySN = $"SELECT DIECUT_SN, DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_ID ='{model.ptcID}'";
+                    var querySN = $"SELECT DIECUT_SN, DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_ID ='{model.ptcID}' OR DIECUT_SN ='{model.ptcID}'";
                     var resultSN = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySN);
-
-                    if ((resultSN as List<dynamic>).Count != 0) { model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN; ptcTypes = (resultSN as List<dynamic>)[0].DIECUT_TYPE; }
-
-                    var queryCheck = $"SELECT DIECUT_TYPE FROM KPDBA.DIECUT_SN WHERE DIECUT_SN ='{model.ptcID}'";
-                    var resultCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheck);
-                    // decimal toolReal = (resultCheck as List<dynamic>)[0].COUN;
-                    ptcTypes = (resultCheck as List<dynamic>)[0].DIECUT_TYPE;
-                    decimal toolReal = (resultCheck as List<dynamic>).Count;
+                    model.ptcID = (resultSN as List<dynamic>)[0].DIECUT_SN;
+                    ptcTypes = (resultSN as List<dynamic>)[0].DIECUT_TYPE;
+                    decimal toolReal = (resultSN as List<dynamic>).Count;
                     if (toolReal == 1)
                     {
-
                         var queryCheckLoc = $"SELECT COUNT(1) AS COUN FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}' AND WAREHOUSE_ID = '{model.warehouseID}' AND PTC_TYPE = '{ptcTypes}'";
                         var resultCheckLoc = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckLoc);
                         decimal LocValid = (resultCheckLoc as List<dynamic>)[0].COUN;
                         if (LocValid != 0)
                         {
-                            var query = $"SELECT SD.LOC_ID, LOC.LOC_DETAIL, SD.QTY FROM (SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID HAVING SUM (SD.QTY) > 0) SD JOIN (SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC) LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
+                            var query = $"SELECT SD.LOC_ID, SD.COMP_ID, LOC.LOC_DETAIL, SD.QTY FROM(SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID HAVING SUM (SD.QTY) > 0) SD JOIN(SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC WHERE PTC_TYPE = '{ptcTypes}') LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
                             var result = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
                             decimal count = (result as List<object>).Count;
                             if (count == 0)
