@@ -136,7 +136,7 @@ namespace PTCwebApi.Methods.PTCMethods
 
                                         if (resultQueHis != null)
                                         {
-                                            var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = TO_DATE ('{DateNow}', 'dd/mm/yyyy'), RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE RETURN_DATE IS NULL AND RETURN_USER_ID IS NULL AND DIECUT_SN = '{model.diecutSN}'";
+                                            var querys = $"UPDATE KPDBA.PTC_JS_PLAN_DETAIL SET RETURN_DATE = SYSDATE, RETURN_USER_ID = TO_CHAR ('{userProfile.userID}') WHERE RETURN_DATE IS NULL AND RETURN_USER_ID IS NULL AND DIECUT_SN = '{model.diecutSN}'";
                                             insertQuery.Add(querys);
                                         }
                                         var resultInsertAll = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQuery);

@@ -138,7 +138,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                         List<RequestCurrentPlans> _data = currentPlans as List<RequestCurrentPlans>;
                                         foreach (var item in _data)
                                         {
-                                            string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{item.JOB_ID}', TO_CHAR ('{item.MACH_ID}'),  TO_CHAR ('{item.STEP_ID}'), TO_NUMBER ('{item.SPLIT_SEQ}'), TO_NUMBER ('{item.PLAN_SUB_SEQ}'), TO_NUMBER ('{item.SEQ_RUN}'), TO_NUMBER ('{item.WDEPT_ID}'), TO_NUMBER ('{item.REVISION}'), TO_DATE ('{item.ACT_DATE}', 'dd/mm/yyyy hh24:mi:ss'), '{toolType}', '{model.ptcID}', TRUNC(SYSDATE), TO_CHAR ('{userProfile.userID}'), '{model.diecutSN}')";
+                                            string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{item.JOB_ID}', TO_CHAR ('{item.MACH_ID}'),  TO_CHAR ('{item.STEP_ID}'), TO_NUMBER ('{item.SPLIT_SEQ}'), TO_NUMBER ('{item.PLAN_SUB_SEQ}'), TO_NUMBER ('{item.SEQ_RUN}'), TO_NUMBER ('{item.WDEPT_ID}'), TO_NUMBER ('{item.REVISION}'), TO_DATE ('{item.ACT_DATE}', 'dd/mm/yyyy hh24:mi:ss'), '{toolType}', '{model.ptcID}', SYSDATE, TO_CHAR ('{userProfile.userID}'), '{model.diecutSN}')";
                                             insertQuery.Add(queryPlanDetail);
                                         }
                                     }
