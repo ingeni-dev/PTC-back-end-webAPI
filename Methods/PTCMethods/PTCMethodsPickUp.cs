@@ -130,22 +130,24 @@ namespace PTCwebApi.Methods.PTCMethods
                                 List<string> insertQuery = new List<string>();
                                 if (model.jobID != "0" && model.ptcID != string.Empty)
                                 {
-                                    var resultPlans = await new StoreConnectionMethod(_mapper).PtcGetCurrentPlans(compID: compID, toolType: toolType, startDay: model.day, endDay: model.day, wareHouse: model.warehouseID, ptcID: model.ptcID);
-                                    var currentPlans = _mapper.Map<IEnumerable<RequestCurrentPlans>>(resultPlans);
+                                    string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{model.jobID}', TO_CHAR ('{model.machID}'),  TO_CHAR ('{model.stepID}'), TO_NUMBER ('{model.splitSeq}'), TO_NUMBER ('{model.planSubSeq}'), TO_NUMBER ('{model.seqRun}'), TO_NUMBER ('{model.wdeptID}'), TO_NUMBER ('{model.revision}'), TO_DATE ('{model.actDate}', 'dd/mm/yyyy hh24:mi:ss'), '{toolType}', '{model.ptcID}', SYSDATE, TO_CHAR ('{userProfile.userID}'), '{model.diecutSN}')";
+                                    insertQuery.Add(queryPlanDetail);
+                                    // var resultPlans = await new StoreConnectionMethod(_mapper).PtcGetCurrentPlans(compID: compID, toolType: toolType, startDay: model.day, endDay: model.day, wareHouse: model.warehouseID, ptcID: model.ptcID);
+                                    // var currentPlans = _mapper.Map<IEnumerable<RequestCurrentPlans>>(resultPlans);
 
-                                    if (currentPlans != null)
-                                    {
-                                        List<RequestCurrentPlans> _data = currentPlans as List<RequestCurrentPlans>;
-                                        foreach (var item in _data)
-                                        {
-                                            string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{item.JOB_ID}', TO_CHAR ('{item.MACH_ID}'),  TO_CHAR ('{item.STEP_ID}'), TO_NUMBER ('{item.SPLIT_SEQ}'), TO_NUMBER ('{item.PLAN_SUB_SEQ}'), TO_NUMBER ('{item.SEQ_RUN}'), TO_NUMBER ('{item.WDEPT_ID}'), TO_NUMBER ('{item.REVISION}'), TO_DATE ('{item.ACT_DATE}', 'dd/mm/yyyy hh24:mi:ss'), '{toolType}', '{model.ptcID}', SYSDATE, TO_CHAR ('{userProfile.userID}'), '{model.diecutSN}')";
-                                            insertQuery.Add(queryPlanDetail);
-                                        }
-                                    }
+                                    // if (currentPlans != null)
+                                    // {
+                                    //     List<RequestCurrentPlans> _data = currentPlans as List<RequestCurrentPlans>;
+                                    //     foreach (var item in _data)
+                                    //     {
+                                    // string queryPlanDetail = $"INSERT INTO KPDBA.PTC_JS_PLAN_DETAIL (JOB_ID, MACH_ID, STEP_ID, SPLIT_SEQ, PLAN_SUB_SEQ, SEQ_RUN, WDEPT_ID, REVISION, ACT_DATE, PTC_TYPE, PTC_ID, WITHD_DATE, WITHD_USER_ID, DIECUT_SN) VALUES ('{item.JOB_ID}', TO_CHAR ('{item.MACH_ID}'),  TO_CHAR ('{item.STEP_ID}'), TO_NUMBER ('{item.SPLIT_SEQ}'), TO_NUMBER ('{item.PLAN_SUB_SEQ}'), TO_NUMBER ('{item.SEQ_RUN}'), TO_NUMBER ('{item.WDEPT_ID}'), TO_NUMBER ('{item.REVISION}'), TO_DATE ('{item.ACT_DATE}', 'dd/mm/yyyy hh24:mi:ss'), '{toolType}', '{model.ptcID}', SYSDATE, TO_CHAR ('{userProfile.userID}'), '{model.diecutSN}')";
+                                    // insertQuery.Add(queryPlanDetail);
+                                    //     }
+                                    // }
 
                                 }
                                 var tranSEQ = 1;
-                                var tranType = "2"; // โอนย้ายออก
+                                var tranType = "5"; // โอนย้ายออก
                                 var locID = dataLoc.LOC_ID; // old loc
                                 string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: compID, tranType: "4");
                                 var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
@@ -153,7 +155,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                 insertQuery.Add(insertGetQuery);
 
                                 tranSEQ = 2;
-                                tranType = "2"; // โอนย้ายเข้า
+                                tranType = "4"; // โอนย้ายเข้า
                                 locID = "$W70"; // newLoc ย้ายไปพื้นที่เบิก
                                 tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
                                 var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.diecutSN}', TO_NUMBER('1'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', 'T', SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{toolType}'))";
@@ -170,7 +172,7 @@ namespace PTCwebApi.Methods.PTCMethods
                         else
                         {
                             _returnFlag = "1";
-                            _returnText = "อุปกรณ์อยู่ในพื้นที่เบิกแล้ว";
+                            _returnText = "อุปกรณ์ถูกเบิกแล้ว";
                         }
                     }
                     else

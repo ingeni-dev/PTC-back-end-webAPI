@@ -110,7 +110,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                         var dataLoc = results.ElementAt(0);
 
                                         var tranSEQ = 1;
-                                        var tranType = "3"; // โอนย้ายออก
+                                        var tranType = "5"; // โอนย้ายออก
                                         var locID = dataLoc.LOC_ID; // old loc
                                         string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: compID, tranType: "4");
                                         var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
@@ -121,7 +121,7 @@ namespace PTCwebApi.Methods.PTCMethods
                                         tranSEQ = 2;
                                         var QTY = "1";
                                         var S_STATUS = 'T';
-                                        tranType = "3"; // โอนย้ายออก
+                                        tranType = "4"; // โอนย้ายออก
                                         locID = "$R70"; // old loc
                                         tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
                                         var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.diecutSN}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{ptcTypes}'))";
