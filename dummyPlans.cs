@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using PTCwebApi.Models.PTCModels.MethodModels.CurrentPlans;
 
-namespace PTC_back_end_webAPI
+namespace PTCwebApi
 {
     public class dummyPlans
     {

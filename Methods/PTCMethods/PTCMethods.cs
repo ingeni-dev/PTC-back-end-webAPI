@@ -4,15 +4,12 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using PTCwebApi.DataService;
 using PTCwebApi.Interfaces;
 using PTCwebApi.Models.ProfilesModels;
 using PTCwebApi.Models.PTCModels;
 using PTCwebApi.Models.PTCModels.MethodModels;
-using PTCwebApi.Models.PTCModels.MethodModels.CurrentPlans;
 using PTCwebApi.Models.PTCModels.MethodModels.FindTools;
 using PTCwebApi.Models.PTCModels.MethodModels.MoveLoc;
-using PTCwebApi.Models.PTCModels.MethodModels.ReturnTooling;
 
 namespace PTCwebApi.Methods.PTCMethods
 {
@@ -122,6 +119,9 @@ namespace PTCwebApi.Methods.PTCMethods
             string _returnFlag = "0";
             string _returnText = "ผ่าน";
             string ptcTypes;
+            string transfer_flag = "F";
+            string transfer_loc_flag = "T";
+            List<string> insertQuery = new List<string>();
             if (model.token != null)
             {
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
@@ -134,9 +134,15 @@ namespace PTCwebApi.Methods.PTCMethods
                     decimal toolReal = (resultSN as List<dynamic>).Count;
                     if (toolReal == 1)
                     {
-                        var queryCheckLoc = $"SELECT COUNT(1) AS COUN FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}' AND WAREHOUSE_ID = '{model.warehouseID}' AND PTC_TYPE = '{ptcTypes}'";
+                        var queryCheckLoc = $"SELECT COUNT(1) AS COUN FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}' AND WAREHOUSE_ID = '{model.warehouseID}' AND PTC_TYPE = '{ptcTypes}' AND TRANSFER_LOC_FLAG = '{transfer_flag}'";
                         var resultCheckLoc = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCheckLoc);
                         decimal LocValid = (resultCheckLoc as List<dynamic>)[0].COUN;
+
+                        var queryCrossWH = $"SELECT WAREHOUSE_ID FROM KPDBA.LOCATION_PTC WHERE LOC_ID = '{model.locID}' AND PTC_TYPE = '{ptcTypes}' AND TRANSFER_LOC_FLAG = '{transfer_loc_flag}'";
+                        var resultCrossWH = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCrossWH);
+                        var rCrossWH = resultCrossWH as List<dynamic>;
+                        decimal crossWHVal = rCrossWH.Count;
+
                         if (LocValid != 0)
                         {
                             var query = $"SELECT SD.LOC_ID, SD.COMP_ID, LOC.LOC_DETAIL, SD.QTY FROM(SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID HAVING SUM (SD.QTY) > 0) SD JOIN(SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC WHERE PTC_TYPE = '{ptcTypes}') LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
@@ -163,8 +169,8 @@ namespace PTCwebApi.Methods.PTCMethods
 
                                 var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
                                 var insertGetQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{ptcTypes}'))";
-                                var resultInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertGetQuery);
-
+                                // var resultInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertGetQuery);
+                                insertQuery.Add(insertGetQuery);
                                 tranSEQ = 2;
                                 QTY = "1";
                                 tranType = "4"; // โอนย้ายเข้า
@@ -172,7 +178,52 @@ namespace PTCwebApi.Methods.PTCMethods
 
                                 tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
                                 var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{ptcTypes}'))";
-                                var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
+                                // var resultOutInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertOutQuery);
+                                insertQuery.Add(insertOutQuery);
+                                var resultInsertAll = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQuery);
+                            }
+                        }
+                        else if (crossWHVal != 0)
+                        {
+                            string WH = rCrossWH[0].WAREHOUSE_ID;
+                            if (WH != model.warehouseID)
+                            {
+                                var query = $"SELECT SD.LOC_ID, SD.COMP_ID, LOC.LOC_DETAIL, SD.QTY FROM(SELECT SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID, SUM (SD.QTY) QTY FROM KPDBA.PTC_STOCK_DETAIL SD WHERE SD.WAREHOUSE_ID = '{model.warehouseID}' AND SD.PTC_ID = '{model.ptcID}' GROUP BY SD.WAREHOUSE_ID, SD.LOC_ID, SD.COMP_ID HAVING SUM (SD.QTY) > 0) SD JOIN(SELECT WAREHOUSE_ID, LOC_ID, LOC_DETAIL FROM KPDBA.LOCATION_PTC WHERE PTC_TYPE = '{ptcTypes}') LOC ON (SD.WAREHOUSE_ID = LOC.WAREHOUSE_ID AND SD.LOC_ID = LOC.LOC_ID)";
+                                var result = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, query);
+                                decimal count = (result as List<object>).Count;
+                                if (count == 0)
+                                {
+                                    _returnFlag = "1";
+                                    _returnText = "ไม่พบอุปกรณ์คงเหลือภายในคลัง";
+                                }
+                                else
+                                {
+                                    var results = _mapper.Map<IEnumerable<GetLoc>>(result);
+                                    var dataLoc = results.ElementAt(0);
+                                    var queryCompID = $"SELECT COMP_ID COMP FROM KPDBA.WAREHOUSE WHERE WAREHOUSE_ID ='{model.warehouseID}'";
+                                    var resultCompID = await new DataContext().GetResultDapperAsyncObject(DataBaseHostEnum.KPR, queryCompID);
+                                    var compID = (resultCompID as List<dynamic>)[0].COMP;
+                                    var tranSEQ = 1;
+                                    var QTY = "-1";
+                                    var S_STATUS = 'T';
+                                    var tranType = "15"; // โอนย้ายออก
+                                    var locID = dataLoc.LOC_ID; // old loc
+                                    string tran_id = await new StoreConnectionMethod(_mapper).PtcGetTranID(compID: compID, tranType: "4");
+
+                                    var tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
+                                    var insertGetQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{model.warehouseID}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{ptcTypes}'))";
+                                    // var resultInsert = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, insertGetQuery);
+                                    insertQuery.Add(insertGetQuery);
+                                    tranSEQ = 2;
+                                    QTY = "1";
+                                    tranType = "14"; // โอนย้ายเข้า
+                                    locID = model.locID; // newLoc
+
+                                    tranDate = DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss", new CultureInfo("en-US"));
+                                    var insertOutQuery = $"INSERT INTO KPDBA.PTC_STOCK_DETAIL (TRAN_ID, TRAN_SEQ, TRAN_TYPE, TRAN_DATE,PTC_ID, QTY, COMP_ID, WAREHOUSE_ID, LOC_ID, STATUS, CR_DATE, CR_ORG_ID, CR_USER_ID, PTC_TYPE) VALUES ('{tran_id}', TO_NUMBER('{tranSEQ}'), TO_NUMBER('{tranType}'), TO_DATE('{tranDate}', 'dd/mm/yyyy hh24:mi:ss'),'{model.ptcID}', TO_NUMBER('{QTY}'), TO_CHAR('{compID}'),'{WH}','{locID}', TO_CHAR('{S_STATUS}'), SYSDATE, '{userProfile.org}', '{userProfile.userID}', TO_CHAR('{ptcTypes}'))";
+                                    insertQuery.Add(insertOutQuery);
+                                    var resultInsertAll = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQuery);
+                                }
                             }
                         }
                         else
