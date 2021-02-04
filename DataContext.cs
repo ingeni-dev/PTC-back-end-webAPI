@@ -1037,6 +1037,42 @@ namespace PTCwebApi
             return null;
         }
 
+         /// <summary>
+        /// เรียกใช้งาน Store Procedure project E-learning
+        /// </summary>
+        /// <param name="databasehost"></param>
+        /// <param name="storedName"></param>
+        /// <param name="param"></param>
+        /// //UserJwt user,
+        public async Task<IEnumerable<dynamic>> CallStoredProcudureElearn(DataBaseHostEnum databasehost, string storedName, List<Param> param)
+        {
+            try
+            {
+                var dyParam = new OracleDynamicParameters();
+                foreach (Param p in param)
+                {
+                    dyParam.Add(p.ParamName, GetOracleDbType(p.ParamType), ParameterDirection.Input, p.ParamValue);
+                }
+                dyParam.Add("O_REF", OracleDbType.RefCursor, ParameterDirection.Output);
+
+                var conn = ConnectionFactory.GetDatabaseInstanceByHost(databasehost);
+                if (conn.State == ConnectionState.Closed)
+                {
+                    conn.Open();
+                }
+                if (conn.State == ConnectionState.Open)
+                {
+                    var rawResult = await SqlMapper.QueryAsync(conn, storedName, param: dyParam, commandType: CommandType.StoredProcedure);
+                    return rawResult;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            return null;
+        }
+
         public static OracleDbType GetOracleDbType(ParamMeterTypeEnum type)
         {
             OracleDbType oracleType = OracleDbType.Varchar2;
@@ -1091,4 +1127,6 @@ namespace PTCwebApi
             return result;
         }
     }
+
 }
+

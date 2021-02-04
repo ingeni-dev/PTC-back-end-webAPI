@@ -9,4 +9,8 @@ namespace webAPI.Models.Elearning
         public string queryID { get; set; }
         public string timeSeq { get; set; }
     }
+    public class SetQrCode
+    {
+        public string qrCode { get; set; }
+    }
 }

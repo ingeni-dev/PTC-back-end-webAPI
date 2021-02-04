@@ -10,10 +10,10 @@ namespace webAPI.Security
     {
         public String generateQrcode(string txt)
         {
-            String qrText = EndoceBase64(txt);
-            String qrcodeText = "http://localhost:4200/kmap-login-screen?queryID=" + qrText;
+            // String qrText = EndoceBase64(txt);
+            String qrcodeText = "http://localhost:4200/kmap-login-screen?queryID=" + txt;
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrText,
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(qrcodeText,
             QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             Bitmap qrCodeImage = qrCode.GetGraphic(20);
