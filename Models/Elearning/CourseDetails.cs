@@ -10,7 +10,7 @@ namespace webAPI.Models.Elearning
         public string COURSE_ID { get; set; }
         public string COURSE_DESC { get; set; }
         public string QUERY_ID { get; set; }
-        public string QUERY_IDS { get { return new GenerateQrcode().EndoceBase64(QUERY_ID); } set { } }
+        // public string QUERY_IDS { get { return new GenerateQrcode().EndoceBase64(QUERY_ID); } set { } }
         public string PLACE { get; set; }
         public string TIME_SEQ { get; set; }
         public string LECT_NAME { get; set; }

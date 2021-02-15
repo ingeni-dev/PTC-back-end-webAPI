@@ -14,8 +14,9 @@ namespace webAPI.Methods.Elearning
 
         public string UploadFile(String queryID, String folderType, String fileName, IFormFile file)
         {
-            string pathRoot = "\\Users\\parnu\\Documents\\GitHub\\WEB-elearning\\src";
-            string pathImg = $"\\assets\\upload\\{queryID}\\{folderType}\\";
+            // string pathRoot = "\\Users\\parnu\\Documents\\GitHub\\WEB-elearning\\src";
+            string pathRoot = "\\DEPLOY\\elearning";
+            string pathImg = $"\\upload\\{queryID}\\{folderType}\\";
             string path = pathRoot + pathImg;
             try
             {

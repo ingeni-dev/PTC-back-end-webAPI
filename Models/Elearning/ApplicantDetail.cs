@@ -13,7 +13,7 @@ namespace PTCwebApi.Models.Elearning
     {
         public string DOC_TYPE { get; set; }
         public string QUERY_ID { get; set; }
-        public string QUERY_IDS { get { return new GenerateQrcode().EndoceBase64(QUERY_ID); } set { } }
+        // public string QUERY_IDS { get { return new GenerateQrcode().EndoceBase64(QUERY_ID); } set { } }
         public int TIME_SEQ { get; set; }
         public string APP_EMP_ID { get; set; }
         public string EMP_NAME { get; set; }

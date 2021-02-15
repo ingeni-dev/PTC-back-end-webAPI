@@ -12,7 +12,7 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.docType, o => o.MapFrom(s => s.DOC_TYPE))
                .ForMember(d => d.courseID, o => o.MapFrom(s => s.COURSE_ID))
                .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC))
-               .ForMember(d => d.queryID, o => o.MapFrom(s => s.QUERY_IDS))
+               .ForMember(d => d.queryID, o => o.MapFrom(s => s.QUERY_ID))
                .ForMember(d => d.place, o => o.MapFrom(s => s.PLACE))
                .ForMember(d => d.timeSeq, o => o.MapFrom(s => s.TIME_SEQ))
                .ForMember(d => d.lectName, o => o.MapFrom(s => s.LECT_NAME))
@@ -25,7 +25,7 @@ namespace webAPI.MapperProfile
 
             CreateMap<ApplicantDetailResponse, ApplicantDetailResult>()
                .ForMember(d => d.docType, o => o.MapFrom(s => s.DOC_TYPE))
-               .ForMember(d => d.queryID, o => o.MapFrom(s => s.QUERY_IDS))
+               .ForMember(d => d.queryID, o => o.MapFrom(s => s.QUERY_ID))
                .ForMember(d => d.timeSeq, o => o.MapFrom(s => s.TIME_SEQ))
                .ForMember(d => d.appEmpID, o => o.MapFrom(s => s.APP_EMP_ID))
                .ForMember(d => d.empName, o => o.MapFrom(s => s.EMP_NAME))

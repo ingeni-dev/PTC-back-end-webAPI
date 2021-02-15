@@ -12,6 +12,8 @@ using webAPI.Models.Elearning.configs;
 using webAPI.Methods.Elearning;
 using System.Text;
 using System.Linq;
+using PTCwebApi.Interfaces;
+using PTCwebApi.Models.ProfilesModels;
 
 namespace webAPI.Controllers
 {
@@ -21,10 +23,12 @@ namespace webAPI.Controllers
     {
         private readonly IWebHostEnvironment _environment;
         private readonly IMapper _mapper;
-        public ElearningController(IMapper mapper, IWebHostEnvironment environment)
+        private readonly IJwtGenerator _jwtGenerator;
+        public ElearningController(IMapper mapper, IWebHostEnvironment environment, IJwtGenerator jwtGenerator)
         {
             _mapper = mapper;
             _environment = environment;
+            _jwtGenerator = jwtGenerator;
         }
 
         [HttpGet("")]
@@ -37,14 +41,15 @@ namespace webAPI.Controllers
         public async Task<dynamic> GetCourses(RequestCourses model)
         {
             string q = new ElearnigQueryConfig().Q_GET_COURE;
-            string query = q.Replace(":INSTANT_FLAG", $"'{model.instantFlag}'");
+            string que = q.Replace(":as_instant_flag", $"'{model.instantFlag}'");
+            string query = que.Replace(":as_user_id", $"'{model.userID}'");
             var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
             var result = _mapper.Map<IEnumerable<ResponseCourseDetails>>(response);
             var results = result as List<ResponseCourseDetails>;
             var resultReal = _mapper.Map<List<ResponseCourseDetails>, List<ResultCourseDetails>>(results);
             foreach (var item in resultReal)
             {
-                item.day=item.queryBegin.Split(" ")[0].ToString();
+                item.day = item.queryBegin.Split(" ")[0].ToString();
             }
             IEnumerable<GroupCourseDetails> groupDay = resultReal
             .GroupBy(x => new { x.day })
@@ -61,10 +66,11 @@ namespace webAPI.Controllers
         [HttpPost("getApplicants")]
         public async Task<List<ListApplicantResult>> GetApplicants(RequestApplicants model)
         {
-            byte[] data = Convert.FromBase64String(model.queryID);
-            model.queryID = Encoding.UTF8.GetString(data);
+            // byte[] data = Convert.FromBase64String(model.queryID);
+            // model.queryID = Encoding.UTF8.GetString(data);
             List<ListApplicantResult> listApplicantResul = new List<ListApplicantResult> { };
-            string queryDepartment = $"SELECT COUNT(1) COUNT, UNIT_ID, UNIT_DESC FROM(SELECT DOC_TYPE, QUERY_ID, TIME_SEQ, APP_EMP_ID, EMP_NAME, TRAINING_FLAG, APPLICANT.UNIT_ID, UNIT_DESC FROM    (SELECT 'ISO' DOC_TYPE, ICT.QUERY_ID, ICT.TIME_SEQ, CA.APP_EMP_ID, EMP.UNIT_ID, EMP_FNAME || ' ' || EMP_LNAME EMP_NAME, NVL (CQA.TRAINING_FLAG, 'F') TRAINING_FLAG FROM KPDBA.ISO_COURSE_APPLICANT CA, KPDBA.ISO_COURSE_TIME ICT, KPDBA.COURSE_QUERY_ATTN CQA, KPDBA.EMPLOYEE EMP WHERE     CA.APP_EMP_ID = EMP.EMP_ID AND CA.QUERY_ID = ICT.QUERY_ID AND ICT.QUERY_ID = CQA.QUERY_ID(+) AND ICT.TIME_SEQ = CQA.TIME_SEQ(+) UNION ALL SELECT 'COURSE' DOC_TYPE, CA.QUERY_ID, CQT.TIME_SEQ, APP_USER_ID, EMP.UNIT_ID, EMP_FNAME || ' ' || EMP_LNAME EMP_NAME, NVL (CQA.TRAINING_FLAG, 'F') TRAINING_FLAG FROM KPDBA.COURSE_APPLICANT CA, KPDBA.COURSE_QUERY_TIME CQT, KPDBA.COURSE_QUERY_ATTN CQA, KPDBA.EMPLOYEE EMP WHERE     CA.APP_USER_ID = EMP.EMP_ID AND CA.QUERY_ID = CQT.QUERY_ID AND CQT.QUERY_ID = CQA.QUERY_ID(+) AND CQT.TIME_SEQ = CQA.TIME_SEQ(+)) APPLICANT JOIN (SELECT UNIT_ID, UNIT_DESC FROM KPDBA.UNIT) UNT ON (APPLICANT.UNIT_ID = UNT.UNIT_ID) WHERE QUERY_ID = '{model.queryID}' AND TIME_SEQ = '{ model.timeSeq}') GROUP BY UNIT_ID,UNIT_DESC";
+            string qD = new ElearnigQueryConfig().Q_GET_DEPARTMENT;
+            string queryDepartment = qD.Replace(":as_query_id", $"'{model.queryID}'").Replace(":ai_time_seq", $"'{model.timeSeq}'");
             var responseDepartment = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryDepartment);
             var resultDepartment = _mapper.Map<IEnumerable<Department>>(responseDepartment);
             foreach (Department item in resultDepartment)
@@ -72,7 +78,9 @@ namespace webAPI.Controllers
                 ListApplicantResult applicantResul = new ListApplicantResult { };
                 applicantResul.departmentID = item.UNIT_ID;
                 applicantResul.department = item.UNIT_DESC;
-                string query = $"SELECT DOC_TYPE, QUERY_ID, TIME_SEQ, APP_EMP_ID, EMP_NAME, TRAINING_FLAG FROM    (SELECT 'ISO' DOC_TYPE, ICT.QUERY_ID, ICT.TIME_SEQ, CA.APP_EMP_ID, EMP.UNIT_ID, EMP_FNAME || ' ' || EMP_LNAME EMP_NAME, NVL (CQA.TRAINING_FLAG, 'F') TRAINING_FLAG FROM KPDBA.ISO_COURSE_APPLICANT CA, KPDBA.ISO_COURSE_TIME ICT, KPDBA.COURSE_QUERY_ATTN CQA, KPDBA.EMPLOYEE EMP WHERE     CA.APP_EMP_ID = EMP.EMP_ID AND CA.QUERY_ID = ICT.QUERY_ID AND ICT.QUERY_ID = CQA.QUERY_ID(+) AND ICT.TIME_SEQ = CQA.TIME_SEQ(+) UNION ALL SELECT 'COURSE' DOC_TYPE, CA.QUERY_ID, CQT.TIME_SEQ, APP_USER_ID, EMP.UNIT_ID, EMP_FNAME || ' ' || EMP_LNAME EMP_NAME, NVL (CQA.TRAINING_FLAG, 'F') TRAINING_FLAG FROM KPDBA.COURSE_APPLICANT CA, KPDBA.COURSE_QUERY_TIME CQT, KPDBA.COURSE_QUERY_ATTN CQA, KPDBA.EMPLOYEE EMP WHERE     CA.APP_USER_ID = EMP.EMP_ID AND CA.QUERY_ID = CQT.QUERY_ID AND CQT.QUERY_ID = CQA.QUERY_ID(+) AND CQT.TIME_SEQ = CQA.TIME_SEQ(+)) APPLICANT JOIN (SELECT UNIT_ID FROM KPDBA.UNIT) UNT ON (APPLICANT.UNIT_ID = UNT.UNIT_ID) WHERE QUERY_ID = '{model.queryID}' AND TIME_SEQ = '{model.timeSeq}' AND APPLICANT.UNIT_ID = '{item.UNIT_ID}'";
+                string q = new ElearnigQueryConfig().Q_GET_APPLICANT;
+                string query = q.Replace(":as_query_id", $"'{model.queryID}'").Replace(":ai_time_seq", $"'{model.timeSeq}'").Replace(":unit_id", $"'{ item.UNIT_ID}'");
+                // string query = $"SELECT DOC_TYPE, QUERY_ID, TIME_SEQ, APP_EMP_ID, EMP_NAME, TRAINING_FLAG FROM    (SELECT 'ISO' DOC_TYPE, ICT.QUERY_ID, ICT.TIME_SEQ, CA.APP_EMP_ID, EMP.UNIT_ID, EMP_FNAME || ' ' || EMP_LNAME EMP_NAME, NVL (CQA.TRAINING_FLAG, 'F') TRAINING_FLAG FROM KPDBA.ISO_COURSE_APPLICANT CA, KPDBA.ISO_COURSE_TIME ICT, KPDBA.COURSE_QUERY_ATTN CQA, KPDBA.EMPLOYEE EMP WHERE     CA.APP_EMP_ID = EMP.EMP_ID AND CA.QUERY_ID = ICT.QUERY_ID AND ICT.QUERY_ID = CQA.QUERY_ID(+) AND ICT.TIME_SEQ = CQA.TIME_SEQ(+) UNION ALL SELECT 'COURSE' DOC_TYPE, CA.QUERY_ID, CQT.TIME_SEQ, APP_USER_ID, EMP.UNIT_ID, EMP_FNAME || ' ' || EMP_LNAME EMP_NAME, NVL (CQA.TRAINING_FLAG, 'F') TRAINING_FLAG FROM KPDBA.COURSE_APPLICANT CA, KPDBA.COURSE_QUERY_TIME CQT, KPDBA.COURSE_QUERY_ATTN CQA, KPDBA.EMPLOYEE EMP WHERE     CA.APP_USER_ID = EMP.EMP_ID AND CA.QUERY_ID = CQT.QUERY_ID AND CQT.QUERY_ID = CQA.QUERY_ID(+) AND CQT.TIME_SEQ = CQA.TIME_SEQ(+)) APPLICANT JOIN (SELECT UNIT_ID FROM KPDBA.UNIT) UNT ON (APPLICANT.UNIT_ID = UNT.UNIT_ID) WHERE QUERY_ID = '{model.queryID}' AND TIME_SEQ = '{model.timeSeq}' AND APPLICANT.UNIT_ID = '{item.UNIT_ID}'";
                 var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
                 var result = _mapper.Map<IEnumerable<ApplicantDetailResponse>>(response);
                 var results = result as List<ApplicantDetailResponse>;
@@ -83,7 +91,7 @@ namespace webAPI.Controllers
             return listApplicantResul;
         }
         [HttpPost("getQrcode")]
-        public SetQrCode PostTModel(RequestApplicants model)
+        public SetQrCode GetQrcode(RequestApplicants model)
         {
             SetQrCode response = new SetQrCode();
             if (model.queryID != string.Empty && model.queryID != null)
@@ -98,6 +106,70 @@ namespace webAPI.Controllers
                 return response;
             }
         }
+        [HttpPost("setCheck")]
+        public async Task<dynamic> SetCheck(SetCheckName model)
+        {
+            ResponeError error = new ResponeError { };
+            if (model.token != null)
+            {
+                UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
+                string org = userProfile.org;
+                string userID = userProfile.userID;
+
+                string qCheck = new ElearnigQueryConfig().Q_CHECK_APPLICANT_ID;
+                string qCheckEmpID = qCheck.Replace(":AS_QUERY_ID", $"'{model.queryID}'")
+                    .Replace(":AI_TIME_SEQ", $"'{model.timeSeq}'")
+                    .Replace(":APP_EMP_ID", $"'{model.appEmpID}'");
+                var resCheck = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, qCheckEmpID);
+                decimal r = (resCheck as List<dynamic>).Count;
+                if (r != 0)
+                {
+                    var rC = (resCheck as List<dynamic>)[0].TRAINING_FLAG;
+                    var empID = (resCheck as List<dynamic>)[0].APP_EMP_ID;
+                    var empName = (resCheck as List<dynamic>)[0].EMP_NAME;
+                    var empDepartment = (resCheck as List<dynamic>)[0].UNIT_DESC;
+
+                    if (model.appEmpID != null && rC == "F")
+                    {
+                        string q = new ElearnigQueryConfig().Q_INSERT_SET_CHECK;
+                        string query = q.Replace(":as_query_id", $"'{model.queryID}'")
+                        .Replace(":ai_time_seq", $"'{model.timeSeq}'")
+                        .Replace(":app_emp_id", $"'{model.appEmpID}'")
+                        .Replace(":training_flag", $"'{model.trainingFlag}'")
+                        .Replace(":org", $"'{org}'")
+                        .Replace(":user_id", $"'{userID}'");
+                        var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
+                        error.stateError = false;
+                        error.cuzError = "Success";
+                        error.empID = empID;
+                        error.empName = (empName as string).Split(' ')[1] + " " + (empName as string).Split(' ')[2];
+                        error.empDepartment = empDepartment;
+                        return error; ;
+                    }
+                    else
+                    {
+                        error.stateError = true;
+                        error.cuzError = "รายชื่อนี้ลงทะเบียนแล้ว";
+                        return error;
+                    }
+
+                }
+                else
+                {
+                    error.stateError = true;
+                    error.cuzError = "ไม่สามารถเช็คชื่อคอร์สนี้ได้ กรุณาติดต่อเจ้าหน้าที่";
+                    return error;
+                }
+
+
+            }
+            else
+            {
+                error.stateError = true;
+                error.cuzError = "Token empty!!";
+                return error;
+            }
+        }
 
         [HttpPost("addCourse")]
         public async Task<Boolean> PostTModel(AddCourseDetail model)
@@ -107,6 +179,8 @@ namespace webAPI.Controllers
 
             return false;
         }
+
+
 
         [HttpPost("getTitleCourses")]
         public async Task<dynamic> GetAllCourses()
@@ -382,6 +456,20 @@ namespace webAPI.Controllers
             }
             return false;
         }
+
+        [HttpPost("getCourseForm")]
+        public async Task<dynamic> PostTModel(RequestCourses model)
+        {
+            string q = new ElearnigQueryConfig().Q_GET_COURE;
+            string query = q.Replace(":INSTANT_FLAG", $"'{model.instantFlag}'");
+            var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
+            var result = _mapper.Map<IEnumerable<ResponseCourseDetails>>(response);
+            var results = result as List<ResponseCourseDetails>;
+            var resultReal = _mapper.Map<List<ResponseCourseDetails>, List<ResultCourseDetails>>(results);
+
+            return resultReal;
+        }
+
 
     }
 }
