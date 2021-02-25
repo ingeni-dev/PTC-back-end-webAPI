@@ -1,0 +1,39 @@
+SELECT TYPE,
+       LECT_ID,
+       THAI_TITLE,
+       THAI_FNAME,
+       THAI_SNAME,
+       REF_EMP_ID,
+       THAI_TITLE || ' ' || THAI_FNAME || ' ' || THAI_SNAME THAI_NAME
+  FROM (WITH LEC
+             AS (SELECT 'LECTURER' TYPE,
+                        ICL.LECT_ID,
+                        LM.THAI_TITLE,
+                        LM.THAI_FNAME,
+                        LM.THAI_SNAME,
+                        REF_EMP_ID
+                   FROM KPDBA.INSTITUTE_COURSE_LECTURER ICL,
+                        KPDBA.LECTURER_MASTER LM
+                  WHERE (ICL.LECT_ID = LM.LECT_ID) AND ICL.INST_ID = '252'),
+             EMP
+             AS (SELECT 'EMPLOYEE' TYPE,
+                        EMP_ID,
+                        TITLE_NAME,
+                        EMP_FNAME,
+                        EMP_LNAME,
+                        ''
+                   FROM KPDBA.EMPLOYEE
+                  WHERE     EMP_ID NOT IN
+                               (SELECT NVL (REF_EMP_ID, ' ') FROM LEC)
+                        AND RESIGN_DATE IS NULL)
+        SELECT *
+          FROM LEC
+         WHERE     THAI_TITLE IS NOT NULL
+               AND THAI_FNAME IS NOT NULL
+               AND THAI_SNAME IS NOT NULL
+        UNION ALL
+        SELECT *
+          FROM EMP
+         WHERE     TITLE_NAME IS NOT NULL
+               AND EMP_FNAME IS NOT NULL
+               AND EMP_LNAME IS NOT NULL)

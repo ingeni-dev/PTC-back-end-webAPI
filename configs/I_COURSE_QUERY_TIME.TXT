@@ -1,0 +1,10 @@
+INSERT INTO KPDBA.COURSE_QUERY_TIME (QUERY_ID,
+                                     TIME_SEQ,
+                                     COURSE_DATE,
+                                     DAY_HOUR,
+                                     DAY_MIN)
+     VALUES (:AS_QUERY_ID,
+             TO_NUMBER (:AI_SEQ),
+             TO_DATE (:AD_BEGIN_DATE, 'dd/mm/yyyy hh24:mi:ss'),
+             TO_CHAR (:AS_SUM_HOUR),
+             TO_CHAR (:AS_SUM_MIN))

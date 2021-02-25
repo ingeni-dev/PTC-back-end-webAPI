@@ -1,0 +1,24 @@
+WITH EMP
+     AS (  SELECT EMP_ID,
+                  EMP_FNAME,
+                  EMP_LNAME,
+                  POS_ID,
+                  POS_DESC,
+                  ROLE_ID,
+                  ROLE_DESC
+             FROM KPDBA.EMPLOYEE
+                  JOIN KPDBA.POSITION
+                     USING (POS_ID)
+                  JOIN KPDBA.ROLE
+                     USING (ROLE_ID)
+            WHERE RESIGN_DATE IS NULL
+         ORDER BY POS_ID, ROLE_ID),
+     APP
+     AS (SELECT APP_USER_ID, TRAINING_FLAG, 'T' AS SELECTED_FLAG
+           FROM course_applicant
+          WHERE query_Id = :AS_QUERY_ID)
+SELECT EMP.*,
+       NVL (TRAINING_FLAG, 'F') TRAINING_FLAG,
+       NVL (SELECTED_FLAG, 'F') SELECTED_FLAG
+  FROM EMP, APP
+ WHERE EMP_ID = APP_USER_ID(+)

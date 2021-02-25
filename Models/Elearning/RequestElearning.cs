@@ -4,6 +4,7 @@ namespace webAPI.Models.Elearning
     {
         public string instantFlag { get; set; }
         public string userID { get; set; }
+        public string token { get; set; }
     }
     public class RequestApplicants
     {

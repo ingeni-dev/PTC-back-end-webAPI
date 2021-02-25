@@ -20,6 +20,7 @@ namespace webAPI.Models.Elearning
         public string DAY_HOUR { get; set; }
         public string DAY_MIN { get; set; }
         public string INSTANT_FLAG { get; set; }
+        public string REMARK { get; set; }
     }
     public class ResultCourseDetails
     {
@@ -37,6 +38,8 @@ namespace webAPI.Models.Elearning
         public string dayHour { get; set; }
         public string dayMin { get; set; }
         public string instantFlag { get; set; }
+        public string remark { get; set; }
+
 
     }
     public class GroupCourseDetails

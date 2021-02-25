@@ -14,6 +14,7 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC))
                .ForMember(d => d.queryID, o => o.MapFrom(s => s.QUERY_ID))
                .ForMember(d => d.place, o => o.MapFrom(s => s.PLACE))
+               .ForMember(d => d.remark, o => o.MapFrom(s => s.REMARK))
                .ForMember(d => d.timeSeq, o => o.MapFrom(s => s.TIME_SEQ))
                .ForMember(d => d.lectName, o => o.MapFrom(s => s.LECT_NAME))
                .ForMember(d => d.applicantCount, o => o.MapFrom(s => s.APPLICANT_COUNT))
@@ -22,6 +23,9 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.dayHour, o => o.MapFrom(s => s.DAY_HOUR))
                .ForMember(d => d.dayMin, o => o.MapFrom(s => s.DAY_MIN))
                .ForMember(d => d.instantFlag, o => o.MapFrom(s => s.INSTANT_FLAG));
+
+            CreateMap<CourseFromMap, CourseFrom>()
+            .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC));
 
             CreateMap<ApplicantDetailResponse, ApplicantDetailResult>()
                .ForMember(d => d.docType, o => o.MapFrom(s => s.DOC_TYPE))
@@ -61,6 +65,28 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.docPath, o => o.MapFrom(s => s.DOC_PATH))
                .ForMember(d => d.videoCover, o => o.MapFrom(s => s.VIDEO_COVER))
                .ForMember(d => d.videoLength, o => o.MapFrom(s => s.VIDEO_LENGTH));
+
+            CreateMap<GetAllLectureMap, GetAllLecture>()
+               .ForMember(d => d.type, o => o.MapFrom(s => s.TYPE))
+               .ForMember(d => d.lectID, o => o.MapFrom(s => s.LECT_ID))
+               .ForMember(d => d.thaiTitle, o => o.MapFrom(s => s.THAI_TITLE))
+               .ForMember(d => d.thaiFname, o => o.MapFrom(s => s.THAI_FNAME))
+               .ForMember(d => d.thaiSname, o => o.MapFrom(s => s.THAI_SNAME))
+               .ForMember(d => d.refEmpID, o => o.MapFrom(s => s.REF_EMP_ID))
+               .ForMember(d => d.thaiName, o => o.MapFrom(s => s.THAI_NAME));
+
+
+            CreateMap<GetAllApplicantMap, GetAllApplicant>()
+               .ForMember(d => d.empID, o => o.MapFrom(s => s.EMP_ID))
+               .ForMember(d => d.empFname, o => o.MapFrom(s => s.EMP_FNAME))
+               .ForMember(d => d.empLname, o => o.MapFrom(s => s.EMP_LNAME))
+               .ForMember(d => d.posID, o => o.MapFrom(s => s.POS_ID))
+               .ForMember(d => d.posDESC, o => o.MapFrom(s => s.POS_DESC))
+               .ForMember(d => d.roleID, o => o.MapFrom(s => s.ROLE_ID))
+               .ForMember(d => d.roleDESC, o => o.MapFrom(s => s.ROLE_DESC))
+               .ForMember(d => d.trainingFlag, o => o.MapFrom(s => s.TRAINING_FLAG))
+               .ForMember(d => d.selectedFlag, o => o.MapFrom(s => s.SELECTED_FLAG_BOOL))
+               ;
 
         }
     }

@@ -1,0 +1,44 @@
+SELECT UNIT_ID, UNIT_DESC
+    FROM (SELECT APPLICANT.DOC_TYPE,
+                 APPLICANT.QUERY_ID,
+                 APPLICANT.TIME_SEQ,
+                 APPLICANT.APP_EMP_ID,
+                 EMP_NAME,
+                 APPLICANT.UNIT_ID,
+                 UNT.UNIT_DESC,
+                 NVL (TRAINING_FLAG, 'F') TRAINING_FLAG
+            FROM (SELECT 'ISO' DOC_TYPE,
+                         ICT.QUERY_ID,
+                         ICT.TIME_SEQ,
+                         EMP.UNIT_ID,
+                         CA.APP_EMP_ID,
+                         CA.APP_EMP_ID || ' ' || EMP_FNAME || ' ' || EMP_LNAME
+                            EMP_NAME
+                    FROM KPDBA.ISO_COURSE_APPLICANT CA,
+                         KPDBA.ISO_COURSE_TIME ICT,
+                         KPDBA.EMPLOYEE EMP
+                   WHERE     CA.APP_EMP_ID = EMP.EMP_ID
+                         AND CA.QUERY_ID = ICT.QUERY_ID
+                         AND CA.QUERY_ID = :as_query_id
+                  UNION ALL
+                  SELECT 'COURSE' DOC_TYPE,
+                         CA.QUERY_ID,
+                         CQT.TIME_SEQ,
+                         EMP.UNIT_ID,
+                         APP_USER_ID,
+                         APP_USER_ID || ' ' || EMP_FNAME || ' ' || EMP_LNAME
+                            EMP_NAME
+                    FROM KPDBA.COURSE_APPLICANT CA,
+                         KPDBA.COURSE_QUERY_TIME CQT,
+                         KPDBA.EMPLOYEE EMP
+                   WHERE     CA.APP_USER_ID = EMP.EMP_ID
+                         AND CA.QUERY_ID = CQT.QUERY_ID) APPLICANT,
+                 (SELECT UNIT_ID, UNIT_DESC FROM KPDBA.UNIT) UNT,
+                 KPDBA.COURSE_QUERY_ATTN CQA
+           WHERE     APPLICANT.QUERY_ID = CQA.QUERY_ID(+)
+                 AND APPLICANT.TIME_SEQ = CQA.TIME_SEQ(+)
+                 AND APPLICANT.APP_EMP_ID = CQA.APP_EMP_ID(+)
+                 AND APPLICANT.UNIT_ID = UNT.UNIT_ID
+                 AND APPLICANT.QUERY_ID = :as_query_id
+                 AND APPLICANT.TIME_SEQ = :ai_time_seq)
+GROUP BY UNIT_ID, UNIT_DESC

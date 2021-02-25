@@ -1,0 +1,16 @@
+INSERT INTO KPDBA.COURSE_QUERY_ATTN (QUERY_ID,
+                                     TIME_SEQ,
+                                     APP_EMP_ID,
+                                     TRAINING_FLAG,
+                                     ATTN_TIME,
+                                     CR_DATE,
+                                     CR_ORG_ID,
+                                     CR_USER_ID)
+     VALUES (:as_query_id,
+             TO_NUMBER (:ai_time_seq),
+             TO_CHAR (:app_emp_id),
+             :training_flag,
+             SYSDATE,
+             SYSDATE,
+             TO_CHAR (:org),
+             TO_CHAR (:user_id))

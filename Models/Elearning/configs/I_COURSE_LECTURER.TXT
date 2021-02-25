@@ -1,0 +1,10 @@
+INSERT INTO KPDBA.COURSE_LECTURER (QUERY_ID,
+                                   LECT_ID,
+                                   CR_DATE,
+                                   CR_ORG_ID,
+                                   CR_USER_ID)
+     VALUES (:AS_QUERY_ID,
+             :AS_LECT_ID,
+             SYSDATE,
+             'KPR',
+             TO_CHAR (:AS_USER_LOGIN))
