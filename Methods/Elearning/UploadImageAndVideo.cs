@@ -14,8 +14,12 @@ namespace webAPI.Methods.Elearning
 
         public string UploadFile(String queryID, String folderType, String fileName, IFormFile file)
         {
-            // string pathRoot = "\\Users\\parnu\\Documents\\GitHub\\WEB-elearning\\src";
-            string pathRoot = "\\DEPLOY\\elearning";
+            // string pathRoot = "\\Users\\parnu\\Documents\\GitHub\\WEB-elearning\\src\\";
+            // string pathRoot = "\\DEPLOY\\elearning";
+            string pathRoot = "\\Users\\Public\\elearning";
+
+            // string pathRoot= Directory.GetCurrentDirectory();
+            // string pathImg = $"assets\\upload\\{queryID}\\{folderType}\\";
             string pathImg = $"\\upload\\{queryID}\\{folderType}\\";
             string path = pathRoot + pathImg;
             try
@@ -27,6 +31,7 @@ namespace webAPI.Methods.Elearning
                         Directory.CreateDirectory(_environment.WebRootPath + path);
                     }
                     string fileType = file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
+                    if (fileType == "blob") { fileType = "png"; }
                     using (FileStream fileStream = System.IO.File.Create(_environment.WebRootPath + path + fileName + "." + fileType))
                     {
                         file.CopyTo(fileStream);

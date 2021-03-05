@@ -35,7 +35,8 @@ namespace webAPI.Controllers
         [HttpGet("")]
         public ActionResult<String> GetTModels()
         {
-            return "1";
+            string curr_dir = Directory.GetCurrentDirectory();
+            return curr_dir;
         }
 
         [HttpPost("getCourses")]
@@ -223,291 +224,6 @@ namespace webAPI.Controllers
 
             return groupPosID;
         }
-
-        [HttpPost("addCourse")]
-        public async Task<Boolean> PostTModel(AddCourseDetail model)
-        {
-            await Task.Yield();
-            return false;
-        }
-
-
-
-        [HttpPost("getTitleCourses")]
-        public async Task<dynamic> GetAllCourses()
-        {
-            var query = new ElearnigQueryConfig().Q_ALL_COURSE;
-            var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
-            var result = _mapper.Map<IEnumerable<GetAllCoursesDB>>(response);
-            var results = result as List<GetAllCoursesDB>;
-            var resultReal = _mapper.Map<List<GetAllCoursesDB>, List<SetAllCoursesDB>>(results);
-            List<SetItemCourses> _items = new List<SetItemCourses> { };
-            foreach (SetAllCoursesDB item in resultReal)
-            {
-                SetItemCourses _item = new SetItemCourses
-                {
-                    docID = item.docID,
-                    docRev = item.docRev,
-                    docDesc = item.docDesc,
-                    remark = item.remark
-                };
-                _items.Add(_item);
-            }
-            SetAllCourses _allCourse = new SetAllCourses { docType = "COURSE", items = _items };
-            return _allCourse;
-        }
-        [HttpPost("getTitleISOs")]
-        public async Task<dynamic> GetAllISOs()
-        {
-            var query = new ElearnigQueryConfig().Q_ALL_ISO;
-            var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
-            var result = _mapper.Map<IEnumerable<GetAllISOsDB>>(response);
-            var results = result as List<GetAllISOsDB>;
-            var resultReal = _mapper.Map<List<GetAllISOsDB>, List<SetAllISOsDB>>(results);
-            List<SetItemISOs> _items = new List<SetItemISOs> { };
-            foreach (SetAllISOsDB item in resultReal)
-            {
-                SetItemISOs _item = new SetItemISOs
-                {
-                    docCode = item.docCode,
-                    docRevision = item.docRevision,
-                    docName = item.docName,
-                    isoSTD = item.isoSTD
-                };
-                _items.Add(_item);
-            }
-            SetAllISOs _allISO = new SetAllISOs { docType = "ISO", items = _items };
-            // return _allISO;
-            return _allISO;
-        }
-        [HttpPost("getTopicDetail")]
-        async public Task<List<ResponseTopicDetail>> GetTopicDetail(RequestTopicDetail model)
-        {
-            List<ResponseTopicDetail> listTopicDetail = new List<ResponseTopicDetail> { };
-            var query = $"SELECT TOPIC_ID, TOPIC_NAME, TOPIC_ORDER, COURSE_REVISION FROM KPDBA.COURSE_TOPIC WHERE COURSE_ID = '{model.courseID}'";
-            var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
-            var result = _mapper.Map<IEnumerable<GetTopicDetail>>(response);
-            var results = result as List<GetTopicDetail>;
-            var resultReal = _mapper.Map<List<GetTopicDetail>, List<SetTopicDetail>>(results);
-            foreach (SetTopicDetail item in resultReal)
-            {
-                ResponseTopicDetail topicDetail = new ResponseTopicDetail { };
-                topicDetail.topicID = item.topicID;
-                topicDetail.topicName = item.topicName;
-                topicDetail.topicOrder = item.topicOrder;
-                topicDetail.courseRevision = item.courseRevision;
-                var queryDoc = $"SELECT CTD.COURSE_DOC_ID, DOC_ORDER, CDM.DOC_TYPE, CDM.DOC_NAME, CDM.DOC_PATH, CDM.VIDEO_COVER, CDM.VIDEO_LENGTH FROM KPDBA.COURSE_TOPIC_DOCUMENT CTD, KPDBA.COURSE_DOCUMENT_MASTER CDM WHERE CTD.COURSE_DOC_ID = CDM.COURSE_DOC_ID AND COURSE_ID = '{model.courseID}' AND TOPIC_ID = '{item.topicID}' AND CTD.COURSE_REVISION = '{item.courseRevision}'";
-                var responseDoc = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryDoc);
-                var resultDoc = _mapper.Map<IEnumerable<GetDocDetail>>(responseDoc);
-                var resultsDoc = resultDoc as List<GetDocDetail>;
-                List<SetDocDetail> resultRealDoc = _mapper.Map<List<GetDocDetail>, List<SetDocDetail>>(resultsDoc);
-                topicDetail.items = resultRealDoc;
-                listTopicDetail.Add(topicDetail);
-            }
-            return listTopicDetail;
-        }
-
-        [HttpPost("upLoadTopic")]
-        async public Task<ReturnTopicID> upLoadTopic([FromForm] UpLoadTopic model)
-        {
-            string org = "KPR";
-            string userID = "630054";
-            string topicId = "";
-            if (model.topicID == "New")
-            {
-                var date = DateTime.Now.ToString("yyMM");
-                string queryTID = $"SELECT COUNT(1) CON FROM KPDBA.COURSE_TOPIC WHERE COURSE_ID='{model.queryID}'";
-                var resultTID = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryTID);
-                var countTID = (resultTID as List<dynamic>)[0].CON;
-                topicId = date + (countTID + 1).ToString("0000");
-
-                string topicType;
-                string queryC = $"SELECT COUNT(1) CON FROM KPDBA.COURSE_MASTER WHERE COURSE_ID='{model.queryID}'";
-                var resultC = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryC);
-                var countC = (resultC as List<dynamic>)[0].CON;
-                string queryI = $"SELECT COUNT(1) CON FROM KPDBA.ISO_MASTER WHERE DOC_CODE='{model.queryID}'";
-                var resultI = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryI);
-                var countI = (resultI as List<dynamic>)[0].CON;
-                if (countC != 0)
-                {
-                    topicType = "C";
-                }
-                else if (countI != 0)
-                {
-                    topicType = "I";
-                }
-                else
-                {
-                    return null;
-                }
-                string query = $"INSERT INTO KPDBA.COURSE_TOPIC (COURSE_ID, TOPIC_ID, DOC_TYPE, TOPIC_NAME, TOPIC_ORDER, COURSE_REVISION, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{model.queryID}', '{topicId}', '{topicType}', '{model.topicName}', TO_NUMBER ('{countTID + 1}'), TO_NUMBER ('{model.revision}'), TO_DATE (TO_CHAR (SYSDATE), 'dd/mm/yyyy'), TO_CHAR ('{org}'), TO_CHAR ('{userID}'))";
-                var result = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, query);
-                ReturnTopicID topicIDs = new ReturnTopicID();
-                topicIDs.topicID = topicId;
-                return topicIDs;
-            }
-            else if (model.topicID != "New" && model.topicID != null)
-            {
-                string queryUP = $"UPDATE KPDBA.COURSE_TOPIC SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), TOPIC_NAME = '{model.topicName}', TOPIC_ORDER = '{model.topicOrder}' WHERE     COURSE_ID = '{model.queryID}' AND TOPIC_ID = '{model.topicID}' AND COURSE_REVISION = '{model.revision}'";
-                var resultUP = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, queryUP);
-                ReturnTopicID topicIDs = new ReturnTopicID();
-                topicIDs.topicID = model.topicID;
-                return topicIDs;
-            }
-            else { return null; }
-
-        }
-
-        [HttpPost("upLoadDoc"), DisableRequestSizeLimit]
-        async public Task<Boolean> upLoadDoc([FromForm] UpLoadDoc model)
-        {
-            var formCollection = await Request.ReadFormAsync();
-            string org = "KPR";
-            string userID = "630054";
-            string courseDocID;
-            if (model.courseDocID == "New")
-            {
-                var date = DateTime.Now.ToString("yyMM");
-                string queryDID = "SELECT COUNT(1) CON FROM KPDBA.COURSE_DOCUMENT_MASTER";
-                var resultDID = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryDID);
-                var countDID = (resultDID as List<dynamic>)[0].CON;
-                courseDocID = date + (countDID + 1).ToString("00000000");
-                string cancelFlag = "F";
-                switch (model.docType)
-                {
-                    case "V":
-                        List<string> insertQuery = new List<string>();
-                        String rndStr = new UploadImageAndVideo(_environment).GetRandomCharacter();
-                        string fileName = $"V{courseDocID}-{rndStr}";
-                        string docPathOld = new UploadImageAndVideo(_environment).UploadFile
-                        (
-                            queryID: model.queryID,
-                            folderType: "videos",
-                            fileName: fileName,
-                            file: model.fileVideo
-                        );
-                        string docPath = docPathOld.Replace("\\", "/");
-                        string imgCoverPathOld = new UploadImageAndVideo(_environment).UploadFile
-                        (
-                            queryID: model.queryID,
-                            folderType: "images",
-                            fileName: fileName,
-                            file: model.fileImg
-                        );
-                        string imgCoverPath = imgCoverPathOld.Replace("\\", "/");
-                        string queryCDM = $"INSERT INTO KPDBA.COURSE_DOCUMENT_MASTER (COURSE_DOC_ID, DOC_TYPE, DOC_NAME, DOC_PATH, VIDEO_COVER, VIDEO_LENGTH, CANCEL_FLAG, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{courseDocID}', '{model.docType}', '{model.docName}', '{docPath}', '{imgCoverPath}', TO_NUMBER('{model.videoLength}'), TO_CHAR('{cancelFlag}'), TO_DATE (TO_CHAR (SYSDATE), 'dd/mm/yyyy'), TO_CHAR('{org}'), TO_CHAR('{userID}'))";
-                        insertQuery.Add(queryCDM);
-                        string queryCTD = $"INSERT INTO KPDBA.COURSE_TOPIC_DOCUMENT (COURSE_ID, TOPIC_ID, COURSE_DOC_ID, DOC_ORDER, COURSE_REVISION, CANCEL_FLAG, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{model.queryID}', '{model.topicID}', '{courseDocID}', TO_NUMBER ('{model.docOrder}'), TO_NUMBER ('{model.revision}'), TO_CHAR('{cancelFlag}'), TO_DATE (TO_CHAR (SYSDATE), 'dd/mm/yyyy'), TO_CHAR('{org}'), TO_CHAR('{userID}'))";
-                        insertQuery.Add(queryCTD);
-                        var resultInsertAll = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQuery);
-                        // var result = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, query);
-                        return true;
-                    case "T":
-                        List<string> insertQueryT = new List<string>();
-                        string queryCDMT = $"INSERT INTO KPDBA.COURSE_DOCUMENT_MASTER (COURSE_DOC_ID, DOC_TYPE, DOC_NAME, DOC_PATH, CANCEL_FLAG, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{courseDocID}', '{model.docType}', '{model.docName}', '{model.docPath}', TO_CHAR('{cancelFlag}'),  TO_DATE (TO_CHAR (SYSDATE), 'dd/mm/yyyy'), TO_CHAR('{org}'), TO_CHAR('{userID}'))";
-                        insertQueryT.Add(queryCDMT);
-                        string queryCTDT = $"INSERT INTO KPDBA.COURSE_TOPIC_DOCUMENT (COURSE_ID, TOPIC_ID, COURSE_DOC_ID, DOC_ORDER, COURSE_REVISION, CANCEL_FLAG, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{model.queryID}', '{model.topicID}', '{courseDocID}', TO_NUMBER ('{model.docOrder}'), TO_NUMBER ('{model.revision}'), TO_CHAR('{cancelFlag}'),  TO_DATE (TO_CHAR (SYSDATE), 'dd/mm/yyyy'), TO_CHAR('{org}'), TO_CHAR('{userID}'))";
-                        insertQueryT.Add(queryCTDT);
-                        var resultInsertAllT = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryT);
-                        return true;
-                    case "D":
-                        String rndStrD = new UploadImageAndVideo(_environment).GetRandomCharacter();
-                        string fileNameD = $"D{courseDocID}-{rndStrD}";
-                        string docPathOldD = new UploadImageAndVideo(_environment).UploadFile
-                        (
-                            queryID: model.queryID,
-                            folderType: "documents",
-                            fileName: fileNameD,
-                            file: model.fileDoc
-                        );
-                        string docPathD = docPathOldD.Replace("\\", "/");
-                        List<string> insertQueryD = new List<string>();
-                        string queryCDMD = $"INSERT INTO KPDBA.COURSE_DOCUMENT_MASTER (COURSE_DOC_ID, DOC_TYPE, DOC_NAME, DOC_PATH, CANCEL_FLAG, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{courseDocID}', '{model.docType}', '{model.docName}', '{docPathD}', TO_CHAR('{cancelFlag}'),  TO_DATE (TO_CHAR (SYSDATE), 'dd/mm/yyyy'), TO_CHAR('{org}'), TO_CHAR('{userID}'))";
-                        insertQueryD.Add(queryCDMD);
-                        string queryCTDD = $"INSERT INTO KPDBA.COURSE_TOPIC_DOCUMENT (COURSE_ID, TOPIC_ID, COURSE_DOC_ID, DOC_ORDER, COURSE_REVISION, CANCEL_FLAG, CR_DATE, CR_ORG_ID, CR_USER_ID) VALUES ('{model.queryID}', '{model.topicID}', '{courseDocID}', TO_NUMBER ('{model.docOrder}'), TO_NUMBER ('{model.revision}'), TO_CHAR('{cancelFlag}'),  TO_DATE (TO_CHAR (SYSDATE), 'dd/mm/yyyy'), TO_CHAR('{org}'), TO_CHAR('{userID}'))";
-                        insertQueryD.Add(queryCTDD);
-                        var resultInsertAllD = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryD);
-
-                        return true;
-                    default:
-                        return false;
-                }
-            }
-            else if (model.courseDocID != "New" && model.courseDocID != null)
-            {
-                switch (model.docType)
-                {
-                    case "V":
-                        String rndStr = new UploadImageAndVideo(_environment).GetRandomCharacter();
-                        string fileName = $"V{model.courseDocID}-{rndStr}";
-                        if (model.fileVideo != null)
-                        {
-                            List<string> insertQuery = new List<string>();
-                            string docPathOld = new UploadImageAndVideo(_environment).UploadFile
-                            (
-                                queryID: model.queryID,
-                                folderType: "videos",
-                                fileName: fileName,
-                                file: model.fileVideo
-                            );
-                            model.docPath = docPathOld.Replace("\\", "/");
-                        }
-                        if (model.fileImg != null)
-                        {
-                            string imgCoverPathOld = new UploadImageAndVideo(_environment).UploadFile
-                            (
-                                queryID: model.queryID,
-                                folderType: "images",
-                                fileName: fileName,
-                                file: model.fileImg
-                            );
-                            model.videoCover = imgCoverPathOld.Replace("\\", "/");
-                        }
-                        List<string> insertQueryV = new List<string>();
-                        string queryCDMV = $"UPDATE KPDBA.COURSE_DOCUMENT_MASTER SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_NAME = '{model.docName}', DOC_PATH = '{model.docPath}', VIDEO_COVER = '{model.videoCover}', VIDEO_LENGTH = TO_NUMBER('{model.videoLength}') WHERE COURSE_DOC_ID = '{model.courseDocID}'";
-                        insertQueryV.Add(queryCDMV);
-                        string queryCTDV = $"UPDATE KPDBA.COURSE_TOPIC_DOCUMENT SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_ORDER = TO_NUMBER('{model.docOrder}') WHERE COURSE_DOC_ID = '{model.courseDocID}' AND TOPIC_ID ='{model.topicID}' AND COURSE_ID = '{model.queryID}'";
-                        insertQueryV.Add(queryCTDV);
-                        var resultInsertAllV = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryV);
-                        return true;
-                    case "T":
-                        List<string> insertQueryT = new List<string>();
-                        string queryCDMT = $"UPDATE KPDBA.COURSE_DOCUMENT_MASTER SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_NAME = '{model.docName}', DOC_PATH = '{model.docPath}' WHERE COURSE_DOC_ID = '{model.courseDocID}'";
-                        insertQueryT.Add(queryCDMT);
-                        string queryCTDT = $"UPDATE KPDBA.COURSE_TOPIC_DOCUMENT SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_ORDER = TO_NUMBER('{model.docOrder}') WHERE COURSE_DOC_ID = '{model.courseDocID}' AND TOPIC_ID ='{model.topicID}' AND COURSE_ID = '{model.queryID}'";
-                        insertQueryT.Add(queryCTDT);
-                        var resultInsertAllT = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryT);
-                        return true;
-                    case "D":
-                        if (model.fileDoc != null)
-                        {
-                            String rndStrD = new UploadImageAndVideo(_environment).GetRandomCharacter();
-                            string fileNameD = $"D{model.courseDocID}-{rndStrD}";
-                            string docPathOldD = new UploadImageAndVideo(_environment).UploadFile
-                            (
-                                queryID: model.queryID,
-                                folderType: "documents",
-                                fileName: fileNameD,
-                                file: model.fileDoc
-                            );
-                            model.docPath = docPathOldD.Replace("\\", "/");
-
-                        }
-                        List<string> insertQueryD = new List<string>();
-                        string queryCDMD = $"UPDATE KPDBA.COURSE_DOCUMENT_MASTER SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_NAME = '{model.docName}', DOC_PATH = '{model.docPath}' WHERE COURSE_DOC_ID = '{model.courseDocID}'";
-                        insertQueryD.Add(queryCDMD);
-                        string queryCTDD = $"UPDATE KPDBA.COURSE_TOPIC_DOCUMENT SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_ORDER = TO_NUMBER('{model.docOrder}') WHERE COURSE_DOC_ID = '{model.courseDocID}' AND TOPIC_ID ='{model.topicID}' AND COURSE_ID = '{model.queryID}'";
-                        insertQueryD.Add(queryCTDD);
-                        var resultInsertAllD = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryD);
-                        return true;
-                    default:
-                        return false;
-
-                }
-            }
-            return false;
-        }
-
         [HttpPost("getCourseForm")]
         public async Task<dynamic> PostTModel(RequestCourses model)
         {
@@ -736,6 +452,536 @@ namespace webAPI.Controllers
                 stateError.stateError = true;
                 stateError.messageError = "Token is empty!!";
                 return stateError;
+            }
+        }
+
+
+        [HttpPost("getTitleCourses")]
+        public async Task<dynamic> GetAllCourses()
+        {
+            var query = new ElearnigQueryConfig().Q_ALL_COURSE;
+            var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
+            var result = _mapper.Map<IEnumerable<GetAllCoursesDB>>(response);
+            var results = result as List<GetAllCoursesDB>;
+            var resultReal = _mapper.Map<List<GetAllCoursesDB>, List<SetAllCoursesDB>>(results);
+            List<SetItemCourses> _items = new List<SetItemCourses> { };
+            foreach (SetAllCoursesDB item in resultReal)
+            {
+                SetItemCourses _item = new SetItemCourses
+                {
+                    docID = item.docID,
+                    docRev = item.docRev,
+                    docDesc = item.docDesc,
+                    remark = item.remark
+                };
+                _items.Add(_item);
+            }
+            SetAllCourses _allCourse = new SetAllCourses { docType = "COURSE", items = _items };
+            return _allCourse;
+        }
+        [HttpPost("getTitleISOs")]
+        public async Task<dynamic> GetAllISOs()
+        {
+            var query = new ElearnigQueryConfig().Q_ALL_ISO;
+            var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
+            var result = _mapper.Map<IEnumerable<GetAllISOsDB>>(response);
+            var results = result as List<GetAllISOsDB>;
+            var resultReal = _mapper.Map<List<GetAllISOsDB>, List<SetAllISOsDB>>(results);
+            List<SetItemISOs> _items = new List<SetItemISOs> { };
+            foreach (SetAllISOsDB item in resultReal)
+            {
+                SetItemISOs _item = new SetItemISOs
+                {
+                    docCode = item.docCode,
+                    docRevision = item.docRevision,
+                    docName = item.docName,
+                    isoSTD = item.isoSTD
+                };
+                _items.Add(_item);
+            }
+            SetAllISOs _allISO = new SetAllISOs { docType = "ISO", items = _items };
+            // return _allISO;
+            return _allISO;
+        }
+        [HttpPost("getTopicDetail")]
+        async public Task<dynamic> GetTopicDetail(RequestTopicDetail model)
+        {
+            var querySCT = new ElearnigQueryConfig().S_COURSE_TOPIC;
+            var querySCTn = querySCT.Replace(":AD_COURSE_ID", $"'{model.courseID}'").Replace(":AD_COURSE_REVSION", $"'{model.courseRevision}'");
+            var responseSCT = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySCTn);
+            var resultSCT = _mapper.Map<IEnumerable<GetTopicGroup>>(responseSCT);
+            var resultSCTas = resultSCT as List<GetTopicGroup>;
+            var resultSCTs = _mapper.Map<List<GetTopicGroup>, List<SetTopicGroup>>(resultSCTas);
+
+            List<TopicGroupDetail> topicGroupDetails = new List<TopicGroupDetail> { };
+            foreach (SetTopicGroup group in resultSCTs)
+            {
+                TopicGroupDetail topicGroupDetail = new TopicGroupDetail { };
+                topicGroupDetail.courseType = group.courseType;
+                topicGroupDetail.courseID = group.courseID;
+                topicGroupDetail.courseRevision = group.courseRevision;
+                topicGroupDetail.groupID = group.groupID;
+                topicGroupDetail.groupOrder = group.groupOrder;
+                topicGroupDetail.groupName = group.groupName;
+                topicGroupDetail.topics = new List<TopicDetail> { };
+                var querySTM = new ElearnigQueryConfig().S_TOPIC_MASTER;
+                var querySTMn = querySTM.Replace(":AD_PARENT_TOPIC_ID", $"'{group.groupID}'");
+                var responseSTM = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySTMn);
+                var resultSTM = _mapper.Map<IEnumerable<GetTopic>>(responseSTM);
+                var resultSTMas = resultSTM as List<GetTopic>;
+                var resultSTMs = _mapper.Map<List<GetTopic>, List<SetTopic>>(resultSTMas);
+                List<TopicDetail> topicDetails = new List<TopicDetail> { };
+                foreach (SetTopic topic in resultSTMs)
+                {
+                    TopicDetail topicDetail = new TopicDetail { };
+                    topicDetail.topicID = topic.topicID;
+                    topicDetail.topicOrder = topic.topicOrder;
+                    topicDetail.topicName = topic.topicName;
+                    topicDetail.groupID = topic.groupID;
+                    var querySDT = new ElearnigQueryConfig().S_DOC_TOPIC;
+                    var querySDTn = querySDT.Replace(":AD_TOPIC_ID", $"'{topic.topicID}'");
+                    var responseSDT = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySDTn);
+                    var resultSDT = _mapper.Map<IEnumerable<GetDoc>>(responseSDT);
+                    var resultSDTas = resultSDT as List<GetDoc>;
+                    var resultSDTs = _mapper.Map<List<GetDoc>, List<SetDoc>>(resultSDTas);
+                    topicDetail.docs = resultSDTs;
+                    topicGroupDetail.topics.Add(topicDetail);
+                }
+                topicGroupDetails.Add(topicGroupDetail);
+            }
+            return topicGroupDetails;
+        }
+
+        [HttpPost("upLoadTopicMulti")]
+        public Task<dynamic> PostTModel([FromForm] UpLoadGroupMultiple model)
+        {
+            List<string> insterQuerys = new List<string>();
+
+            return null;
+        }
+
+        [HttpPost("upLoadGroup")]
+        async public Task<StateUpload> uploadGroup(UpLoadGroup model)
+        {
+            StateUpload stateError = new StateUpload();
+            if (model.token != null && model.token != "")
+            {
+                UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
+                var org = userProfile.org;
+                var userID = userProfile.userID;
+                var cancelFlag = "F";
+                if (model.groupID == "New")
+                {
+                    List<string> insertQroupNew = new List<string>();
+
+                    var date = DateTime.Now.ToString("yyMM");
+                    var querySCTM = new ElearnigQueryConfig().S_COUNT_TOPIC_MASTER;
+                    var resultSCTM = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySCTM);
+                    var countSCTM = (resultSCTM as List<dynamic>)[0].CON;
+                    model.groupID = date + countSCTM.ToString("0000");
+
+                    var parent = "";
+                    var topicType = "C";
+
+                    var queryITM = new ElearnigQueryConfig().I_TOPIC_MASTER;
+                    var queryITMn = queryITM.Replace(":AD_TOPIC_ID", $"'{model.groupID}'")
+                                            .Replace(":AD_TOPIC_NAME", $"'{model.groupName}'")
+                                            .Replace(":AD_PARENT_TOPIC_ID", $"'{parent}'")
+                                            .Replace(":AD_TOPIC_TYPE", $"'{topicType}'")
+                                            .Replace(":AD_TOPIC_ORDER", $"'{model.groupOrder}'")
+                                            .Replace(":AD_ORG", $"'{org}'")
+                                            .Replace(":AD_USER_ID", $"'{userID}'")
+                                            .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                    insertQroupNew.Add(queryITMn);
+
+                    var courseType = "C";
+                    var queryICT = new ElearnigQueryConfig().I_COURSE_TOPIC;
+                    var queryICTn = queryICT.Replace(":AD_COURSE_ID", $"'{model.courseID}'")
+                                            .Replace(":AD_COURSE_REVISION", $"'{model.courseRevision}'")
+                                            .Replace(":AD_TOPIC_ID", $"'{model.groupID}'")
+                                            .Replace(":AD_COURSE_TYPE", $"'{courseType}'")
+                                            .Replace(":AD_TOPIC_ORDER", $"'{model.groupOrder}'")
+                                            .Replace(":AD_ORG", $"'{org}'")
+                                            .Replace(":AD_USER_ID", $"'{userID}'")
+                                            .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                    insertQroupNew.Add(queryICTn);
+
+                    var resultInsert = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQroupNew);
+
+                    stateError.error = false;
+                    stateError.messageError = "Upload group success.";
+                    stateError.groupID = model.groupID;
+                    return stateError;
+                }
+                else
+                {
+                    if (model.stateDelete) { cancelFlag = "T"; }
+                    List<string> updateQroup = new List<string>();
+                    var queryUGTM = new ElearnigQueryConfig().UG_TOPIC_MASTER;
+                    var queryUGTMn = queryUGTM.Replace(":AD_TOPIC_NAME", $"'{model.groupName}'")
+                                            .Replace(":AD_TOPIC_ORDER", $"'{model.groupOrder}'")
+                                            .Replace(":AD_ORG_ID", $"'{org}'")
+                                            .Replace(":AD_USER_ID", $"'{userID}'")
+                                            .Replace(":AD_TOPIC_ID", $"'{model.groupID}'")
+                                            .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                    updateQroup.Add(queryUGTMn);
+
+                    var queryUGCT = new ElearnigQueryConfig().UG_COURSE_TOPIC;
+                    var queryUGCTn = queryUGCT.Replace(":AD_TOPIC_ORDER", $"'{model.groupOrder}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_TOPIC_ID", $"'{model.groupID}'")
+                                           .Replace(":AD_COURSE_ID", $"'{model.courseID}'")
+                                           .Replace(":AD_COURSE_REVSION", $"'{model.courseRevision}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                    updateQroup.Add(queryUGCTn);
+
+                    var resultUpdate = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, updateQroup);
+
+                    stateError.error = false;
+                    stateError.messageError = "Update group success.";
+                    stateError.groupID = model.groupID;
+                    return stateError;
+                }
+            }
+            else
+            {
+                stateError.error = true;
+                stateError.messageError = "Token is empty!!!";
+                return stateError;
+            }
+        }
+
+        [HttpPost("upLoadTopic")]
+        async public Task<StateUpload> upLoadTopic(UpLoadTopic model)
+        {
+            StateUpload stateError = new StateUpload();
+            if (model.token != null && model.token != "")
+            {
+                UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
+                var org = userProfile.org;
+                var userID = userProfile.userID;
+                var cancelFlag = "F";
+                if (model.topicID == "New")
+                {
+                    var date = DateTime.Now.ToString("yyMM");
+                    var querySCTM = new ElearnigQueryConfig().S_COUNT_TOPIC_MASTER;
+                    var resultSCTM = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySCTM);
+                    var countSCTM = (resultSCTM as List<dynamic>)[0].CON;
+                    model.topicID = date + countSCTM.ToString("0000");
+
+                    var topicType = "T";
+
+                    var queryITM = new ElearnigQueryConfig().I_TOPIC_MASTER;
+                    var queryITMn = queryITM.Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                            .Replace(":AD_TOPIC_NAME", $"'{model.topicName}'")
+                                            .Replace(":AD_PARENT_TOPIC_ID", $"'{model.groupID}'")
+                                            .Replace(":AD_TOPIC_TYPE", $"'{topicType}'")
+                                            .Replace(":AD_TOPIC_ORDER", $"'{model.topicOrder}'")
+                                            .Replace(":AD_ORG", $"'{org}'")
+                                            .Replace(":AD_USER_ID", $"'{userID}'")
+                                            .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+
+                    var result = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, queryITMn);
+                    stateError.error = false;
+                    stateError.messageError = "Upload topic success.";
+                    stateError.topicID = model.topicID;
+                    return stateError;
+                }
+                else
+                {
+                    if (model.stateDelete) { cancelFlag = "T"; }
+                    var queryUGTM = new ElearnigQueryConfig().UT_TOPIC_MASTER;
+                    var queryUGTMn = queryUGTM.Replace(":AD_TOPIC_NAME", $"'{model.topicName}'")
+                                            .Replace(":AD_TOPIC_ORDER", $"'{model.topicOrder}'")
+                                            .Replace(":AD_ORG_ID", $"'{org}'")
+                                            .Replace(":AD_USER_ID", $"'{userID}'")
+                                            .Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                            .Replace(":AD_PARENT_TOPIC_ID", $"'{model.groupID}'")
+                                            .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+
+                    var result = await new DataContext().InsertResultDapperAsync(DataBaseHostEnum.KPR, queryUGTMn);
+                    stateError.error = false;
+                    stateError.messageError = "Update topic success.";
+                    stateError.topicID = model.topicID;
+                    return stateError;
+                }
+            }
+            else
+            {
+                stateError.error = true;
+                stateError.messageError = "Token is empty!!!";
+                return stateError;
+            }
+        }
+
+        [HttpPost("upLoadDoc"), DisableRequestSizeLimit]
+        async public Task<Boolean> upLoadDoc([FromForm] UpLoadDoc model)
+        {
+            var formCollection = await Request.ReadFormAsync();
+
+            StateUpload stateError = new StateUpload();
+            if (model.token != null && model.token != "")
+            {
+                UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
+                var org = userProfile.org;
+                var userID = userProfile.userID;
+                if (model.docID == "New")
+                {
+                    var date = DateTime.Now.ToString("yyMM");
+                    var queryDID = new ElearnigQueryConfig().S_COUNT_COURSE_DOC_MASTER;
+                    var resultDID = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryDID);
+                    var countDID = (resultDID as List<dynamic>)[0].CON;
+                    model.docID = date + countDID.ToString("00000000");
+                    string cancelFlag = "F";
+                    string emptyString = "";
+                    switch (model.docType)
+                    {
+                        case "V":
+                            List<string> insertQuery = new List<string>();
+                            String rndStr = new UploadImageAndVideo(_environment).GetRandomCharacter();
+                            string fileName = $"V{model.docID}-{rndStr}";
+                            if (model.fileVideo != null)
+                            {
+                                string docPathOld = new UploadImageAndVideo(_environment).UploadFile
+                                (
+                                    queryID: model.courseID,
+                                    folderType: "videos",
+                                    fileName: fileName,
+                                    file: model.fileVideo
+                                );
+                                model.docPath = docPathOld.Replace("\\", "/");
+                            }
+                            if (model.fileVideo != null)
+                            {
+                                string imgCoverPathOld = new UploadImageAndVideo(_environment).UploadFile
+                                (
+                                    queryID: model.courseID,
+                                    folderType: "images",
+                                    fileName: fileName,
+                                    file: model.fileImg
+                                );
+                                model.videoCover = imgCoverPathOld.Replace("\\", "/");
+                            }
+                            string queryCDM = new ElearnigQueryConfig().I_COURSE_DOC_MASTER;
+                            var queryCDMn = queryCDM.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_TYPE", $"'{model.docType}'")
+                                           .Replace(":AD_DOC_NAME", $"'{model.docName}'")
+                                           .Replace(":AD_DOC_PATH", $"'{model.docPath}'")
+                                           .Replace(":AD_VIDEO_COVER", $"'{model.videoCover}'")
+                                           .Replace(":AD_VIDEO_LENGTH", $"'{model.videoLength}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQuery.Add(queryCDMn);
+                            string queryCTD = new ElearnigQueryConfig().I_TOPIC_DOC;
+                            var queryCTDn = queryCTD.Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                           .Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_ORDER", $"'{model.docOrder}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQuery.Add(queryCTDn);
+                            var resultInsertAll = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQuery);
+                            return true;
+                        case "T":
+                            List<string> insertQueryT = new List<string>();
+                            string queryCDMT = new ElearnigQueryConfig().I_COURSE_DOC_MASTER;
+                            var queryCDMTn = queryCDMT.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_TYPE", $"'{model.docType}'")
+                                           .Replace(":AD_DOC_NAME", $"'{model.docName}'")
+                                           .Replace(":AD_DOC_PATH", $"'{model.docPath}'")
+                                           .Replace(":AD_VIDEO_COVER", $"'{emptyString}'")
+                                           .Replace(":AD_VIDEO_LENGTH", $"'{emptyString}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryT.Add(queryCDMTn);
+                            string queryCTDT = new ElearnigQueryConfig().I_TOPIC_DOC;
+                            var queryCTDTn = queryCTDT.Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                           .Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_ORDER", $"'{model.docOrder}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryT.Add(queryCTDTn);
+                            var resultInsertAllT = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryT);
+                            return true;
+                        case "D":
+                            List<string> insertQueryD = new List<string>();
+                            String rndStrD = new UploadImageAndVideo(_environment).GetRandomCharacter();
+                            string fileNameD = $"D{model.docID}-{rndStrD}";
+                            if (model.fileDoc != null)
+                            {
+                                string docPathOldD = new UploadImageAndVideo(_environment).UploadFile
+                                (
+                                    queryID: model.courseID,
+                                    folderType: "documents",
+                                    fileName: fileNameD,
+                                    file: model.fileDoc
+                                );
+                                model.docPath = docPathOldD.Replace("\\", "/");
+                            }
+                            string queryCDMD = new ElearnigQueryConfig().I_COURSE_DOC_MASTER;
+                            var queryCDMDn = queryCDMD.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_TYPE", $"'{model.docType}'")
+                                           .Replace(":AD_DOC_NAME", $"'{model.docName}'")
+                                           .Replace(":AD_DOC_PATH", $"'{model.docPath}'")
+                                           .Replace(":AD_VIDEO_COVER", $"'{emptyString}'")
+                                           .Replace(":AD_VIDEO_LENGTH", $"'{emptyString}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryD.Add(queryCDMDn);
+
+                            string queryCTDD = new ElearnigQueryConfig().I_TOPIC_DOC;
+                            var queryCTDDn = queryCTDD.Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                           .Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_ORDER", $"'{model.docOrder}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryD.Add(queryCTDDn);
+                            var resultInsertAllD = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryD);
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+                else
+                {
+                    string cancelFlag = "F";
+                    switch (model.docType)
+                    {
+                        case "V":
+                            if (model.stateDelete) { cancelFlag = "T"; }
+                            String rndStr = new UploadImageAndVideo(_environment).GetRandomCharacter();
+                            string fileName = $"V{model.docID}-{rndStr}";
+                            if (model.fileVideo != null)
+                            {
+                                List<string> insertQuery = new List<string>();
+                                string docPathOld = new UploadImageAndVideo(_environment).UploadFile
+                                (
+                                    queryID: model.courseID,
+                                    folderType: "videos",
+                                    fileName: fileName,
+                                    file: model.fileVideo
+                                );
+                                model.docPath = docPathOld.Replace("\\", "/");
+                            }
+                            if (model.fileImg != null)
+                            {
+                                string imgCoverPathOld = new UploadImageAndVideo(_environment).UploadFile
+                                (
+                                    queryID: model.courseID,
+                                    folderType: "images",
+                                    fileName: fileName,
+                                    file: model.fileImg
+                                );
+                                model.videoCover = imgCoverPathOld.Replace("\\", "/");
+                            }
+                            List<string> insertQueryV = new List<string>();
+
+                            string queryCDMV = new ElearnigQueryConfig().U_COURSE_DOC_MASTER;
+                            var queryCDMVn = queryCDMV.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_NAME", $"'{model.docName}'")
+                                           .Replace(":AD_DOC_PATH", $"'{model.docPath}'")
+                                           .Replace(":AD_VIDEO_COVER", $"'{model.videoCover}'")
+                                           .Replace(":AD_VIDEO_LENGTH", $"'{model.videoLength}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryV.Add(queryCDMVn);
+
+                            string queryCTDV = new ElearnigQueryConfig().U_TOPIC_DOC;
+                            var queryCTDVn = queryCTDV.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                           .Replace(":AD_DOC_ORDER", $"'{model.docOrder}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryV.Add(queryCTDVn);
+                            var resultInsertAllV = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryV);
+
+                            // string queryCDMV = $"UPDATE KPDBA.COURSE_DOCUMENT_MASTER SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_NAME = '{model.docName}', DOC_PATH = '{model.docPath}', VIDEO_COVER = '{model.videoCover}', VIDEO_LENGTH = TO_NUMBER('{model.videoLength}') WHERE COURSE_DOC_ID = '{model.courseDocID}'";
+                            // string queryCTDV = $"UPDATE KPDBA.COURSE_TOPIC_DOCUMENT SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_ORDER = TO_NUMBER('{model.docOrder}') WHERE COURSE_DOC_ID = '{model.courseDocID}' AND TOPIC_ID ='{model.topicID}' AND COURSE_ID = '{model.queryID}'";
+                            return true;
+                        case "T":
+                            if (model.stateDelete) { cancelFlag = "T"; }
+                            List<string> insertQueryT = new List<string>();
+                            string queryCDMT = new ElearnigQueryConfig().U_COURSE_DOC_MASTER;
+                            var queryCDMTn = queryCDMT.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_NAME", $"'{model.docName}'")
+                                           .Replace(":AD_DOC_PATH", $"'{model.docPath}'")
+                                           .Replace(":AD_VIDEO_COVER", $"''")
+                                           .Replace(":AD_VIDEO_LENGTH", $"''")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryT.Add(queryCDMTn);
+
+                            string queryCTDT = new ElearnigQueryConfig().U_TOPIC_DOC;
+                            var queryCTDTn = queryCTDT.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                           .Replace(":AD_DOC_ORDER", $"'{model.docOrder}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryT.Add(queryCTDTn);
+                            var resultInsertAllT = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryT);
+                            // string queryCDMTo = $"UPDATE KPDBA.COURSE_DOCUMENT_MASTER SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_NAME = '{model.docName}', DOC_PATH = '{model.docPath}' WHERE COURSE_DOC_ID = '{model.courseDocID}'";
+                            // string queryCTDTo = $"UPDATE KPDBA.COURSE_TOPIC_DOCUMENT SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_ORDER = TO_NUMBER('{model.docOrder}') WHERE COURSE_DOC_ID = '{model.courseDocID}' AND TOPIC_ID ='{model.topicID}' AND COURSE_ID = '{model.queryID}'";
+                            return true;
+                        case "D":
+                            if (model.stateDelete) { cancelFlag = "T"; }
+                            if (model.fileDoc != null)
+                            {
+                                String rndStrD = new UploadImageAndVideo(_environment).GetRandomCharacter();
+                                string fileNameD = $"D{model.docID}-{rndStrD}";
+                                string docPathOldD = new UploadImageAndVideo(_environment).UploadFile
+                                (
+                                    queryID: model.courseID,
+                                    folderType: "documents",
+                                    fileName: fileNameD,
+                                    file: model.fileDoc
+                                );
+                                model.docPath = docPathOldD.Replace("\\", "/");
+
+                            }
+                            List<string> insertQueryD = new List<string>();
+
+                            string queryCDMD = new ElearnigQueryConfig().U_COURSE_DOC_MASTER;
+                            var queryCDMDn = queryCDMD.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_DOC_NAME", $"'{model.docName}'")
+                                           .Replace(":AD_DOC_PATH", $"'{model.docPath}'")
+                                           .Replace(":AD_VIDEO_COVER", $"''")
+                                           .Replace(":AD_VIDEO_LENGTH", $"''")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryD.Add(queryCDMDn);
+
+                            string queryCTDD = new ElearnigQueryConfig().U_TOPIC_DOC;
+                            var queryCTDDn = queryCTDD.Replace(":AD_COURSE_DOC_ID", $"'{model.docID}'")
+                                           .Replace(":AD_TOPIC_ID", $"'{model.topicID}'")
+                                           .Replace(":AD_DOC_ORDER", $"'{model.docOrder}'")
+                                           .Replace(":AD_ORG_ID", $"'{org}'")
+                                           .Replace(":AD_USER_ID", $"'{userID}'")
+                                           .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
+                            insertQueryD.Add(queryCTDDn);
+                            var resultInsertAllD = await new DataContext().ExecuteDapperMultiAsync(DataBaseHostEnum.KPR, insertQueryD);
+
+                            // string queryCDMDo = $"UPDATE KPDBA.COURSE_DOCUMENT_MASTER SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_NAME = '{model.docName}', DOC_PATH = '{model.docPath}' WHERE COURSE_DOC_ID = '{model.courseDocID}'";
+                            // string queryCTDDo = $"UPDATE KPDBA.COURSE_TOPIC_DOCUMENT SET UPDATE_DATE = SYSDATE, UP_ORG_ID = TO_CHAR ('{org}'), UP_USER_ID = TO_CHAR ('{userID}'), DOC_ORDER = TO_NUMBER('{model.docOrder}') WHERE COURSE_DOC_ID = '{model.courseDocID}' AND TOPIC_ID ='{model.topicID}' AND COURSE_ID = '{model.queryID}'";
+                            return true;
+                        default:
+                            return false;
+                    }
+                }
+            }
+            else
+            {
+                return false;
             }
         }
     }

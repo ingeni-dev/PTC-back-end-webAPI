@@ -27,6 +27,20 @@ namespace webAPI.Models.Elearning.configs
         public string U_COURSE_QUERY { get; set; }
         public string U_COURSE_QUERY_TIME { get; set; }
         public string U_COURSE_QUERY_DATE { get; set; }
+        public string S_COURSE_TOPIC { get; set; }
+        public string S_TOPIC_MASTER { get; set; }
+        public string S_DOC_TOPIC { get; set; }
+        public string S_COUNT_TOPIC_MASTER { get; set; }
+        public string I_TOPIC_MASTER { get; set; }
+        public string I_COURSE_TOPIC { get; set; }
+        public string UG_TOPIC_MASTER { get; set; }
+        public string UG_COURSE_TOPIC { get; set; }
+        public string UT_TOPIC_MASTER { get; set; }
+        public string S_COUNT_COURSE_DOC_MASTER { get; set; }
+        public string I_COURSE_DOC_MASTER { get; set; }
+        public string I_TOPIC_DOC { get; set; }
+        public string U_COURSE_DOC_MASTER { get; set; }
+        public string U_TOPIC_DOC { get; set; }
         private string PATH = @"\configs";
         // private string PATH = @"\Models\Elearning\configs";
         public ElearnigQueryConfig()
@@ -55,6 +69,20 @@ namespace webAPI.Models.Elearning.configs
             U_COURSE_QUERY = System.IO.File.ReadAllText(@$"{curr_dir}\U_COURSE_QUERY.TXT");
             U_COURSE_QUERY_TIME = System.IO.File.ReadAllText(@$"{curr_dir}\U_COURSE_QUERY_TIME.TXT");
             U_COURSE_QUERY_DATE = System.IO.File.ReadAllText(@$"{curr_dir}\U_COURSE_QUERY_DATE.TXT");
+            S_COURSE_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_COURSE_TOPIC.sql");
+            S_TOPIC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_TOPIC_MASTER.sql");
+            S_DOC_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_DOC_TOPIC.sql");
+            S_COUNT_TOPIC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_COUNT_TOPIC_MASTER.sql");
+            I_TOPIC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\I_TOPIC_MASTER.sql");
+            I_COURSE_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\I_COURSE_TOPIC.sql");
+            UG_TOPIC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\UG_TOPIC_MASTER.sql");
+            UG_COURSE_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\UG_COURSE_TOPIC.sql");
+            UT_TOPIC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\UT_TOPIC_MASTER.sql");
+            S_COUNT_COURSE_DOC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_COUNT_COURSE_DOC_MASTER.sql");
+            I_COURSE_DOC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\I_COURSE_DOC_MASTER.sql");
+            I_TOPIC_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\I_TOPIC_DOC.sql");
+            U_COURSE_DOC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\U_COURSE_DOC_MASTER.sql");
+            U_TOPIC_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\U_TOPIC_DOC.sql");
         }
     }
 }

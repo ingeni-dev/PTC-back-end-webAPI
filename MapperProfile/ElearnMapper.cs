@@ -51,14 +51,23 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.docName, o => o.MapFrom(s => s.DOC_NAME))
                .ForMember(d => d.isoSTD, o => o.MapFrom(s => s.ISO_STD));
 
-            CreateMap<GetTopicDetail, SetTopicDetail>()
-               .ForMember(d => d.topicID, o => o.MapFrom(s => s.TOPIC_ID))
-               .ForMember(d => d.topicName, o => o.MapFrom(s => s.TOPIC_NAME))
-               .ForMember(d => d.topicOrder, o => o.MapFrom(s => s.TOPIC_ORDER))
-               .ForMember(d => d.courseRevision, o => o.MapFrom(s => s.COURSE_REVISION));
+            CreateMap<GetTopicGroup, SetTopicGroup>()
+               .ForMember(d => d.courseType, o => o.MapFrom(s => s.COURSE_TYPE))
+               .ForMember(d => d.courseID, o => o.MapFrom(s => s.COURSE_ID))
+               .ForMember(d => d.courseRevision, o => o.MapFrom(s => s.COURSE_REVSION))
+               .ForMember(d => d.groupID, o => o.MapFrom(s => s.GROUP_ID))
+               .ForMember(d => d.groupName, o => o.MapFrom(s => s.GROUP_NAME))
+               .ForMember(d => d.groupOrder, o => o.MapFrom(s => s.GROUP_ORDER));
 
-            CreateMap<GetDocDetail, SetDocDetail>()
-               .ForMember(d => d.courseDocID, o => o.MapFrom(s => s.COURSE_DOC_ID))
+            CreateMap<GetTopic, SetTopic>()
+               .ForMember(d => d.topicID, o => o.MapFrom(s => s.TOPIC_ID))
+               .ForMember(d => d.topicOrder, o => o.MapFrom(s => s.TOPIC_ORDER))
+               .ForMember(d => d.topicName, o => o.MapFrom(s => s.TOPIC_NAME))
+               .ForMember(d => d.groupID, o => o.MapFrom(s => s.GROUP_ID));
+
+            CreateMap<GetDoc, SetDoc>()
+               .ForMember(d => d.topicID, o => o.MapFrom(s => s.TOPIC_ID))
+               .ForMember(d => d.docID, o => o.MapFrom(s => s.COURSE_DOC_ID))
                .ForMember(d => d.docOrder, o => o.MapFrom(s => s.DOC_ORDER))
                .ForMember(d => d.docName, o => o.MapFrom(s => s.DOC_NAME))
                .ForMember(d => d.docType, o => o.MapFrom(s => s.DOC_TYPE))
