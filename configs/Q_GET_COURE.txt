@@ -80,3 +80,4 @@ SELECT 'ISO' DOC_TYPE,
        AND ICT.COURSE_DATE >= TRUNC(SYSDATE)
        AND NVL (INSTANT_FLAG, 'F') LIKE :as_instant_flag
        AND ICQ.CR_USER_ID LIKE :as_user_id
+       AND ICQ.QUERY_TYPE ='N'
