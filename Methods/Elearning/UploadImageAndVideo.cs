@@ -17,6 +17,10 @@ namespace webAPI.Methods.Elearning
             // string pathRoot = "\\Users\\parnu\\Documents\\GitHub\\WEB-elearning\\src\\";
             // string pathRoot = "\\DEPLOY\\elearning";
             string pathRoot = "\\Users\\Public\\elearning";
+            // string pathRoot = "\\\\192.168.1.7\\vdoupload$";
+            // string pathRoot = "\\\\192.168.55.92\\Users\\Public\\elearning";
+
+
 
             // string pathRoot= Directory.GetCurrentDirectory();
             // string pathImg = $"assets\\upload\\{queryID}\\{folderType}\\";

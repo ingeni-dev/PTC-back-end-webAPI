@@ -54,7 +54,7 @@ namespace webAPI.MapperProfile
             CreateMap<GetTopicGroup, SetTopicGroup>()
                .ForMember(d => d.courseType, o => o.MapFrom(s => s.COURSE_TYPE))
                .ForMember(d => d.courseID, o => o.MapFrom(s => s.COURSE_ID))
-               .ForMember(d => d.courseRevision, o => o.MapFrom(s => s.COURSE_REVSION))
+               .ForMember(d => d.courseRevision, o => o.MapFrom(s => s.COURSE_REVISION))
                .ForMember(d => d.groupID, o => o.MapFrom(s => s.GROUP_ID))
                .ForMember(d => d.groupName, o => o.MapFrom(s => s.GROUP_NAME))
                .ForMember(d => d.groupOrder, o => o.MapFrom(s => s.GROUP_ORDER));
@@ -94,9 +94,44 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.roleID, o => o.MapFrom(s => s.ROLE_ID))
                .ForMember(d => d.roleDESC, o => o.MapFrom(s => s.ROLE_DESC))
                .ForMember(d => d.trainingFlag, o => o.MapFrom(s => s.TRAINING_FLAG))
-               .ForMember(d => d.selectedFlag, o => o.MapFrom(s => s.SELECTED_FLAG_BOOL))
-               ;
+               .ForMember(d => d.selectedFlag, o => o.MapFrom(s => s.SELECTED_FLAG_BOOL));
 
+            CreateMap<GetALLOnlineCourse, SetALLOnlineCourse>()
+               .ForMember(d => d.courseID, o => o.MapFrom(s => s.COURSE_ID))
+               .ForMember(d => d.courseRevision, o => o.MapFrom(s => s.COURSE_REVISION))
+               .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC))
+               .ForMember(d => d.beginDate, o => o.MapFrom(s => s.BEGIN_DATE))
+               .ForMember(d => d.endDate, o => o.MapFrom(s => s.END_DATE))
+               .ForMember(d => d.fullTimeCourse, o => o.MapFrom(s => s.FULL_TIME_COURSE))
+               .ForMember(d => d.precentViewCourse, o => o.MapFrom(s => s.PERCENT_VIEW_COURSE));
+
+            CreateMap<GetALLOnlineCourseLatest, SetALLOnlineCourseLatest>()
+               .ForMember(d => d.appUserID, o => o.MapFrom(s => s.APP_USER_ID))
+               .ForMember(d => d.queryID, o => o.MapFrom(s => s.QUERY_ID))
+               .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC))
+               .ForMember(d => d.beginDate, o => o.MapFrom(s => s.BEGIN_DATE))
+               .ForMember(d => d.endDate, o => o.MapFrom(s => s.END_DATE))
+               .ForMember(d => d.courseDocID, o => o.MapFrom(s => s.COURSE_DOC_ID))
+               .ForMember(d => d.courseID, o => o.MapFrom(s => s.COURSE_ID))
+               .ForMember(d => d.courseRevision, o => o.MapFrom(s => s.COURSE_REVISION))
+               .ForMember(d => d.topicID, o => o.MapFrom(s => s.TOPIC_ID))
+               .ForMember(d => d.cancelFlag, o => o.MapFrom(s => s.CANCEL_FLAG))
+               .ForMember(d => d.cTopicID, o => o.MapFrom(s => s.C_TOPIC_ID))
+               .ForMember(d => d.cTopicOrder, o => o.MapFrom(s => s.C_TOPIC_ORDER))
+               .ForMember(d => d.cTopicName, o => o.MapFrom(s => s.C_TOPIC_NAME))
+               .ForMember(d => d.cParentTopicID, o => o.MapFrom(s => s.C_PARENT_TOPIC_ID))
+               .ForMember(d => d.tTopicID, o => o.MapFrom(s => s.T_TOPIC_ID))
+               .ForMember(d => d.tTopicOrder, o => o.MapFrom(s => s.T_TOPIC_ORDER))
+               .ForMember(d => d.tTopicName, o => o.MapFrom(s => s.T_TOPIC_NAME))
+               .ForMember(d => d.tParentTopicID, o => o.MapFrom(s => s.T_PARENT_TOPIC_ID))
+               .ForMember(d => d.docType, o => o.MapFrom(s => s.DOC_TYPE))
+               .ForMember(d => d.docName, o => o.MapFrom(s => s.DOC_NAME))
+               .ForMember(d => d.docPath, o => o.MapFrom(s => s.DOC_PATH))
+               .ForMember(d => d.videoCover, o => o.MapFrom(s => s.VIDEO_COVER))
+               .ForMember(d => d.videoLength, o => o.MapFrom(s => s.VIDEO_LENGTH))
+               .ForMember(d => d.count, o => o.MapFrom(s => s.COUNT))
+               .ForMember(d => d.currTime, o => o.MapFrom(s => s.CURR_TIME))
+               .ForMember(d => d.lastVisit, o => o.MapFrom(s => s.LAST_VISIT));
         }
     }
 }

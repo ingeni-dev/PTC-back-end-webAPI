@@ -106,7 +106,7 @@ namespace webAPI.Methods.Elearning
         public async Task<dynamic> CheckSetCheck(SetCheckName model)
         {
             ResponeError error = new ResponeError { };
-            if (model.token != null)
+            if (model.token != null && model.token != "")
             {
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
                 string org = userProfile.org;

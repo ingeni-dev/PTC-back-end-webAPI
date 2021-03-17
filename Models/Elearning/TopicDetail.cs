@@ -11,7 +11,7 @@ namespace webAPI.Models.Elearning
     {
         public string COURSE_TYPE { get; set; }
         public string COURSE_ID { get; set; }
-        public string COURSE_REVSION { get; set; }
+        public string COURSE_REVISION { get; set; }
         public string GROUP_ID { get; set; }
         public string GROUP_ORDER { get; set; }
         public string GROUP_NAME { get; set; }

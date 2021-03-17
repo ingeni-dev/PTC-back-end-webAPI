@@ -71,7 +71,7 @@ namespace webAPI.Methods.Elearning
         async public Task<dynamic> CreateGetTopicDetail(RequestTopicDetail model)
         {
             var querySCT = new ElearnigQueryConfig().S_COURSE_TOPIC;
-            var querySCTn = querySCT.Replace(":AD_COURSE_ID", $"'{model.courseID}'").Replace(":AD_COURSE_REVSION", $"'{model.courseRevision}'");
+            var querySCTn = querySCT.Replace(":AD_COURSE_ID", $"'{model.courseID}'").Replace(":AD_COURSE_REVISION", $"'{model.courseRevision}'");
             var responseSCT = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, querySCTn);
             var resultSCT = _mapper.Map<IEnumerable<GetTopicGroup>>(responseSCT);
             var resultSCTas = resultSCT as List<GetTopicGroup>;
@@ -186,7 +186,7 @@ namespace webAPI.Methods.Elearning
                                            .Replace(":AD_USER_ID", $"'{userID}'")
                                            .Replace(":AD_TOPIC_ID", $"'{model.groupID}'")
                                            .Replace(":AD_COURSE_ID", $"'{model.courseID}'")
-                                           .Replace(":AD_COURSE_REVSION", $"'{model.courseRevision}'")
+                                           .Replace(":AD_COURSE_REVISION", $"'{model.courseRevision}'")
                                            .Replace(":AD_CANCEL_FLAG", $"'{cancelFlag}'");
                     updateQroup.Add(queryUGCTn);
 

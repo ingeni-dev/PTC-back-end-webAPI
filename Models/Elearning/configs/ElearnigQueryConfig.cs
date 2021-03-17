@@ -41,11 +41,16 @@ namespace webAPI.Models.Elearning.configs
         public string I_TOPIC_DOC { get; set; }
         public string U_COURSE_DOC_MASTER { get; set; }
         public string U_TOPIC_DOC { get; set; }
+        public string Q_GET_ONLINE_COURSE_LATEST { get; set; }
+        public string Q_GET_ALL_ONLINE_COURSE { get; set; }
+
         private string PATH = @"\configs";
         // private string PATH = @"\Models\Elearning\configs";
         public ElearnigQueryConfig()
         {
             string curr_dir = Directory.GetCurrentDirectory() + PATH;
+
+            //Query check person
             Q_GET_COURE = System.IO.File.ReadAllText(@$"{curr_dir}\Q_GET_COURE.txt");
             Q_GET_COURE_FORM = System.IO.File.ReadAllText(@$"{curr_dir}\Q_GET_COURE_FORM.TXT");
             Q_GET_DEPARTMENT = System.IO.File.ReadAllText(@$"{curr_dir}\Q_GET_DEPARTMENT.TXT");
@@ -69,6 +74,8 @@ namespace webAPI.Models.Elearning.configs
             U_COURSE_QUERY = System.IO.File.ReadAllText(@$"{curr_dir}\U_COURSE_QUERY.TXT");
             U_COURSE_QUERY_TIME = System.IO.File.ReadAllText(@$"{curr_dir}\U_COURSE_QUERY_TIME.TXT");
             U_COURSE_QUERY_DATE = System.IO.File.ReadAllText(@$"{curr_dir}\U_COURSE_QUERY_DATE.TXT");
+
+            //Query create course
             S_COURSE_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_COURSE_TOPIC.sql");
             S_TOPIC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_TOPIC_MASTER.sql");
             S_DOC_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_DOC_TOPIC.sql");
@@ -83,6 +90,10 @@ namespace webAPI.Models.Elearning.configs
             I_TOPIC_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\I_TOPIC_DOC.sql");
             U_COURSE_DOC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\U_COURSE_DOC_MASTER.sql");
             U_TOPIC_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\U_TOPIC_DOC.sql");
+
+            Q_GET_ONLINE_COURSE_LATEST = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\Q_GET_ONLINE_COURSE_LATEST.sql");
+            Q_GET_ALL_ONLINE_COURSE = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\Q_GET_ALL_ONLINE_COURSE.sql");
+
         }
     }
 }

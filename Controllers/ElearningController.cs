@@ -163,9 +163,9 @@ namespace webAPI.Controllers
               jwtGenerator: _jwtGenerator).CreateUpLoadDoc(model: model);
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpPost("getOrderLatest")]
-        async public Task<dynamic> GetOrderLatest(OnlineGetOrderLatestModel model)
+        async public Task<dynamic> GetOrderLatest(OnlineGetOrderModel model)
         {
             ReturnOnlineGetOrderLatest dataReturn = new ReturnOnlineGetOrderLatest();
             if (model.token != null)
@@ -174,9 +174,16 @@ namespace webAPI.Controllers
                 string userID = userProfile.userID;
                 string org = userProfile.org;
 
+                var queryQGOCL = new ElearnigQueryConfig().Q_GET_ONLINE_COURSE_LATEST;
+                var queryQGOCLn = queryQGOCL.Replace(":as_emp_id", $"'{userID}'");
+                var responseQGOCL = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryQGOCLn);
+                var result = _mapper.Map<IEnumerable<GetALLOnlineCourseLatest>>(responseQGOCL);
+                var results = result as List<GetALLOnlineCourseLatest>;
+                var resultReal = _mapper.Map<List<GetALLOnlineCourseLatest>, List<SetALLOnlineCourseLatest>>(results);
 
                 dataReturn.stateError = false;
                 dataReturn.message = "success";
+                dataReturn.returns = resultReal;
                 return dataReturn;
             }
             else
@@ -192,6 +199,36 @@ namespace webAPI.Controllers
             //   mapper: _mapper,
             //   environment: _environment,
             //   jwtGenerator: _jwtGenerator).OnlineGetOrderLatest();
+        }
+
+        [HttpPost("getAllOnlineCourse")]
+        async public Task<dynamic> GetAllOnlineCourse(OnlineGetOrderModel model)
+        {
+            ReturnGetALLOnlineCourse dataReturn = new ReturnGetALLOnlineCourse();
+            if (model.token != null && model.token != "")
+            {
+                UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
+                string userID = userProfile.userID;
+                string org = userProfile.org;
+
+                var queryQGAOC = new ElearnigQueryConfig().Q_GET_ALL_ONLINE_COURSE;
+                var queryQGAOCn = queryQGAOC.Replace(":as_emp_id", $"'{userID}'");
+                var responseQGAOC = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryQGAOCn);
+                var result = _mapper.Map<IEnumerable<GetALLOnlineCourse>>(responseQGAOC);
+                var results = result as List<GetALLOnlineCourse>;
+                var resultReal = _mapper.Map<List<GetALLOnlineCourse>, List<SetALLOnlineCourse>>(results);
+
+                dataReturn.stateError = false;
+                dataReturn.message = "success";
+                dataReturn.returns = resultReal;
+                return dataReturn;
+            }
+            else
+            {
+                dataReturn.stateError = true;
+                dataReturn.message = "Token is Empty!!";
+                return dataReturn;
+            }
         }
 
     }
