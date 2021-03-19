@@ -18,7 +18,8 @@ INSERT INTO KPDBA.COURSE_QUERY (QUERY_ID,
                                 NUM_OF_MIN,
                                 EVALUATE_FLAG,
                                 INSTANT_FLAG,
-                                QUERY_TYPE)
+                                QUERY_TYPE,
+                                TRAIN_TYPE_ID)
      VALUES (:AS_QUERY_ID,
              'U',
              TO_CHAR (:AS_COURSE_ID),
@@ -39,4 +40,5 @@ INSERT INTO KPDBA.COURSE_QUERY (QUERY_ID,
              TO_NUMBER (:AS_SUM_MIN),
              'F',
              'T',
-             'N')
+             'N',
+             :AS_TRAIN_TYPE_ID)

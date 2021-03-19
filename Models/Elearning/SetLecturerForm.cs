@@ -25,6 +25,8 @@ namespace webAPI.Models.Elearning
         public string place { get; set; }
         public string remark { get; set; }
         public string timeSeq { get; set; }
+        public string trainTypeID { get; set; }
+        public string trainTypeDESC { get; set; }
 
         public List<ListDate> listDate { get; set; }
         public List<FormListApplicant> listApplicant { get; set; }

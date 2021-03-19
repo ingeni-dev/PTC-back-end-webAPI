@@ -291,7 +291,7 @@ namespace webAPI.Methods.Elearning
                             string fileName = $"V{model.docID}-{rndStr}";
                             if (model.fileVideo != null)
                             {
-                                string docPathOld = new UploadImageAndVideo(_environment).UploadFile
+                                string docPathOld = new UploadImageAndVideo(_environment).UploadOnlyVideo
                                 (
                                     queryID: model.courseID,
                                     folderType: "videos",
@@ -408,7 +408,7 @@ namespace webAPI.Methods.Elearning
                             if (model.fileVideo != null)
                             {
                                 List<string> insertQuery = new List<string>();
-                                string docPathOld = new UploadImageAndVideo(_environment).UploadFile
+                                string docPathOld = new UploadImageAndVideo(_environment).UploadOnlyVideo
                                 (
                                     queryID: model.courseID,
                                     folderType: "videos",

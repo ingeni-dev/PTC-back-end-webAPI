@@ -22,10 +22,16 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.queryEnd, o => o.MapFrom(s => s.QUERY_END))
                .ForMember(d => d.dayHour, o => o.MapFrom(s => s.DAY_HOUR))
                .ForMember(d => d.dayMin, o => o.MapFrom(s => s.DAY_MIN))
+               .ForMember(d => d.trainTypeID, o => o.MapFrom(s => s.TRAIN_TYPE_ID))
+               .ForMember(d => d.trainTypeDESC, o => o.MapFrom(s => s.TRAIN_TYPE_DESC))
                .ForMember(d => d.instantFlag, o => o.MapFrom(s => s.INSTANT_FLAG));
 
             CreateMap<CourseFromMap, CourseFrom>()
-            .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC));
+               .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC));
+
+            CreateMap<GetTrainType, SetTrainType>()
+               .ForMember(d => d.trainTypeID, o => o.MapFrom(s => s.TRAIN_TYPE_ID))
+               .ForMember(d => d.trainTypeDESC, o => o.MapFrom(s => s.TRAIN_TYPE_DESC));
 
             CreateMap<ApplicantDetailResponse, ApplicantDetailResult>()
                .ForMember(d => d.docType, o => o.MapFrom(s => s.DOC_TYPE))
@@ -97,6 +103,7 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.selectedFlag, o => o.MapFrom(s => s.SELECTED_FLAG_BOOL));
 
             CreateMap<GetALLOnlineCourse, SetALLOnlineCourse>()
+               .ForMember(d => d.queryID, o => o.MapFrom(s => s.QUERY_ID))
                .ForMember(d => d.courseID, o => o.MapFrom(s => s.COURSE_ID))
                .ForMember(d => d.courseRevision, o => o.MapFrom(s => s.COURSE_REVISION))
                .ForMember(d => d.courseDESC, o => o.MapFrom(s => s.COURSE_DESC))

@@ -79,6 +79,7 @@ namespace webAPI.Models.Elearning
     }
     public class GetALLOnlineCourse
     {
+        public string QUERY_ID { get; set; }
         public string COURSE_ID { get; set; }
         public string COURSE_REVISION { get; set; }
         public string COURSE_DESC { get; set; }
@@ -90,6 +91,7 @@ namespace webAPI.Models.Elearning
     }
     public class SetALLOnlineCourse
     {
+        public string queryID { get; set; }
         public string courseID { get; set; }
         public string courseRevision { get; set; }
         public string courseDESC { get; set; }

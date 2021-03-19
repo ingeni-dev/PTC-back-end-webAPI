@@ -1,0 +1,16 @@
+INSERT INTO KPDBA.COURSE_QUERY_DOCUMENT (QUERY_DOC_ID,
+                                         COURSE_DOC_ID,
+                                         QUERY_ID,
+                                         APP_EMP_ID,
+                                         COUNT,
+                                         CURR_TIME,
+                                         FINISH_FLAG,
+                                         LAST_VISIT)
+     VALUES (:AS_QUERY_DOC_ID,
+             :AS_COURSE_DOC_ID,
+             :AS_QUERY_ID,
+             TO_CHAR (:AS_APP_EMP_ID),
+             1,
+             0,
+             'F',
+             SYSDATE)

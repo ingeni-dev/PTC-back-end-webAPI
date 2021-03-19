@@ -1,5 +1,6 @@
 WITH ALL_COURSE_VIDEO
-     AS (SELECT CT.COURSE_ID,CT.COURSE_REVISION,
+     AS (SELECT CT.COURSE_ID,
+                CT.COURSE_REVISION,
                 CT.TOPIC_ID,
                 CT.CANCEL_FLAG,
                 CDM.COURSE_DOC_ID,
@@ -29,7 +30,8 @@ WITH ALL_COURSE_VIDEO
                 AND NVL (TD.CANCEL_FLAG, 'F') = 'F'
                 AND CDM.COURSE_DOC_ID(+) = TD.COURSE_DOC_ID
                 AND NVL (CDM.CANCEL_FLAG, 'F') = 'F')
-  SELECT COURSE_ID,
+  SELECT QUERY_ID,
+         COURSE_ID,
          COURSE_REVISION,
          COURSE_DESC,
          BEGIN_DATE,
@@ -72,7 +74,8 @@ WITH ALL_COURSE_VIDEO
                  AND CA.QUERY_ID = CQ.QUERY_ID
                  AND CQ.COURSE_ID = ACV.COURSE_ID(+)
                  AND APP_USER_ID = :as_emp_id) COOURSE
-GROUP BY COURSE_ID,
+GROUP BY QUERY_ID,
+         COURSE_ID,
          COURSE_REVISION,
          COURSE_DESC,
          BEGIN_DATE,

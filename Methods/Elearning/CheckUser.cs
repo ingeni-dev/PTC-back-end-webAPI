@@ -371,7 +371,8 @@ namespace webAPI.Methods.Elearning
                         .Replace(":AS_BEGIN_TIME", $"'{_beginTime}'")
                         .Replace(":AS_END_TIME", $"'{_endTime}'")
                         .Replace(":AS_SUM_HOUR", $"'{setLecturer.dayHour}'")
-                        .Replace(":AS_SUM_MIN", $"'{setLecturer.dayMin}'");
+                        .Replace(":AS_SUM_MIN", $"'{setLecturer.dayMin}'")
+                        .Replace(":AS_TRAIN_TYPE_ID", $"'{setLecturer.trainTypeID}'");
                     //! INSERT NEW COURSE
                     var responseICQ = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryICQn);
 
@@ -408,7 +409,8 @@ namespace webAPI.Methods.Elearning
                         .Replace(":AS_UP_USER_ID", $"'{userID}'")
                         .Replace(":AS_PLACE", $"'{setLecturer.place}'")
                         .Replace(":AS_REMARK", $"'{setLecturer.remark}'")
-                        .Replace(":AS_QUERY_ID", $"'{setLecturer.queryID}'");
+                        .Replace(":AS_QUERY_ID", $"'{setLecturer.queryID}'")
+                        .Replace(":AS_TRAIN_TYPE_ID", $"'{setLecturer.trainTypeID}'");
                     //! INSERT NEW COURSE
                     updateQuery.Add(queryUCQn);
 
@@ -427,6 +429,15 @@ namespace webAPI.Methods.Elearning
                 stateError.messageError = "Token is empty!!";
                 return stateError;
             }
+        }
+        public async Task<dynamic> CheckGetTrainType()
+        {
+            string query = new ElearnigQueryConfig().S_TRAIN_TYPE;
+            var response = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, query);
+            var result = _mapper.Map<IEnumerable<GetTrainType>>(response);
+            var results = result as List<GetTrainType>;
+            var resultReal = _mapper.Map<List<GetTrainType>, List<SetTrainType>>(results);
+            return resultReal;
         }
     }
 }

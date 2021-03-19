@@ -108,6 +108,14 @@ namespace webAPI.Controllers
                 jwtGenerator: _jwtGenerator).CheckSetNewCourse(model: model);
         }
 
+        [HttpPost("getTrainType")]
+        public async Task<dynamic> GetTrainType()
+        {
+            return await new CheckUser(
+                 mapper: _mapper,
+                 environment: _environment,
+                 jwtGenerator: _jwtGenerator).CheckGetTrainType();
+        }
 
         [HttpPost("getTitleCourses")]
         public async Task<dynamic> GetAllCourses()
@@ -163,6 +171,25 @@ namespace webAPI.Controllers
               jwtGenerator: _jwtGenerator).CreateUpLoadDoc(model: model);
         }
 
+        [HttpPost("upLoadDoc2"), DisableRequestSizeLimit]
+        async public Task<IActionResult> UpLoadDoc2([FromForm] UpLoadDoc model)
+        {
+            var formCollection = await Request.ReadFormAsync();
+
+            try
+            {
+                await new CreateDoc(
+                 mapper: _mapper,
+                 environment: _environment,
+                 jwtGenerator: _jwtGenerator).CreateUpLoadDoc(model: model);
+                return Ok(true);
+            }
+            catch (Exception ex)
+            {
+                return Ok(ex.ToString());
+            }
+        }
+
         // [Authorize]
         [HttpPost("getOrderLatest")]
         async public Task<dynamic> GetOrderLatest(OnlineGetOrderModel model)
@@ -192,9 +219,6 @@ namespace webAPI.Controllers
                 dataReturn.message = "Token is Empty!!";
                 return dataReturn;
             }
-
-
-
             // return await new OnlineCourse(
             //   mapper: _mapper,
             //   environment: _environment,
@@ -231,5 +255,65 @@ namespace webAPI.Controllers
             }
         }
 
+        [HttpPost("setSawvdo")]
+        public async Task<bool> SetSawvdo(RequestSetSawVDO model)
+        {
+            // try
+            // {
+            if (model.token != null && model.token != "")
+            {
+                UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
+                string userID = userProfile.userID;
+                string org = userProfile.org;
+                string finishFlag = "F";
+
+                var queryCCQDW = new ElearnigQueryConfig().C_COURSE_QUERY_DOC_WHERE;
+                var queryCCQDWn = queryCCQDW.Replace(":AS_COURSE_DOC_ID", $"'{model.courseDocID}'")
+                                            .Replace(":AS_QUERY_ID", $"'{model.queryID}'");
+                var responseCCQDW = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCCQDWn);
+                var CCQDW = responseCCQDW as List<dynamic>;
+                decimal countCCQDW = CCQDW.Count;
+                if (countCCQDW != 0)
+                {
+                    if (model.currTime != String.Empty) { CCQDW[0].CURR_TIME = model.currTime; }
+                    var queryUCQDW = new ElearnigQueryConfig().U_COURSE_QUERY_DOC;
+                    var queryUCQDWn = queryUCQDW.Replace(":AS_COUNT", $"'{CCQDW[0].COUNT + 1}'")
+                                                .Replace(":AS_CURR_TIME", $"'{CCQDW[0].CURR_TIME}'")
+                                                .Replace(":AS_FINISH_FLAG", $"'{finishFlag}'")
+                                                .Replace(":AS_QUERY_DOC_ID", $"'{CCQDW[0].QUERY_DOC_ID}'");
+                    var responseUCQDW = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryUCQDWn);
+                    return true;
+                }
+                else
+                {
+                    var date = DateTime.Now.ToString("yyMM");
+                    var queryCCQD = new ElearnigQueryConfig().C_COURSE_QUERY_DOC;
+                    var responseCCQD = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCCQD);
+                    var countSCTM = (responseCCQD as List<dynamic>)[0].COUN;
+                    string queryDocID = date + countSCTM.ToString("0000");
+
+                    var queryICQD = new ElearnigQueryConfig().I_COURSE_QUERY_DOC;
+                    var queryICQDn = queryICQD.Replace(":AS_QUERY_DOC_ID", $"'{queryDocID}'")
+                                                .Replace(":AS_COURSE_DOC_ID", $"'{model.courseDocID}'")
+                                                .Replace(":AS_QUERY_ID", $"'{model.queryID}'")
+                                                .Replace(":AS_APP_EMP_ID", $"'{userID}'");
+                    // var responseICQD = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryICQDn);
+
+                    //TODO INSERT
+                    return true;
+
+                }
+                // await new CreateDoc(
+                //  mapper: _mapper,
+                //  environment: _environment,
+                //  jwtGenerator: _jwtGenerator).CreateUpLoadDoc(model: model);
+            }
+            return false;
+            // }
+            // catch (Exception ex)
+            // {
+            //     return Ok(ex.ToString());
+            // }
+        }
     }
 }
