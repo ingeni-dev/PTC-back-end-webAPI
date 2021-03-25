@@ -47,7 +47,5 @@ namespace PTCwebApi.Controllers
             var userProfile = _jwtGenerator.DecodeToken(model.token);
             return Ok(userProfile);
         }
-
-
     }
 }

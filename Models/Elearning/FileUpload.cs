@@ -5,6 +5,10 @@ using Microsoft.AspNetCore.Http;
 namespace webAPI.Models.Elearning
 {
 
+    public class FileParam
+    {
+        public string filePath { get; set; }
+    }
     public class StateUpload
     {
         public bool error { get; set; }

@@ -11,6 +11,10 @@ using webAPI.Models.Elearning.configs;
 using webAPI.Methods.Elearning;
 using PTCwebApi.Interfaces;
 using PTCwebApi.Models.ProfilesModels;
+using System.IO;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.StaticFiles;
+using HeyRed.Mime;
 
 namespace webAPI.Controllers
 {
@@ -256,10 +260,11 @@ namespace webAPI.Controllers
         }
 
         [HttpPost("setSawvdo")]
-        public async Task<bool> SetSawvdo(RequestSetSawVDO model)
+        async public Task<ReturnSetSawVDO> SetSawvdo(RequestSetSawVDO model)
         {
             // try
             // {
+            ReturnSetSawVDO returns = new ReturnSetSawVDO();
             if (model.token != null && model.token != "")
             {
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
@@ -282,7 +287,10 @@ namespace webAPI.Controllers
                                                 .Replace(":AS_FINISH_FLAG", $"'{finishFlag}'")
                                                 .Replace(":AS_QUERY_DOC_ID", $"'{CCQDW[0].QUERY_DOC_ID}'");
                     var responseUCQDW = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryUCQDWn);
-                    return true;
+
+                    returns.stateError = false;
+                    returns.messageError = "Success to update data";
+                    return returns;
                 }
                 else
                 {
@@ -297,10 +305,12 @@ namespace webAPI.Controllers
                                                 .Replace(":AS_COURSE_DOC_ID", $"'{model.courseDocID}'")
                                                 .Replace(":AS_QUERY_ID", $"'{model.queryID}'")
                                                 .Replace(":AS_APP_EMP_ID", $"'{userID}'");
-                    // var responseICQD = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryICQDn);
+                    var responseICQD = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryICQDn);
 
                     //TODO INSERT
-                    return true;
+                    returns.stateError = false;
+                    returns.messageError = "Success to insert data";
+                    return returns;
 
                 }
                 // await new CreateDoc(
@@ -308,12 +318,22 @@ namespace webAPI.Controllers
                 //  environment: _environment,
                 //  jwtGenerator: _jwtGenerator).CreateUpLoadDoc(model: model);
             }
-            return false;
+            returns.stateError = true;
+            returns.messageError = "Token's Empty !!";
+            return returns;
             // }
             // catch (Exception ex)
             // {
             //     return Ok(ex.ToString());
             // }
+        }
+        [HttpPost("downloadDoc")]
+        public async Task<FileContentResult> DownloadDoc(FileParam model)
+        {
+            return await new OnlineCourse(
+                     mapper: _mapper,
+                     environment: _environment,
+                     jwtGenerator: _jwtGenerator).DownloadDoc(model: model);
         }
     }
 }
