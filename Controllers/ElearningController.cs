@@ -274,7 +274,8 @@ namespace webAPI.Controllers
 
                 var queryCCQDW = new ElearnigQueryConfig().C_COURSE_QUERY_DOC_WHERE;
                 var queryCCQDWn = queryCCQDW.Replace(":AS_COURSE_DOC_ID", $"'{model.courseDocID}'")
-                                            .Replace(":AS_QUERY_ID", $"'{model.queryID}'");
+                                            .Replace(":AS_QUERY_ID", $"'{model.queryID}'")
+                                            .Replace(":AS_APP_EMP_ID", $"'{userID}'");
                 var responseCCQDW = await new DataContext().GetResultDapperAsyncDynamic(DataBaseHostEnum.KPR, queryCCQDWn);
                 var CCQDW = responseCCQDW as List<dynamic>;
                 decimal countCCQDW = CCQDW.Count;

@@ -14,7 +14,7 @@ namespace webAPI.Methods.Elearning
         public string UploadOnlyVideo(String queryID, String folderType, String fileName, IFormFile file)
         {
             string path = "\\\\192.168.1.7\\vdoupload$\\";
-            string pathVDo = "http:\\\\192.168.1.7:3385\\video\\";
+            // string pathVDo = "http:\\\\192.168.1.7:3385\\video\\";
             try
             {
                 if (file.Length > 0)
@@ -28,7 +28,7 @@ namespace webAPI.Methods.Elearning
                     {
                         file.CopyTo(fileStream);
                         fileStream.Flush();
-                        return pathVDo + fileName + "." + fileType;
+                        return fileName + "." + fileType;
                     }
                 }
                 else
