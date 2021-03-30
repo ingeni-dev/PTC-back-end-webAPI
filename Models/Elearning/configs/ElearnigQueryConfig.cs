@@ -4,6 +4,8 @@ namespace webAPI.Models.Elearning.configs
 {
     public class ElearnigQueryConfig
     {
+
+        // TODO Query check person
         public string Q_GET_COURE { get; set; }
         public string Q_GET_COURE_FORM { get; set; }
         public string Q_GET_DEPARTMENT { get; set; }
@@ -30,8 +32,7 @@ namespace webAPI.Models.Elearning.configs
         public string S_TRAIN_TYPE { get; set; }
 
 
-
-
+        // TODO Query create course
         public string S_COURSE_TOPIC { get; set; }
         public string S_TOPIC_MASTER { get; set; }
         public string S_DOC_TOPIC { get; set; }
@@ -47,12 +48,17 @@ namespace webAPI.Models.Elearning.configs
         public string U_COURSE_DOC_MASTER { get; set; }
         public string U_TOPIC_DOC { get; set; }
 
+
+        // TODO QUERY Online course
         public string Q_GET_ONLINE_COURSE_LATEST { get; set; }
         public string Q_GET_ALL_ONLINE_COURSE { get; set; }
         public string C_COURSE_QUERY_DOC_WHERE { get; set; }
         public string U_COURSE_QUERY_DOC { get; set; }
         public string C_COURSE_QUERY_DOC { get; set; }
         public string I_COURSE_QUERY_DOC { get; set; }
+        public string S_COURSE_QUERY_DOC_DETAIL { get; set; }
+        public string I_COURSE_QUERY_DOC_DETAIL { get; set; }
+
 
 
 
@@ -62,7 +68,7 @@ namespace webAPI.Models.Elearning.configs
         {
             string curr_dir = Directory.GetCurrentDirectory() + PATH;
 
-            //Query check person
+            // TODO Query check person
             Q_GET_COURE = System.IO.File.ReadAllText(@$"{curr_dir}\Q_GET_COURE.txt");
             Q_GET_COURE_FORM = System.IO.File.ReadAllText(@$"{curr_dir}\Q_GET_COURE_FORM.TXT");
             Q_GET_DEPARTMENT = System.IO.File.ReadAllText(@$"{curr_dir}\Q_GET_DEPARTMENT.TXT");
@@ -89,7 +95,7 @@ namespace webAPI.Models.Elearning.configs
             S_TRAIN_TYPE = System.IO.File.ReadAllText(@$"{curr_dir}\S_TRAIN_TYPE.sql");
 
 
-            //Query create course
+            // TODO Query create course
             S_COURSE_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_COURSE_TOPIC.sql");
             S_TOPIC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_TOPIC_MASTER.sql");
             S_DOC_TOPIC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\S_DOC_TOPIC.sql");
@@ -105,15 +111,16 @@ namespace webAPI.Models.Elearning.configs
             U_COURSE_DOC_MASTER = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\U_COURSE_DOC_MASTER.sql");
             U_TOPIC_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\create-topic\U_TOPIC_DOC.sql");
 
-            //QUERY Online course
+            // TODO QUERY Online course
             Q_GET_ONLINE_COURSE_LATEST = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\Q_GET_ONLINE_COURSE_LATEST.sql");
             Q_GET_ALL_ONLINE_COURSE = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\Q_GET_ALL_ONLINE_COURSE.sql");
-
             C_COURSE_QUERY_DOC_WHERE = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\C_COURSE_QUERY_DOC_WHERE.sql");
             U_COURSE_QUERY_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\U_COURSE_QUERY_DOC.sql");
             C_COURSE_QUERY_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\C_COURSE_QUERY_DOC.sql");
             I_COURSE_QUERY_DOC = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\I_COURSE_QUERY_DOC.sql");
 
+            S_COURSE_QUERY_DOC_DETAIL = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\S_COURSE_QUERY_DOC_DETAIL.sql");
+            I_COURSE_QUERY_DOC_DETAIL = System.IO.File.ReadAllText(@$"{curr_dir}\online-course\I_COURSE_QUERY_DOC_DETAIL.sql");
 
         }
     }

@@ -139,6 +139,13 @@ namespace webAPI.MapperProfile
                .ForMember(d => d.count, o => o.MapFrom(s => s.COUNT))
                .ForMember(d => d.currTime, o => o.MapFrom(s => s.CURR_TIME))
                .ForMember(d => d.lastVisit, o => o.MapFrom(s => s.LAST_VISIT));
+
+
+            CreateMap<GetCourseQueryDoc, SetCourseQueryDoc>()
+               .ForMember(d => d.queryDocID, o => o.MapFrom(s => s.QUERY_DOC_ID))
+               .ForMember(d => d.count, o => o.MapFrom(s => s.COUNT))
+               .ForMember(d => d.currTime, o => o.MapFrom(s => s.CURR_TIME))
+               .ForMember(d => d.finishFlag, o => o.MapFrom(s => s.FINISH_FLAG));
         }
     }
 }

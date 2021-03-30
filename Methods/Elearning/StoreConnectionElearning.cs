@@ -25,5 +25,18 @@ namespace webAPI.Methods.Elearning
                 return null;
             return result;
         }
+
+        public async Task<IEnumerable<dynamic>> ElearningViewVDO(String queryID, String appEmpID, String courseDocID)
+        {
+            List<Param> param = new List<Param>() {
+                new Param () { ParamName = "QUERY_ID", ParamType = ParamMeterTypeEnum.STRING, ParamValue =queryID },
+                new Param () { ParamName = "APP_EMP_ID", ParamType = ParamMeterTypeEnum.STRING, ParamValue = appEmpID },
+                new Param () { ParamName = "COURSE_DOC_ID", ParamType = ParamMeterTypeEnum.STRING, ParamValue = courseDocID },
+            };
+            var result = await new DataContext(_mapper).CallStoredProcudureElearn(DataBaseHostEnum.KPR, "KPDBA.DF_CALC_VIEW_VIDEO", param);
+            if (result == null)
+                return null;
+            return result;
+        }
     }
 }
