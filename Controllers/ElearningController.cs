@@ -336,7 +336,6 @@ namespace webAPI.Controllers
                     returns.stateError = false;
                     returns.messageError = "Success to insert data";
                     return returns;
-
                 }
                 // await new CreateDoc(
                 //  mapper: _mapper,
