@@ -3,18 +3,50 @@
     <TargetFramework>netcoreapp3.1</TargetFramework>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="System.DirectoryServices" Version="4.7.0"/>
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1"/>
-    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1"/>
-    <PackageReference Include="Newtonsoft.Json" Version="12.0.3"/>
-    <PackageReference Include="System.Data.SqlClient" Version="4.8.2"/>
-    <PackageReference Include="Dapper.Oracle" Version="1.2.1"/>
-    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.80"/>
-    <PackageReference Include="Dapper.FluentMap" Version="1.8.1"/>
-    <PackageReference Include="Dapper.Contrib" Version="2.0.35"/>
-    <PackageReference Include="Dapper" Version="2.0.35"/>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7"/>
-    <PackageReference Include="QRCoder" Version="1.3.7"/>
-    <PackageReference Include="MimeTypesMap" Version="1.0.8"/>
+    <None Remove="FilePrintReport.vsrepx" />
+    <None Remove="FolderPrintReport.vsrepx" />
+    <None Remove="XtraReport1.vsrepx" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="FilePrintReport.vsrepx" />
+    <EmbeddedResource Include="FolderPrintReport.vsrepx" />
+    <EmbeddedResource Include="XtraReport1.vsrepx" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="DevExpress.Reporting.Core" Version="21.1.3" />
+    <PackageReference Include="System.DirectoryServices" Version="4.7.0" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.7.1" />
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.0.1" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
+    <PackageReference Include="System.Data.SqlClient" Version="4.8.2" />
+    <PackageReference Include="Dapper.Oracle" Version="1.2.1" />
+    <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.80" />
+    <PackageReference Include="Dapper.FluentMap" Version="1.8.1" />
+    <PackageReference Include="Dapper.Contrib" Version="2.0.35" />
+    <PackageReference Include="Dapper" Version="2.0.35" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7" />
+    <PackageReference Include="QRCoder" Version="1.3.7" />
+    <PackageReference Include="MimeTypesMap" Version="1.0.8" />
+    <PackageReference Include="iTextSharp" Version="5.5.13.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Update="FilePrintReport.cs">
+      <DependentUpon>FilePrintReport.vsrepx</DependentUpon>
+    </Compile>
+    <Compile Update="FilePrintReport.Designer.cs">
+      <DependentUpon>FilePrintReport.vsrepx</DependentUpon>
+    </Compile>
+    <Compile Update="FolderPrintReport.cs">
+      <DependentUpon>FolderPrintReport.vsrepx</DependentUpon>
+    </Compile>
+    <Compile Update="FolderPrintReport.Designer.cs">
+      <DependentUpon>FolderPrintReport.vsrepx</DependentUpon>
+    </Compile>
+    <Compile Update="XtraReport1.cs">
+      <DependentUpon>XtraReport1.vsrepx</DependentUpon>
+    </Compile>
+    <Compile Update="XtraReport1.Designer.cs">
+      <DependentUpon>XtraReport1.vsrepx</DependentUpon>
+    </Compile>
   </ItemGroup>
 </Project>

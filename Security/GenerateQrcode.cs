@@ -21,6 +21,19 @@ namespace webAPI.Security
             string base64String = Convert.ToBase64String(imageBytes);
             return base64String;
         }
+        public String generateKeepQrcode(string txt)
+        {
+            // String qrText = EndoceBase64(txt);
+            // String qrcodeText = "http://localhost:4200/kmap-login-screen?queryID=" + txt;
+            QRCodeGenerator qrGenerator = new QRCodeGenerator();
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(txt,
+            QRCodeGenerator.ECCLevel.Q);
+            QRCode qrCode = new QRCode(qrCodeData);
+            Bitmap qrCodeImage = qrCode.GetGraphic(20);
+            Byte[] imageBytes = BitmapToBytes(qrCodeImage);
+            string base64String = Convert.ToBase64String(imageBytes);
+            return base64String;
+        }
         private static Byte[] BitmapToBytes(Bitmap img)
         {
             using (MemoryStream stream = new MemoryStream())

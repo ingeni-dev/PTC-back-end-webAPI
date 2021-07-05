@@ -221,7 +221,7 @@ namespace webAPI.Methods.Elearning
                 UserProfile userProfile = _jwtGenerator.DecodeToken(model.token);
                 var org = userProfile.org;
                 var userID = userProfile.userID;
-                if (setLecturer.docType == "COURSE")
+                if (setLecturer.docType == "COURSE" || setLecturer.docType == "ISO")
                 {
                     if (setLecturer.queryID == "New")
                     {
@@ -423,12 +423,12 @@ namespace webAPI.Methods.Elearning
                     stateError.messageError = "Course Success!!";
                     return stateError;
                 }
-                else if (setLecturer.docType == "ISO")
-                {
-                    stateError.stateError = true;
-                    stateError.messageError = "ISO Success!!";
-                    return stateError;
-                }
+                // else if (setLecturer.docType == "ISO")
+                // {
+                //     stateError.stateError = true;
+                //     stateError.messageError = "ระบบยังไม่รองรับการสร้าง ISO!!";
+                //     return stateError;
+                // }
                 else
                 {
                     stateError.stateError = true;

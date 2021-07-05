@@ -21,7 +21,7 @@ namespace PTCwebApi.Controllers
             _mapper = mapper;
         }
 
-        [Authorize]
+        // [Authorize]
         [HttpPost("")]
         public async Task<ActionResult<Object>> ApiAllPTC(RequestAllModelsPTC model)
         {

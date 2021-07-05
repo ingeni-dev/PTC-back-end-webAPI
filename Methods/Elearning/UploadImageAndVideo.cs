@@ -9,22 +9,25 @@ namespace webAPI.Methods.Elearning
 {
     public class UploadImageAndVideo
     {
+        public static string VideoUploadPath = string.Empty;
+        public static string DocUploadPath = string.Empty;
+
         private readonly IWebHostEnvironment _environment;
         public UploadImageAndVideo(IWebHostEnvironment environment) => _environment = environment;
         public string UploadOnlyVideo(String queryID, String folderType, String fileName, IFormFile file)
         {
-            string path = "\\\\192.168.1.7\\vdoupload$\\";
-            // string pathVDo = "http:\\\\192.168.1.7:3385\\video\\";
+            // string path = "\\\\192.168.1.7\\vdoupload$\\";
+            // string pathVDo = "http:\\\\192.168.103.7:3385\\video\\";
             try
             {
                 if (file.Length > 0)
                 {
-                    if (!Directory.Exists(_environment.WebRootPath + path))
+                    if (!Directory.Exists(_environment.WebRootPath + VideoUploadPath))
                     {
-                        Directory.CreateDirectory(_environment.WebRootPath + path);
+                        Directory.CreateDirectory(_environment.WebRootPath + VideoUploadPath);
                     }
                     string fileType = file.FileName.Split('.')[file.FileName.Split('.').Length - 1];
-                    using (FileStream fileStream = System.IO.File.Create(_environment.WebRootPath + path + fileName + "." + fileType))
+                    using (FileStream fileStream = System.IO.File.Create(_environment.WebRootPath + VideoUploadPath + fileName + "." + fileType))
                     {
                         file.CopyTo(fileStream);
                         fileStream.Flush();
@@ -48,14 +51,14 @@ namespace webAPI.Methods.Elearning
             // string pathRoot = "\\DEPLOY\\elearning";
             // string pathRoot = "\\Users\\Public\\elearning";
             // string pathRoot = "\\\\192.168.1.7\\vdoupload$";
-            string pathRoot = "\\\\192.168.55.92\\Users\\Public\\elearning";
+            // string pathRoot = "\\\\192.168.55.92\\Users\\Public\\elearning";
 
 
 
             // string pathRoot= Directory.GetCurrentDirectory();
             // string pathImg = $"assets\\upload\\{queryID}\\{folderType}\\";
             string pathImg = $"\\upload\\{queryID}\\{folderType}\\";
-            string path = pathRoot + pathImg;
+            string path = DocUploadPath + pathImg;
             try
             {
                 if (file.Length > 0)

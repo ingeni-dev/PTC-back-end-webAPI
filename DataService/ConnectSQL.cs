@@ -5,11 +5,12 @@ using System.Data.SqlClient;
 
 namespace PTCwebApi.DataService {
     public class ConnectSQL {
+        public static string SQLserverConnection = string.Empty;
         public ConnectSQL () {
 
         }
         public static SqlConnection Con () {
-            SqlConnection cn = new SqlConnection ("Data Source=192.168.1.7;Initial Catalog=PORTAL_PROD;User Id=sa;Password=Cognos3004252303;Connection Timeout=999999990");
+            SqlConnection cn = new SqlConnection (SQLserverConnection);
             //SqlConnection cn = new SqlConnection(@"Data Source=192.168.0.14\SQLEXPRESS;Initial Catalog=KPI_KPR;User Id=portal;Password=1q2w3e4r;Connection Timeout=0");
             //SqlConnection cn = new SqlConnection(@"Data Source=192.168.55.6;Initial Catalog=PORTAL_PROD;User Id=sa;Password=P@ssw0rd;Connection Timeout=999999990");
             return cn;

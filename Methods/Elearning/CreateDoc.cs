@@ -36,7 +36,7 @@ namespace webAPI.Methods.Elearning
                 SetItemCourses _item = new SetItemCourses
                 {
                     docID = item.docID,
-                    docRev = item.docRev,
+                    docRev = (item.docRev != null) ? item.docRev : "0",
                     docDesc = item.docDesc,
                     remark = item.remark
                 };
@@ -58,7 +58,7 @@ namespace webAPI.Methods.Elearning
                 SetItemISOs _item = new SetItemISOs
                 {
                     docCode = item.docCode,
-                    docRevision = item.docRevision,
+                    docRevision = (item.docRevision != null) ? item.docRevision : "0",
                     docName = item.docName,
                     isoSTD = item.isoSTD
                 };

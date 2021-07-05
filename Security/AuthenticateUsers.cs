@@ -4,8 +4,10 @@ using PTCwebApi.Models;
 
 namespace PTCwebApi.Security {
     public class AuthenticateUsers {
+        public static string LoginADPath = string.Empty;
+
         internal static Boolean AuthenticateUser (UserLogin model) {
-            DirectoryEntry entry = new DirectoryEntry ("LDAP://192.168.1.2", model.Username, model.Password);
+            DirectoryEntry entry = new DirectoryEntry (LoginADPath, model.Username, model.Password);
             entry.AuthenticationType = AuthenticationTypes.Secure;
             try {
                 DirectorySearcher search = new DirectorySearcher (entry);

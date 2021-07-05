@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="21.1.3.0" Ref="0" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v21.1, Version=21.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="FolderPrintReport" Margins="0, 1, 0, 0" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="21.1" Font="BrowalliaUPC, 27.75pt, charSet=0" BorderWidth="2">
+  <Extensions>
+    <Item1 Ref="1" Key="VSReportExtInfo" Value=".vsrepx" />
+  </Extensions>
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin" HeightF="0" />
+    <Item2 Ref="3" ControlType="BottomMarginBand" Name="BottomMargin" HeightF="0.4348755" />
+    <Item3 Ref="4" ControlType="DetailBand" Name="Detail" HeightF="404.601532" Font="TH Sarabun New, 23.9999981pt, charSet=0" Borders="None" BorderWidth="1">
+      <Controls>
+        <Item1 Ref="5" ControlType="XRPanel" Name="panel2" SizeF="685.65,403.2767" LocationFloat="71.875,0" Borders="All">
+          <Controls>
+            <Item1 Ref="6" ControlType="XRLabel" Name="label7" Multiline="true" Text="label7" SizeF="493.525055,101.916748" LocationFloat="182.124969,196.958344" Padding="2,2,0,0,100" Borders="None">
+              <ExpressionBindings>
+                <Item1 Ref="7" EventName="BeforePrint" PropertyName="Text" Expression="[prodDesc]" />
+              </ExpressionBindings>
+              <StylePriority Ref="8" UseBorders="false" />
+            </Item1>
+            <Item2 Ref="9" ControlType="XRLabel" Name="label2" Multiline="true" Text="label2" SizeF="478.9417,49.04167" LocationFloat="196.708313,147.916672" Padding="2,2,0,0,100" Borders="None">
+              <ExpressionBindings>
+                <Item1 Ref="10" EventName="BeforePrint" PropertyName="Text" Expression="[custName]" />
+              </ExpressionBindings>
+              <StylePriority Ref="11" UseBorders="false" />
+            </Item2>
+            <Item3 Ref="12" ControlType="XRLabel" Name="label11" Multiline="true" Text="label11" SizeF="344.791656,52.166626" LocationFloat="132.916641,298.875061" Padding="2,2,0,0,100" Borders="None">
+              <ExpressionBindings>
+                <Item1 Ref="13" EventName="BeforePrint" PropertyName="Text" Expression="[approval]" />
+              </ExpressionBindings>
+              <StylePriority Ref="14" UseBorders="false" />
+            </Item3>
+            <Item4 Ref="15" ControlType="XRLabel" Name="label10" Multiline="true" Text="label10" SizeF="213.666443,50.0833435" LocationFloat="453.75,351.0417" Padding="2,2,0,0,100" Borders="None">
+              <ExpressionBindings>
+                <Item1 Ref="16" EventName="BeforePrint" PropertyName="Text" Expression="[expireDate]" />
+              </ExpressionBindings>
+              <StylePriority Ref="17" UseBorders="false" />
+            </Item4>
+            <Item5 Ref="18" ControlType="XRLabel" Name="label9" Multiline="true" Text="label9" SizeF="173.958328,50.0833435" LocationFloat="95.41667,351.0417" Padding="2,2,0,0,100" Borders="None">
+              <ExpressionBindings>
+                <Item1 Ref="19" EventName="BeforePrint" PropertyName="Text" Expression="[appDate]" />
+              </ExpressionBindings>
+              <StylePriority Ref="20" UseBorders="false" />
+            </Item5>
+            <Item6 Ref="21" ControlType="XRLabel" Name="label1" Multiline="true" Text="Customer Name :" SizeF="182.541641,49.04167" LocationFloat="14.1666718,147.916672" Padding="2,2,0,0,100" Borders="None">
+              <StylePriority Ref="22" UseBorders="false" />
+            </Item6>
+            <Item7 Ref="23" ControlType="XRLabel" Name="label3" Multiline="true" Text="Product Name :" SizeF="167.9583,49.04164" LocationFloat="14.1666718,196.958344" Padding="2,2,0,0,100" Borders="None">
+              <StylePriority Ref="24" UseBorders="false" />
+            </Item7>
+            <Item8 Ref="25" ControlType="XRLabel" Name="label4" Multiline="true" Text="Approval :" SizeF="118.749962,52.1666565" LocationFloat="14.1666718,298.875061" Padding="2,2,0,0,100" Borders="None">
+              <StylePriority Ref="26" UseBorders="false" />
+            </Item8>
+            <Item9 Ref="27" ControlType="XRLabel" Name="label5" Multiline="true" Text="Date :" SizeF="81.24999,50.0833435" LocationFloat="14.1666718,351.0417" Padding="2,2,0,0,100" Borders="None">
+              <StylePriority Ref="28" UseBorders="false" />
+            </Item9>
+            <Item10 Ref="29" ControlType="XRLabel" Name="label6" Multiline="true" Text="Expiration date :" SizeF="184.375,50.083313" LocationFloat="269.374969,351.0417" Padding="2,2,0,0,100" Borders="None">
+              <StylePriority Ref="30" UseBorders="false" />
+            </Item10>
+            <Item11 Ref="31" ControlType="XRBarCode" Name="barCode1" Module="5" Alignment="MiddleCenter" ShowText="false" SizeF="139.166626,126.54" LocationFloat="536.4834,10.0000067" Padding="10,10,0,0,100" Borders="None">
+              <Symbology Ref="32" Name="QRCode" Version="Version1" />
+              <ExpressionBindings>
+                <Item1 Ref="33" EventName="BeforePrint" PropertyName="Text" Expression="[cfSn]" />
+              </ExpressionBindings>
+              <StylePriority Ref="34" UseBorders="false" />
+            </Item11>
+          </Controls>
+          <StylePriority Ref="35" UseBorders="false" />
+        </Item1>
+      </Controls>
+      <StylePriority Ref="36" UseFont="false" UseBorders="false" UseBorderWidth="false" />
+    </Item3>
+  </Bands>
+  <ComponentStorage>
+    <Item1 Ref="37" ObjectType="DevExpress.DataAccess.ObjectBinding.ObjectDataSource,DevExpress.DataAccess.v21.1" Name="objectDataSource1" Base64="PE9iamVjdERhdGFTb3VyY2UgTmFtZT0ib2JqZWN0RGF0YVNvdXJjZTEiIC8+" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>

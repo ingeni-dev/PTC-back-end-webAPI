@@ -41,6 +41,7 @@ namespace webAPI.Controllers
                 jwtGenerator: _jwtGenerator).GetDirectory();
         }
 
+        [Authorize]
         [HttpPost("getCourses")]
         public async Task<dynamic> GetCourses(RequestCourses model)
         {
@@ -133,17 +134,18 @@ namespace webAPI.Controllers
         public async Task<dynamic> GetAllISOs()
         {
             return await new CreateDoc(
-               mapper: _mapper,
-               environment: _environment,
-               jwtGenerator: _jwtGenerator).CreateGetAllISOs();
+                mapper: _mapper,
+                environment: _environment,
+                jwtGenerator: _jwtGenerator).CreateGetAllISOs();
         }
+        [Authorize]
         [HttpPost("getTopicDetail")]
         async public Task<dynamic> GetTopicDetail(RequestTopicDetail model)
         {
             return await new CreateDoc(
-               mapper: _mapper,
-               environment: _environment,
-               jwtGenerator: _jwtGenerator).CreateGetTopicDetail(model: model);
+                mapper: _mapper,
+                environment: _environment,
+                jwtGenerator: _jwtGenerator).CreateGetTopicDetail(model: model);
         }
 
         [HttpPost("upLoadGroup")]
@@ -165,14 +167,24 @@ namespace webAPI.Controllers
         }
 
         [HttpPost("upLoadDoc"), DisableRequestSizeLimit]
-        async public Task<Boolean> UpLoadDoc([FromForm] UpLoadDoc model)
+        [RequestFormLimits(MultipartBodyLengthLimit = 1073741824)]
+        async public Task<ActionResult<Boolean>> UpLoadDoc([FromForm] UpLoadDoc model)
         {
             var formCollection = await Request.ReadFormAsync();
 
-            return await new CreateDoc(
-              mapper: _mapper,
-              environment: _environment,
-              jwtGenerator: _jwtGenerator).CreateUpLoadDoc(model: model);
+            try
+            {
+                return await new CreateDoc(
+                         mapper: _mapper,
+                         environment: _environment,
+                         jwtGenerator: _jwtGenerator).CreateUpLoadDoc(model: model);
+            }
+            catch (Exception e)
+            {
+
+                return Ok(e);
+            }
+
         }
 
         // [Authorize]

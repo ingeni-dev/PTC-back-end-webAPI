@@ -1,0 +1,23 @@
+﻿SELECT SN.CF_SN,
+       SN.CF_SEQ,
+       SN.CF_STATUS,
+       PROD_DESC,
+       AVAILABLE_FLAG,
+       TO_CHAR (SN.CF_NO) || '/' || TO_CHAR (CF.SUBMIT_QTY) SN_NO
+  FROM KPDBA.COLOR_FOLDER_SN SN
+       JOIN (SELECT CF_STATUS, AVAILABLE_FLAG
+               FROM KPDBA.CF_STATUS_MASTER
+              WHERE CANCEL_FLAG = 'F') ST
+          ON SN.CF_STATUS = ST.CF_STATUS
+       JOIN (SELECT PROD_ID,
+                    REVISION,
+                    SUBMIT_QTY,
+                    CF_SEQ
+               FROM KPDBA.COLOR_FOLDER
+              WHERE APPV_FLAG != 'P' AND CANCEL_FLAG = 'F') CF
+          ON CF.CF_SEQ = SN.CF_SEQ
+       JOIN (SELECT PROD_ID, REVISION, PROD_DESC
+               FROM KPDBA.PRODUCT
+              WHERE CANCEL_FLAG = 'F') P
+          ON P.PROD_ID = CF.PROD_ID AND P.REVISION = CF.REVISION
+ WHERE SN.CF_SN = :S_CF_SN

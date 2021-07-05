@@ -1,20 +1,13 @@
-using System.Text;
 using AutoMapper;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
+using PTCwebApi.DataService;
 using PTCwebApi.Interfaces;
-using PTCwebApi.Models.PTCModels;
 using PTCwebApi.Security;
-using PTCwebApi.Security.Requirement;
+using webAPI.Methods.Elearning;
 
 namespace PTCwebApi
 {
@@ -105,10 +98,13 @@ namespace PTCwebApi
         }
         public void SetDatabaseConnection()
         {
+            AuthenticateUsers.LoginADPath = Configuration.GetConnectionString("LoginADPath");
+            UploadImageAndVideo.VideoUploadPath = Configuration.GetConnectionString("VideoUploadPath");
+            UploadImageAndVideo.DocUploadPath = Configuration.GetConnectionString("DocUploadPath");
+            ConnectSQL.SQLserverConnection = Configuration.GetConnectionString("SQLserverConnection");
             ConnectionFactory.LapConnectionString = Configuration.GetConnectionString("LapConnection");
             ConnectionFactory.KppConnectionString = Configuration.GetConnectionString("KppConnection");
             ConnectionFactory.KprConnectionString = Configuration.GetConnectionString("KprConnection");
-
             DataContextConfiguration.DEFAULT_DATABASE = ConnectionFactory.GetDatabaseHostByName(Configuration.GetSection("DefaultDatabase").Value);
         }
     }

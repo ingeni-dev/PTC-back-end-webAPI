@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<XtraReportsLayoutSerializer SerializerVersion="21.1.3.0" Ref="0" ControlType="DevExpress.XtraReports.UI.XtraReport, DevExpress.XtraReports.v21.1, Version=21.1.3.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a" Name="FilePrintReport" Margins="0, 0, 0, 0" PaperKind="A4" PageWidth="827" PageHeight="1169" Version="21.1" Font="BrowalliaUPC, 9.75pt, charSet=0">
+  <Extensions>
+    <Item1 Ref="1" Key="VSReportExtInfo" Value=".vsrepx" />
+  </Extensions>
+  <Bands>
+    <Item1 Ref="2" ControlType="TopMarginBand" Name="TopMargin" HeightF="0" />
+    <Item2 Ref="3" ControlType="BottomMarginBand" Name="BottomMargin" HeightF="0.458335876" />
+    <Item3 Ref="4" ControlType="DetailBand" Name="Detail" HeightF="120.25" Font="TH Sarabun New, 9.749999pt, charSet=0" Borders="All">
+      <Controls>
+        <Item1 Ref="5" ControlType="XRPanel" Name="panel1" SizeF="685.6501,120.25" LocationFloat="72.9166641,0" Borders="All">
+          <Controls>
+            <Item1 Ref="6" ControlType="XRLabel" Name="label1" Multiline="true" Text="label1" TextAlignment="MiddleLeft" SizeF="521.875,100.249992" LocationFloat="20.41668,1.99999809" Font="TH Sarabun New, 65.25pt, style=Bold, charSet=186" Padding="2,2,0,0,100" Borders="None">
+              <ExpressionBindings>
+                <Item1 Ref="7" EventName="BeforePrint" PropertyName="Text" Expression="[prodID]" />
+              </ExpressionBindings>
+              <StylePriority Ref="8" UseFont="false" UseBorders="false" UseTextAlignment="false" />
+            </Item1>
+            <Item2 Ref="9" ControlType="XRBarCode" Name="barCode1" Module="5" Alignment="MiddleCenter" ShowText="false" SizeF="116,116" LocationFloat="559.65,1.99999809" Font="Arial, 20.25pt, charSet=0" Padding="0,0,0,0,100" Borders="None">
+              <Symbology Ref="10" Name="QRCode" Version="Version1" />
+              <ExpressionBindings>
+                <Item1 Ref="11" EventName="BeforePrint" PropertyName="Text" Expression="[prodID]" />
+              </ExpressionBindings>
+              <StylePriority Ref="12" UseFont="false" UsePadding="false" UseBorders="false" />
+            </Item2>
+          </Controls>
+          <StylePriority Ref="13" UseBorders="false" />
+        </Item1>
+      </Controls>
+      <StylePriority Ref="14" UseFont="false" UseBorders="false" />
+    </Item3>
+  </Bands>
+  <ComponentStorage>
+    <Item1 Ref="15" ObjectType="DevExpress.DataAccess.ObjectBinding.ObjectDataSource,DevExpress.DataAccess.v21.1" Name="objectFileDataSource" Base64="PE9iamVjdERhdGFTb3VyY2UgTmFtZT0ib2JqZWN0RmlsZURhdGFTb3VyY2UiIC8+" />
+  </ComponentStorage>
+</XtraReportsLayoutSerializer>
